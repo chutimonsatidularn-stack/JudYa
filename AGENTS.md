@@ -26,7 +26,7 @@ Never record a guess as the owner's decision. If unsure, mark it `Proposed` / `O
    Commit messages follow git convention: title ≤ 50 characters, imperative mood ("Add story for offline use"), no trailing period; blank line; then a body explaining what and why.
    Commit one medium-sized logical change at a time (one story, one decision, one page change) — not one giant commit, not one per tiny edit.
 4. Don't delete or move files without asking .
-5. Health context: the app must never give medical advice or dosing recommendations beyond what the user entered.
+5. Health context: follow the Safety section of `docs/requirements.md`.
 6. Reply in the owner's language (Thai or English).
 
 ## FIRST TASK (one-time — delete this whole section when done)

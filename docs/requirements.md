@@ -19,7 +19,6 @@ The **current truth** about what MedMate should do. Not a chat log.
 ## Logic & rules
 | ID | Requirement | Status |
 |---|---|---|
-| L-1 | Data is stored on the device only; no account, no sync between devices. | Assumed |
 | L-2 | Works offline after the first load. | Assumed |
 
 ## UI
@@ -31,6 +30,37 @@ The **current truth** about what MedMate should do. Not a chat log.
 | ID | Requirement | Status |
 |---|---|---|
 | UX-1 | Installable to the Android home screen (PWA). | Assumed |
+
+## Data & privacy
+| ID | Requirement | Status |
+|---|---|---|
+| D-1 | Data is stored on the device only; no account, no sync between devices. | Assumed |
+| D-2 | What is stored per medicine (name, amount, expiry, notes…)? | Open |
+| D-3 | User can delete their data; export/backup wanted? | Open |
+
+## Safety
+| ID | Requirement | Status |
+|---|---|---|
+| SF-1 | The app shows only what the user entered; it gives no medical advice or dosing guidance. | Assumed |
+| SF-2 | Do not promise reminders/alarms the web app can't reliably deliver. | Assumed |
+
+## Out of scope (parked, not now)
+| ID | Item | Status |
+|---|---|---|
+| OS-1 | Login/accounts, cloud sync, barcode scan, drug-interaction checks, notifications, selling or ads. Move an item out of this list only when the owner asks. | Assumed |
+
+## Prototype approval (when the real app may start)
+| ID | Check | Status |
+|---|---|---|
+| AP-1 | Owner can do the top 3 jobs (see Q-1) on their own phone without help. | Open |
+| AP-2 | Owner says in words: "the prototype is approved". | Confirmed |
+
+## Constraints
+| ID | Requirement | Status |
+|---|---|---|
+| C-1 | Target: Android Chrome (other devices?). | Assumed |
+| C-2 | Readable for older users (large text, good contrast)? | Open |
+| C-3 | Free hosting (e.g. GitHub Pages), no running costs. | Assumed |
 
 ## Suggestions waiting for the owner
 | ID | Idea | Status |
