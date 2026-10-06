@@ -1,14 +1,14 @@
 # ADR-0001: Record decisions as short ADRs and log owner inputs
 
-- Status: Accepted
+- Status: Superseded by ADR-0003 (the inputs log part; stories and ADRs still stand)
 - Date: 2026-10-06
-- Linked inputs/stories: I-2, I-3, I-5
+- Linked inputs/stories: see docs/requirements.md, docs/stories.md
 
 ## Context
 The owner builds with AI and doesn't code. AI sessions forget; the owner needs to see why things are the way they are.
 
 ## Decision
-Keep three plain Markdown records: `docs/inputs.md` (what the owner said), `docs/stories.md` (what users need), `docs/adr/` (what we decided and why). One rules file (`AGENTS.md`) tells the agent to use them.
+Keep three plain Markdown records: `docs/requirements.md` (what the owner said), `docs/stories.md` (what users need), `docs/adr/` (what we decided and why). One rules file (`AGENTS.md`) tells the agent to use them.
 
 ## Alternatives considered
 - Issue tracker / wiki – more tools to learn; not needed yet.

@@ -2,7 +2,7 @@
 
 - Status: Accepted (approach decided by owner; the static-HTML detail reflects what the repo already is)
 - Date: 2026-10-06
-- Linked inputs/stories: I-4, S-2, S-3, S-4
+- Linked inputs/stories: see docs/requirements.md, docs/stories.md
 
 ## Context
 The owner wants to ask for page changes and iterate until satisfied, before any real app. The repo already holds a working static, installable PWA that stores data in the browser.
@@ -16,4 +16,4 @@ During the prototype phase: static HTML/CSS/JS, no build step, no backend, no lo
 
 ## Consequences
 Fast, cheap changes and easy hosting (e.g. GitHub Pages). No cross-device sync and no real data safety until the real app. Prototype code may be thrown away.
-The prototype file is `medmate-app.html` (I-8). It is compiled output with no separate source (I-9), so it is edited in place; rebuilding as readable files would be a new ADR.
+The prototype file is `medmate-app.html` . It is compiled output with no separate source , so it is edited in place; rebuilding as readable files would be a new ADR.

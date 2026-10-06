@@ -13,7 +13,7 @@ We are shaping the app by looking at it, not building the real one yet.
 ## Documents are the memory (read before working, update as you go)
 | Where | What |
 |---|---|
-| `docs/inputs.md` | Every requirement, preference or decision the owner gives, dated, in their words. **Append it the moment it's said**, before acting. |
+| `docs/requirements.md` | **Living spec** of logic, UI, UX, requirements and pending suggestions. Update it on *every* owner input, before changing the app. Edit lines in place; remove what's no longer true. It is current state, not a chat log. |
 | `docs/stories.md` | What users need: "As a …, I want …, so that …" + done-when. Add/adjust when a request changes what the app does. |
 | `docs/adr/` | One short file per decision that's costly to reverse (tech, data, structure). Copy `0000-template.md`. Never edit an accepted ADR – supersede it with a new one. |
 
@@ -25,12 +25,12 @@ Never record a guess as the owner's decision. If unsure, mark it `Proposed` / `O
 3. **Commit automatically** after each finished change and push to the working branch. The owner is not expected to know git; don't ask about commits or explain git to them. Never open a PR unless asked.
    Commit messages follow git convention: title ≤ 50 characters, imperative mood ("Add story for offline use"), no trailing period; blank line; then a body explaining what and why.
    Commit one medium-sized logical change at a time (one story, one decision, one page change) — not one giant commit, not one per tiny edit.
-4. Don't delete or move files without asking (see open questions in `docs/inputs.md`).
+4. Don't delete or move files without asking .
 5. Health context: the app must never give medical advice or dosing recommendations beyond what the user entered.
 6. Reply in the owner's language (Thai or English).
 
 ## FIRST TASK (one-time — delete this whole section when done)
 Stories are only guesses until the owner's intent is on paper.
-1. Write the owner's goals, users and must-have features from the chat memory of the kick-off discussion into `docs/inputs.md` and turn them into stories in `docs/stories.md`.
-2. If chat memory isn't enough, ask the owner briefly using question mode — at most 20 questions in total, grouped, multiple-choice where possible. Log each answer in `docs/inputs.md`.
-3. Mark Q-3 answered, then remove this section from `AGENTS.md` and tell the owner.
+1. Write the owner's goals, users and must-have features from the chat memory of the kick-off discussion into `docs/requirements.md` and turn them into stories in `docs/stories.md`.
+2. If chat memory isn't enough, ask the owner briefly using question mode — at most 20 questions in total, grouped, multiple-choice where possible. Record each answer in `docs/requirements.md`.
+3. Mark Q-1 answered, then remove this section from `AGENTS.md` and tell the owner.

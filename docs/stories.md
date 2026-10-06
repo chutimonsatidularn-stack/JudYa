@@ -2,9 +2,9 @@
 
 Format: **S-n** As a *who*, I want *what*, so that *why*. · Done when: observable checks. · Status.
 Status: `Draft` (agent's guess) → `Confirmed` (owner agreed) → `In prototype` → `Approved`.
-Source column points to `docs/inputs.md` or the evidence used.
+Source column points to `docs/requirements.md` or the evidence used.
 
-> All stories below are **Draft**: inferred from `README-TH.txt` (the only description of the app). Owner to confirm/edit (Q-3).
+> All stories below are **Draft**: inferred from `README-TH.txt` (the only description of the app). Owner to confirm/edit (Q-1 in `docs/requirements.md`).
 
 | ID | Story | Done when | Status | Source |
 |---|---|---|---|---|
