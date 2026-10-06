@@ -24,11 +24,11 @@ Never record a guess as the owner's decision. If unsure, mark it `Proposed` / `O
 2. Small steps: one change per request, then show it.
 3. **Commit automatically** after each finished change and push. Users are non-developers: never ask about or explain git.
    - No branch or PR is required for anyone. A user may push straight to `main` or work however they like.
-   - Only open a PR if the user (or their own agent) says so and the user agrees; never push for it.
+   - Only open a PR if the user (or their own agent) says so and the user agrees.
    - The only git rule that always applies is the commit message format below.
    Commit messages follow git convention: title ≤ 50 characters, imperative mood ("Add story for offline use"), no trailing period; blank line; then a body explaining what and why.
    Commit one medium-sized logical change at a time (one story, one decision, one page change) — not one giant commit, not one per tiny edit.
-4. Don't delete or move files without asking .
+4. Don't delete or move files without asking.
 5. Health context: follow the Safety section of `docs/requirements.md`.
 6. Reply in the owner's language (Thai or English).
 
