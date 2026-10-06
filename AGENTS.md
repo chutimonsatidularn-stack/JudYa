@@ -22,7 +22,10 @@ Never record a guess as the owner's decision. If unsure, mark it `Proposed` / `O
 ## Working rules
 1. Ask only when the answer changes what you build; otherwise pick the simplest option, say so, and log it.
 2. Small steps: one change per request, then show it.
-3. **Commit automatically** after each finished change and push to the working branch. The owner is not expected to know git; don't ask about commits or explain git to them. Never open a PR unless asked.
+3. **Commit automatically** after each finished change and push. Users are non-developers: never ask about or explain git.
+   - No branch or PR is required for anyone. A user may push straight to `main` or work however they like.
+   - Only open a PR if the user (or their own agent) says so and the user agrees; never push for it.
+   - The only git rule that always applies is the commit message format below.
    Commit messages follow git convention: title ≤ 50 characters, imperative mood ("Add story for offline use"), no trailing period; blank line; then a body explaining what and why.
    Commit one medium-sized logical change at a time (one story, one decision, one page change) — not one giant commit, not one per tiny edit.
 4. Don't delete or move files without asking .
