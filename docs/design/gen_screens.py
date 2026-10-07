@@ -4,9 +4,8 @@
 Why this exists: the SVG screens are the visual reference for the app. Editing
 one generator is faster and safer than redrawing 20 files by hand.
 
-Redraws the screens that changed with the dose-schedule feature
-(06, 07, 07b, 08, 08c, 09, 09b, 12). The other screens (01-05, 10, 11, 13, 14)
-are plain SVG files kept as they are.
+Draws all 17 screens in one visual language (line icons, 48 px targets, text >= 11 px).
+The logo on 01-05 is the exact drawing from medmate_logo.svg, scaled (logo_mark).
 
 Rules baked in (see docs/design-system.md):
   * palette only from design-tokens.json; navy is the main colour
@@ -93,6 +92,20 @@ ICONS = {
     "arrow": ['<path d="M5 12h14M13 6l6 6-6 6"/>'],
     "file": ['<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"/>',
              '<path d="M14 3v5h5M9 13h6M9 17h6"/>'],
+    "mail": ['<rect x="3" y="5" width="18" height="14" rx="2"/>', '<path d="M3 7l9 6 9-6"/>'],
+    "lock": ['<rect x="5" y="11" width="14" height="10" rx="2"/>', '<path d="M8 11V8a4 4 0 0 1 8 0v3"/>'],
+    "link": ['<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/>',
+             '<path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'],
+    "image": ['<rect x="3" y="4" width="18" height="16" rx="2"/>', '<circle cx="9" cy="10" r="1.5"/>',
+              '<path d="M21 16l-5-5-9 9"/>'],
+    "userplus": ['<circle cx="9" cy="8" r="4"/>', '<path d="M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1"/>',
+                 '<path d="M19 8v6M16 11h6"/>'],
+    "store": ['<path d="M4 9l1.5-5h13L20 9"/>',
+              '<path d="M4 9c0 1.4 1.1 2.5 2.5 2.5S9 10.4 9 9c0 1.4 1.1 2.5 3 2.5s3-1.1 3-2.5c0 1.4 1.1 2.5 2.5 2.5S20 10.4 20 9"/>',
+              '<path d="M5 11.5V20h14v-8.5"/>', '<path d="M10 20v-5h4v5"/>'],
+    "copy": ['<rect x="9" y="9" width="11" height="11" rx="2"/>', '<path d="M5 15V6a2 2 0 0 1 2-2h8"/>'],
+    "chat": ['<path d="M4 5h16v11H9l-5 4V5z"/>'],
+    "box": ['<rect x="4" y="4" width="16" height="16" rx="4"/>'],
 }
 
 
@@ -499,7 +512,190 @@ def screen_12_doctor():
     return head(H, "MedMate — Doctor Mode") + s + "</svg>", H
 
 
+# ------------------------------------------------------------------ logo (exact geometry of medmate_logo.svg)
+# The logo file draws a 110 px tile with a capsule group at translate(20,18) from the tile corner.
+# This function scales that exact drawing, so every screen shows the same mark as the logo file.
+LOGO_TILE = 110.0
+
+
+def logo_mark(x, y, size):
+    k = size / LOGO_TILE
+    return ('<g transform="translate(%s,%s) scale(%s)"><rect width="110" height="110" rx="28" fill="%s"/>'
+            '<g transform="translate(20 18) rotate(-42 35 35)" fill="none" stroke="%s" stroke-width="6" '
+            'stroke-linecap="round"><rect x="25" y="4" width="28" height="72" rx="14"/><path d="M25 40h28"/></g></g>'
+            % (f(x), f(y), f(k), SKY, NAVY))
+
+
+APPLE = ('<path fill="currentColor" stroke="none" d="M16.4 12.6c0-2 1.6-3 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7'
+         's-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.3 2-1.4 2.5-.4 6.1 1 8.1.7 1 1.5 2.1 2.5 2 1 0 1.4-.6 2.6-.6s1.5.6 2.6.6 '
+         '1.8-1 2.4-2c.8-1.1 1.1-2.2 1.1-2.3 0 0-2.1-.8-2.1-3.2zM14.5 6.5c.5-.7.9-1.6.8-2.5-.8 0-1.7.5-2.3 1.2-.5.6-.9 '
+         '1.5-.8 2.4.9.1 1.8-.4 2.3-1.1z"/>')
+ICONS["apple"] = [APPLE]
+
+
+def checkbox(x, y, on=True, size=24):
+    if on:
+        return R(x, y, size, size, 6, NAVY) + icon("check", x + size * 0.17, y + size * 0.17, size * 0.66, WHITE, 3)
+    return R(x, y, size, size, 6, WHITE, BORDER, sw=1.5)
+
+
+def field_row(y, ic, label, h=52):
+    return R(24, y, 342, h, 12, WHITE, BORDER) + icon(ic, 40, y + (h - 22) / 2, 22, MUTED) + T(74, y + h / 2 + 5, label, 15, 400, MUTED)
+
+
+def social(y, which):
+    """Google / Apple buttons (secondary 48 px)."""
+    lab = {"g_in": "เข้าสู่ระบบด้วย Google", "a_in": "เข้าสู่ระบบด้วย Apple",
+           "g_up": "สมัครด้วย Google", "a_up": "สมัครด้วย Apple"}[which]
+    s = R(24, y, 342, 48, 14, WHITE, BORDER)
+    if which.startswith("g"):
+        s += C(66, y + 24, 12, WHITE, BORDER) + T(66, y + 29, "G", 14, 700, NAVY, "middle")
+    else:
+        s += icon("apple", 54, y + 12, 24, NAVY)
+    return s + T(100, y + 29, lab, 14, 700, NAVY)
+
+
+def or_divider(y):
+    return ('<line x1="24" y1="%s" x2="168" y2="%s" stroke="%s"/><line x1="222" y1="%s" x2="366" y2="%s" stroke="%s"/>'
+            % (y - 5, y - 5, BORDER, y - 5, y - 5, BORDER)) + T(195, y, "หรือ", 13, 400, MUTED, "middle")
+
+
+def screen_01_splash():
+    H = 844
+    s = head(H, "MedMate — Splash") + logo_mark(147, 188, 96)
+    s += T(195, 336, "MedMate", 32, 700, NAVY, "middle") + T(195, 366, "จัดการยาในบ้านได้ง่ายๆ", 16, 600, NAVY, "middle")
+    s += T(195, 398, "ยาของทุกคนในบ้าน ครบ จบ ในที่เดียว", 14, 400, MUTED, "middle")
+    s += button(730, "เริ่มใช้งาน", with_arrow=True)
+    return s + "</svg>", H
+
+
+def screen_02_welcome():
+    H = 844
+    s = head(H, "MedMate — Welcome")
+    s += R(290, 6, 76, 44, 22, SKY) + T(328, 34, "ข้าม", 14, 600, NAVY, "middle")
+    s += R(32, 76, 326, 262, 28, WHITE, BORDER) + logo_mark(140, 112, 110)
+    s += T(195, 270, "MedMate", 22, 700, NAVY, "middle") + T(195, 298, "จัดการยาในบ้านได้ง่ายๆ", 14, 500, MUTED, "middle")
+    s += T(195, 392, "จัดการยาในบ้าน", 24, 700, NAVY, "middle") + T(195, 424, "ได้ง่ายขึ้นทุกวัน", 24, 700, NAVY, "middle")
+    for i, t in enumerate(["เตือนเมื่อยาใกล้หมด", "เตรียมสั่งยาอัตโนมัติ", "เทียบราคาและค่าส่ง", "แชร์ข้อมูลให้คนในบ้าน"]):
+        y = 462 + i * 52
+        s += C(58, y + 14, 14, MINT) + icon("check", 50, y + 6, 16, GREEN, 2.6) + T(86, y + 20, t, 16, 500, NAVY)
+    s += button(730, "เริ่มใช้งาน")
+    return s + "</svg>", H
+
+
+def screen_03_login():
+    H = 844
+    s = head(H, "MedMate — Login") + topbar("เข้าสู่ระบบ") + logo_mark(159, 68, 72)
+    s += T(195, 176, "MedMate", 24, 700, NAVY, "middle") + T(195, 204, "ยินดีต้อนรับกลับมา", 14, 400, MUTED, "middle")
+    s += field_row(240, "mail", "อีเมล") + field_row(302, "lock", "รหัสผ่าน")
+    s += checkbox(24, 372, True) + T(58, 390, "จดจำฉัน", 14, 500, NAVY) + T(366, 390, "ลืมรหัสผ่าน?", 14, 600, NAVY, "end")
+    s += button(424, "เข้าสู่ระบบ") + or_divider(508) + social(528, "g_in") + social(584, "a_in")
+    s += T(195, 668, "ยังไม่มีบัญชี? สมัครใช้งาน", 14, 600, NAVY, "middle")
+    return s + "</svg>", H
+
+
+def screen_04_register():
+    H = 844
+    s = head(H, "MedMate — Register") + topbar("สมัครใช้งาน")
+    s += T(24, 92, "เริ่มจัดการยาในบ้านได้เลย", 15, 500, MUTED)
+    for i, (ic, lab) in enumerate([("user", "ชื่อ – นามสกุล"), ("mail", "อีเมล"), ("lock", "รหัสผ่าน"), ("lock", "ยืนยันรหัสผ่าน")]):
+        s += field_row(116 + i * 62, ic, lab)
+    s += checkbox(24, 376, True) + T(58, 388, "ยอมรับข้อกำหนดการใช้งาน", 13, 500, NAVY) + T(58, 408, "และนโยบายความเป็นส่วนตัว", 13, 500, NAVY)
+    s += button(440, "สมัครใช้งาน") + or_divider(524) + social(544, "g_up") + social(600, "a_up")
+    s += T(195, 684, "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ", 14, 600, NAVY, "middle")
+    return s + "</svg>", H
+
+
+def screen_05_otp():
+    H = 844
+    s = head(H, "MedMate — OTP") + topbar("ยืนยันอีเมล") + logo_mark(159, 84, 72)
+    s += T(195, 206, "ยืนยันอีเมล", 22, 700, NAVY, "middle") + T(195, 236, "เราส่งรหัสยืนยัน 6 หลักไปที่", 14, 400, MUTED, "middle")
+    s += T(195, 260, "chutimon@example.com", 14, 600, NAVY, "middle")
+    for i in range(6):
+        x = 24 + i * 58.8
+        s += R(x, 296, 48, 56, 12, WHITE, NAVY if i == 0 else BORDER, sw=2 if i == 0 else 1)
+    s += T(195, 392, "ไม่ได้รับรหัส? ส่งอีกครั้ง (00:59)", 14, 500, NAVY, "middle")
+    return s + "</svg>", H
+
+
+def screen_10_order_compare():
+    H = 844
+    s = head(H, "MedMate — Order Compare") + topbar("สั่งยา", "เก็บราคา", 100)
+    s += R(24, 64, 150, 44, 22, WHITE, BORDER) + T(99, 92, "รายการสั่งยา", 14, 600, NAVY, "middle")
+    s += R(182, 64, 150, 44, 22, NAVY) + icon("check", 196, 76, 20, WHITE, 2.6) + T(264, 92, "เทียบราคา", 14, 600, WHITE, "middle")
+    s += R(24, 124, 342, 92, 16, WARN_BG) + C(56, 166, 20, YELLOW) + icon("check", 44, 154, 24, NAVY, 2.6)
+    s += T(88, 154, "ตัวเลือกที่คุ้มที่สุด", 14, 700, NAVY) + T(88, 182, "รวมค่าส่ง 1,250 บาท", 17, 700, NAVY)
+    s += T(88, 204, "ประหยัดกว่า 180 บาท", 12, 600, "#14744C")
+    rows = [("ร้านยาสุขใจ", "1,250 บาท", True), ("ร้านยาคุณภาพ", "1,380 บาท", False), ("ร้านยาใกล้บ้าน", "1,450 บาท", False)]
+    for i, (n, p, best) in enumerate(rows):
+        y = 232 + i * 88
+        s += R(24, y, 342, 76, 16, WHITE, GREEN if best else BORDER, sw=2 if best else 1)
+        s += (C(56, y + 38, 14, GREEN) + icon("check", 48, y + 30, 16, WHITE, 3)) if best else C(56, y + 38, 14, WHITE, BORDER)
+        s += T(84, y + 33, n, 16, 700, NAVY) + T(84, y + 56, "8 รายการ", 12, 400, MUTED) + T(346, y + 45, p, 16, 700, NAVY, "end")
+    s += T(24, 514, "หรือ แยกซื้อหลายร้าน (ทุกครั้งมีค่าส่ง)", 13, 500, MUTED)
+    s += button(700, "ดูรายการสั่งยา") + bottom_nav(1)
+    return s + "</svg>", H
+
+
+def screen_11_order_message():
+    H = 844
+    s = head(H, "MedMate — Order Message") + topbar("รายการยาสำหรับสั่ง")
+    s += R(24, 64, 342, 72, 16, WHITE, BORDER) + T(40, 94, "ร้านยาสุขใจ", 16, 700, NAVY) + T(40, 118, "รวม 8 รายการ · 1,250 บาท", 12, 400, MUTED)
+    s += R(306, 76, 48, 48, 12, SKY) + icon("copy", 318, 88, 24, NAVY)
+    s += T(24, 168, "สั่งยา:", 14, 700, NAVY)
+    items = ["Losartan 50 mg 30 เม็ด", "Amlodipine 5 mg 30 เม็ด", "Metformin 500 mg 60 เม็ด", "Atorvastatin 20 mg 30 เม็ด",
+             "Calcium 600 mg 60 เม็ด", "Vitamin D 1000 IU 30 เม็ด", "Omeprazole 20 mg 30 เม็ด", "Cetirizine 10 mg 30 เม็ด"]
+    for i, t in enumerate(items):
+        s += T(40, 198 + i * 30, "%d) %s" % (i + 1, t), 14, 500, TEXT)
+    s += T(24, 464, "ข้อความที่จะส่ง", 14, 700, NAVY) + R(24, 476, 342, 124, 16, SKY)
+    for i, t in enumerate(["สวัสดีค่ะ ขอสั่งยาตามรายการนี้ค่ะ", "รบกวนแจ้งยอดและวันที่จัดส่งด้วยค่ะ", "ขอบคุณค่ะ"]):
+        s += T(40, 506 + i * 28, t, 14, 500, TEXT)
+    s += button(620, "คัดลอกข้อความ")
+    s += R(24, 684, 342, 48, 14, WHITE, BORDER) + icon("chat", 128, 696, 24, NAVY) + T(164, 713, "เปิด LINE", 14, 700, NAVY)
+    s += T(195, 764, "แอพไม่ส่งข้อความเอง คัดลอกแล้วนำไปวางใน LINE", 12, 400, MUTED, "middle")
+    return s + "</svg>", H
+
+
+def screen_13_share():
+    H = 844
+    s = head(H, "MedMate — Share") + topbar("แชร์ข้อมูล")
+    rows = [("link", "ลิงก์สำหรับคนในครอบครัว", "ให้คนในบ้านดูข้อมูลและสถานะยา"),
+            ("image", "รูปสรุปข้อมูล", "เป็นรูปภาพพร้อมส่งในไลน์"),
+            ("file", "ไฟล์ PDF", "สำหรับแพทย์หรือเก็บไว้"),
+            ("userplus", "เชิญสมาชิกใหม่", "ส่งลิงก์ให้เข้ามาช่วยจัดการยา")]
+    for i, (ic, t, sub) in enumerate(rows):
+        y = 72 + i * 92
+        s += R(24, y, 342, 80, 16, WHITE, BORDER) + C(62, y + 40, 24, SKY) + icon(ic, 50, y + 28, 24, NAVY)
+        s += T(98, y + 35, t, 15, 700, NAVY) + T(98, y + 58, sub, 12, 400, MUTED) + icon("chev", 330, y + 28, 24, MUTED)
+    s += R(24, 448, 342, 92, 16, MINT) + icon("lock", 40, 466, 24, GREEN)
+    s += T(76, 484, "ความเป็นส่วนตัว", 14, 700, NAVY) + T(76, 508, "ข้อมูลสุขภาพควรแชร์เฉพาะคนที่ไว้ใจ", 13, 500, NAVY)
+    s += bottom_nav(2)
+    return s + "</svg>", H
+
+
+def screen_14_pharmacy():
+    H = 844
+    s = head(H, "MedMate — Pharmacy Settings") + topbar("ตั้งค่าร้านยา")
+    s += R(262, 6, 104, 44, 22, SKY) + icon("plus", 272, 16, 24, NAVY, 2.4) + T(324, 34, "เพิ่มร้าน", 14, 600, NAVY, "middle")
+    rows = [("ร้านยาสุขใจ", "ค่าส่ง 80 บาท (คงที่)"), ("ร้านยาคุณภาพ", "ค่าส่ง 60 บาท (คงที่)"),
+            ("ร้านยาใกล้บ้าน", "ค่าส่งไม่แน่นอน (กรอกทุกครั้ง)")]
+    for i, (n, sub) in enumerate(rows):
+        y = 72 + i * 88
+        s += R(24, y, 342, 76, 16, WHITE, BORDER) + C(62, y + 38, 24, SKY) + icon("store", 50, y + 26, 24, NAVY)
+        s += T(98, y + 33, n, 15, 700, NAVY) + T(98, y + 56, sub, 12, 400, MUTED)
+        s += R(290, y + 14, 64, 48, 12, SKY) + T(322, y + 44, "แก้ไข", 14, 600, NAVY, "middle")
+    s += T(24, 366, "ที่อยู่จัดส่ง", 16, 700, NAVY) + R(24, 380, 342, 60, 12, WHITE, BORDER) + T(40, 416, "ที่อยู่ผู้รับ", 14, 400, MUTED)
+    s += T(24, 476, "เตือนก่อนยาใกล้หมด", 16, 700, NAVY) + R(24, 490, 342, 52, 12, WHITE, BORDER)
+    s += T(40, 522, "10 วัน", 15, 600, NAVY) + T(350, 522, "ก่อนยาหมด", 12, 400, MUTED, "end")
+    s += bottom_nav(3)
+    return s + "</svg>", H
+
+
 SCREENS = [
+    ("01_splash.svg", screen_01_splash), ("02_welcome.svg", screen_02_welcome), ("03_login.svg", screen_03_login),
+    ("04_register.svg", screen_04_register), ("05_otp.svg", screen_05_otp),
+    ("10_order_compare.svg", screen_10_order_compare), ("11_order_message.svg", screen_11_order_message),
+    ("13_share.svg", screen_13_share), ("14_pharmacy_settings.svg", screen_14_pharmacy),
     ("06_home.svg", screen_06_home), ("07_household.svg", screen_07_household),
     ("07b_person_medications.svg", screen_07b_person_meds), ("08_medication_edit.svg", screen_08),
     ("08c_schedule_modes.svg", screen_08c), ("09_dose_adjust.svg", screen_09),

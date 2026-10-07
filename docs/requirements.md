@@ -100,7 +100,7 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 ## Prototype approval (when the real app may start)
 | ID | Check | Status |
 |---|---|---|
-| AP-1 | Owner can do the top 3 jobs (see Q-1) on their own phone without help. | Open |
+| AP-1 | Owner can do the top 3 jobs (Q-1 answered above) on their own phone without help. | Open |
 | AP-2 | Owner says in words: "the prototype is approved". | Confirmed |
 | AP-3 | Acceptance checks are listed in `docs/acceptance-criteria.md`. | Confirmed |
 
@@ -115,12 +115,17 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 ## Suggestions waiting for the owner
 | ID | Idea | Status |
 |---|---|---|
-| SG-1 | Replace the text-glyph icons that remain on screens 01–05, 10, 11, 13, 14 with the clean-line icon set used on the redrawn screens, and make their small buttons 48 px. | Suggested |
-| SG-2 | The logo capsule sits off-centre inside its square on screens 02, 03, 05; centre it. | Suggested |
+| SG-1 | Screens 01–05, 10, 11, 13, 14 redrawn with the clean-line icons, 48 px buttons, text ≥ 11 px (2026-10-07, in `gen_screens.py`). | Done (owner to review in the running app) |
+| SG-2 | Logo on 01–05 is the exact drawing of `medmate_logo.svg`, scaled. That drawing sits ~6% off-centre in its tile; centring it would change the logo. | Open: ask owner |
+
+## Answered questions
+| ID | Answer (owner, 2026-10-07) |
+|---|---|
+| Q-1 | The 3 first jobs: (1) show how much stock is left and when to start preparing an order; (2) one overview of everything to manage for the people in the household; (3) pass medicine and dose information on to other people. |
+| Q-2 | All 17 screens are wanted in the prototype. Login/register/OTP (02–05) therefore need an answer to Q-3 before they can work. |
+| Review | Owner will judge the look only after using the real prototype, not from the pictures. |
 
 ## Open questions
 | ID | Question |
 |---|---|
-| Q-1 | The 3 things the app must do first? (Asked in the FIRST TASK.) |
-| Q-2 | Which of the 17 designed screens belong in the prototype, and which are only for the later real app (login, OTP, share link)? |
-| Q-3 | The prototype already has a local register/login. Keep it, or remove it to match "no accounts" (D-1, OS-1)? |
+| Q-3 | The prototype already has a local register/login (accounts stored only in this phone's browser, no server). Owner asked what it means; explained in chat. Keep it, or remove it to match "no accounts" (D-1, OS-1)? Needed for screens 03–05. |

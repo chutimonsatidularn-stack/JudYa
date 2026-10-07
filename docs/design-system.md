@@ -65,5 +65,5 @@ Bottom bar (4): หน้าแรก · สั่งยา · แชร์ · �
 - Thai body text ≥ 16 px where readability needs it; touch targets ≥ 48 px; visible focus ring; WCAG AA contrast target; status always has text; icon-only buttons have an accessible name (e.g. "ย้อนกลับ", "เพิ่ม", "ลด").
 - Critical medication information (dose, schedule, allergy) must stay legible at normal phone size.
 
-## Known gaps (not yet redrawn)
-Screens 01–05, 10, 11, 13, 14 keep the original layout with the text colour bug fixed (white text on navy buttons now shows). They still use text glyphs for a few icons, have small pill buttons (30 px) and some 10 px captions. See SG-1 and SG-2 in `docs/requirements.md`.
+## Known gaps
+All 17 screens now follow this system (2026-10-07). Open: the logo mark is drawn exactly as in `medmate_logo.svg`, which sits about 6% off-centre in its tile (SG-2); the Google/Apple buttons use a plain "G" badge and a simple apple shape, not official brand artwork; Noto Sans Thai was not installed in the drawing tool, so the PNG previews use a fallback font (the SVG files name Noto Sans Thai).
