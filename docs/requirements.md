@@ -63,6 +63,7 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 | UI-4 | Home is action-first: medicines close to running out, household overview, a "prepare order" button; avoid information overload. (pkg) | Confirmed |
 | UI-5 | Doctor Mode: person, age if stored, allergies, current medicines with dose and schedule, recent dose/schedule changes, a "create medication summary" button, and a visible note that it is communication support, not diagnosis. (pkg) | Confirmed |
 | UI-6 | Share: family link, picture summary, PDF, invite; the privacy notice stays visible. (pkg) | Confirmed |
+| UI-8 | Brand graphics (logo, Splash and Welcome illustration, house banner on Home, user profile icons) are the approved vector set made from the ChatGPT concept (owner chose it 2026-10-07). They are kept as separate files in `docs/design/assets/` so the owner can swap them later without redrawing screens. | Confirmed |
 | UI-7 | Pharmacy settings: pharmacies, shipping cost (fixed or variable), delivery address, recipient, refill warning days. (pkg) | Confirmed |
 
 ## UX
@@ -78,9 +79,9 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 |---|---|---|
 | D-1 | Data is stored on the device only; no cloud sync between devices. | Assumed |
 | D-2 | Stored entities: **Person** (name, relationship, birth year, conditions, allergies, insurance) · **Medication** (name, strength, form, notes) · **Assignment** = a medicine for one person (stock, package size/unit, four daily doses, **schedule**, start date, reorder lead days, target stock days, prescriber/source, notes, active) · **DoseChange** (when, previous/new dose, **previous/new schedule**, source, reason, note, by whom; append-only) · **FollowUpNote** (date, symptom, severity, trend, note) · **Pharmacy** (name, LINE, phone, address, fixed/variable shipping, order template, active) · **OrderDraft** (people, assignments, target days, line items, pharmacy, subtotal, shipping, total, message, status draft/reviewed/copied). (pkg + DS) | Confirmed |
-| D-3 | User can delete their data; export/backup wanted? | Open |
+| D-3 | Backup and restore: Settings has a button to save all data to a file and a button to load such a file back (owner 2026-10-07). Loading replaces current data only after a confirmation that shows what will be replaced; the file is checked before use. User can also delete their data. | Confirmed |
 | D-4 | The saved-data format is versioned. Today the app saves one JSON object in the browser under `medmate.v1` with `version: 1`; the dose-schedule change upgrades it to `version: 2` (see ADR-0004). | Assumed |
-| D-5 | Observed in the app: a local register/login whose accounts are kept in the same browser (`medmate.accounts.v1`). See Q-3. | Assumed |
+| D-5 | No login in the prototype (owner 2026-10-07): the app opens straight to Home. The old local login is removed; saved accounts in `medmate.accounts.v1` are ignored and left untouched. Screens 03 Login, 04 Register and 05 OTP stay as pictures for the later real app. | Confirmed |
 
 ## Safety
 | ID | Requirement | Status |
@@ -116,16 +117,15 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 | ID | Idea | Status |
 |---|---|---|
 | SG-1 | Screens 01–05, 10, 11, 13, 14 redrawn with the clean-line icons, 48 px buttons, text ≥ 11 px (2026-10-07, in `gen_screens.py`). | Done (owner to review in the running app) |
-| SG-2 | Logo on 01–05 is the exact drawing of `medmate_logo.svg`, scaled. That drawing sits ~6% off-centre in its tile; centring it would change the logo. | Open: ask owner |
+| SG-2 | (closed) The approved logo from the app is used as is on the screens; the earlier plain capsule logo is dropped. | Done |
 
 ## Answered questions
 | ID | Answer (owner, 2026-10-07) |
 |---|---|
 | Q-1 | The 3 first jobs: (1) show how much stock is left and when to start preparing an order; (2) one overview of everything to manage for the people in the household; (3) pass medicine and dose information on to other people. |
-| Q-2 | All 17 screens are wanted in the prototype. Login/register/OTP (02–05) therefore need an answer to Q-3 before they can work. |
+| Q-2 | All 17 screens are wanted. 03–05 (login, register, OTP) are kept as pictures for the real app and are not in the running prototype (see Q-3). |
+| Q-3 | Remove the local login for the test phase; the app opens to Home (D-5). |
 | Review | Owner will judge the look only after using the real prototype, not from the pictures. |
 
 ## Open questions
-| ID | Question |
-|---|---|
-| Q-3 | The prototype already has a local register/login (accounts stored only in this phone's browser, no server). Owner asked what it means; explained in chat. Keep it, or remove it to match "no accounts" (D-1, OS-1)? Needed for screens 03–05. |
+None at the moment.

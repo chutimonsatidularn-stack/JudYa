@@ -6,8 +6,8 @@ The source of truth for how MedMate looks. Machine-readable values: `docs/design
 - Name **MedMate** · Thai line **จัดการยาในบ้านได้ง่ายๆ** · positioning: family medication management assistant.
 - Principle: **ไม่ต้องจำ ไม่ต้องคำนวณ ไม่ต้องพิมพ์ใหม่**.
 - Direction (from the JotWai reference): premium, clean mobile UI; white and light surfaces; navy brand colour; green/mint as the second colour; yellow as the attention accent; beige and sky-blue supporting surfaces; rounded cards; clean-line icons; Noto Sans Thai; restrained decoration.
-- Not allowed: childish mascot, cartoon-heavy illustration, a green-only "health" look.
-- Logo: `docs/design/medmate_logo.svg` (capsule in a sky tile + wordmark).
+- Not allowed: a green-only "health" look. Illustration: the approved ChatGPT-derived vector set (woman with phone on Splash, phone checklist on Welcome, house banner on Home, profile icons) is part of the brand; use it as is, do not redraw (owner 2026-10-07). It lives in `docs/design/assets/` and may be replaced later.
+- Logo: the approved vector logo (blue/navy two-tone capsule + MedMate wordmark + yellow leaf), file in `docs/design/assets/`. `medmate_logo.svg` (simple capsule) is the earlier package logo and is not used.
 
 ## Colour (locked palette)
 | Token | Hex | Use |
