@@ -24,6 +24,10 @@
 | [`docs/requirements.md`](`docs/requirements.md`) | สเปกที่อัปเดตตลอด: ทุกอย่างที่คุณบอก AI เรื่องลอจิก หน้าจอ การใช้งาน และความต้องการ |
 | [`docs/stories.md`](docs/stories.md) | ใครต้องการอะไร และทำไม (user stories) |
 | [`docs/adr/`](docs/adr/) | การตัดสินใจสำคัญ พร้อมเหตุผล (ADR) |
+| [`docs/design-system.md`](docs/design-system.md) | กติกาหน้าตาของแอป: สี ฟอนต์ ไอคอน ปุ่ม และส่วนประกอบต่างๆ |
+| [`docs/design/`](docs/design/) | รูปหน้าจอทั้ง 17 หน้า (SVG) ภาพรวม และไฟล์สร้างหน้าจออัตโนมัติ |
+| [`docs/acceptance-criteria.md`](docs/acceptance-criteria.md) | รายการเช็กว่า "เสร็จจริง" |
+| [`docs/prompts/`](docs/prompts/) | คำสั่งสำเร็จรูปสำหรับให้ Claude Code ทำงานต่อ (เช่น ตารางวันทานยา) |
 | [`AGENTS.md`](AGENTS.md) | กติกาสั้นๆ ที่ AI ต้องทำตาม |
 
 ## 📱 ติดตั้งบน Android

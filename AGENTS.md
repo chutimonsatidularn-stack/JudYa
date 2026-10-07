@@ -16,6 +16,9 @@ We are shaping the app by looking at it, not building the real one yet.
 | `docs/requirements.md` | **Living spec** of logic, UI, UX, requirements and pending suggestions. Update it on *every* owner input, before changing the app. Edit lines in place; remove what's no longer true. It is current state, not a chat log. |
 | `docs/stories.md` | What users need: "As a …, I want …, so that …" + done-when. Add/adjust when a request changes what the app does. |
 | `docs/adr/` | One short file per decision that's costly to reverse (tech, data, structure). Copy `0000-template.md`. Never edit an accepted ADR – supersede it with a new one. |
+| `docs/design-system.md` + `docs/design/` | How the app must look (palette, type, icons, components) and the 17 screen pictures. Match them; change them only when the owner asks. Edit `docs/design/gen_screens.py` and re-run it rather than redrawing SVGs by hand. |
+| `docs/acceptance-criteria.md` | Checklist for "done". Walk through it before asking the owner to approve a change. |
+| `docs/prompts/` | Ready-made task instructions written for Claude Code (e.g. `dose-schedule.md`). |
 
 Never record a guess as the owner's decision. If unsure, mark it `Proposed` / `Open question` and ask.
 
