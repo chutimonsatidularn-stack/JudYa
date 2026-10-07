@@ -13,6 +13,11 @@ A medicine can be taken on certain days only. Five kinds: every day · chosen we
 `medmate-app.html` is one compiled React file (about 690 KB, no separate source; ADR-0002 says edit it in place). Data is one JSON object in `localStorage` key `medmate.v1` with `version: 1` and lists `persons, medications, assignments, doseChanges, notes, pharmacies, prices, orders` plus `settings` and `orderPlan`. A dose is `{morning, noon, evening, bedtime}` and is printed by a small helper that joins "เช้า 1 · เย็น 1 เม็ด". Stock and order maths use fields such as `stockQuantity`, `reorderLeadDays`, `targetStockDays`, `packageSize`. Find the real places by searching for those names and for the Thai labels on the screens; do not trust line numbers.
 If editing the compiled file proves too risky, stop and tell the owner: a readable rebuild needs its own ADR first.
 
+### Changes made on 2026-10-07 (already in `medmate-app.html`, do not redo)
+- No login: the default and loaded `session` is a guest `{name, email:'', guest:true}`; Splash goes straight to Home; routes `welcome/login/register/verify` redirect to Home; logout removed. The old login screens' code is still in the file but unreachable.
+- Settings → "ข้อมูลในเครื่อง" has **สำรองข้อมูลเป็นไฟล์** (downloads `medmate-backup-YYYY-MM-DD.json`: `{format:'medmate-backup', version, exportedAt, data}`) and **นำเข้าข้อมูลจากไฟล์** (validates, asks for confirmation, keeps the previous data under `medmate.v1.before-import`, then replaces).
+- **When you bump the data to version 2**: the import must accept both versions and run the same `upgradeData` on version-1 files (today it only accepts `data.version === 1`), and the backup must write the new version. Add a test for both.
+
 ## 3. Order of work (one commit per step, message format in AGENTS.md)
 1. **Documents first** (already written; correct them if reality differs).
 2. **Pure functions**, no screen code. Write them as a small block of plain functions in the file, and test them with a throw-away script that you do not commit (for example load the function text in Node and run the cases below).
