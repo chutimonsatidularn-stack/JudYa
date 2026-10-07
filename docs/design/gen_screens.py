@@ -633,7 +633,7 @@ def screen_05_otp():
     H = 844
     s = head(H, "MedMate — OTP") + topbar("ยืนยันอีเมล") + C(195, 132, 48, SKY) + asset("logo_mark", 195 - 26, 132 - 28.4, 52, 56.8)
     s += T(195, 206, "ยืนยันอีเมล", 22, 700, NAVY, "middle") + T(195, 236, "เราส่งรหัสยืนยัน 6 หลักไปที่", 14, 400, MUTED, "middle")
-    s += T(195, 260, "chutimon@example.com", 14, 600, NAVY, "middle")
+    s += T(195, 260, "name@example.com", 14, 600, NAVY, "middle")
     for i in range(6):
         x = 24 + i * 58.8
         s += R(x, 296, 48, 56, 12, WHITE, NAVY if i == 0 else BORDER, sw=2 if i == 0 else 1)
