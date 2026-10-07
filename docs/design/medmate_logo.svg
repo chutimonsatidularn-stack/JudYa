@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="180" viewBox="0 0 600 180">
+<rect width="600" height="180" fill="#FFFFFF"/>
+<rect x="34" y="30" width="110" height="110" rx="28" fill="#EAF4FF"/>
+<g transform="translate(54 48) rotate(-42 35 35)" fill="none" stroke="#1F3A56" stroke-width="6" stroke-linecap="round">
+<rect x="25" y="4" width="28" height="72" rx="14"/><path d="M25 40h28"/>
+</g>
+<text x="175" y="88" font-family="Noto Sans Thai,Noto Sans,sans-serif" font-size="58" font-weight="700" fill="#1F3A56">MedMate</text>
+<text x="178" y="121" font-family="Noto Sans Thai,Noto Sans,sans-serif" font-size="21" font-weight="500" fill="#1F3A56">จัดการยาในบ้านได้ง่ายๆ</text>
+</svg>
