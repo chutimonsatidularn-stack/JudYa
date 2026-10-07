@@ -14,6 +14,7 @@ The **current truth** about what MedMate should do. Not a chat log.
 | P-2 | Stay simple for beginners; no complex features yet. | Confirmed |
 | P-3 | It is a **family medication management assistant**, not only a reminder app: keep each person's medicines, know the stock, days remaining and reorder date, prepare the order, compare pharmacies, share with family, and give the doctor a readable summary. (pkg) | Confirmed |
 | P-4 | Core principle: **ไม่ต้องจำ ไม่ต้องคำนวณ ไม่ต้องพิมพ์ใหม่** (no remembering, no calculating, no retyping). (pkg) | Confirmed |
+| P-5 | The app is being renamed from MedMate to **JudYa** (owner 2026-10-07). Scope of the first pass: only what users see (name in the app, screens, install name and icon, documents). Internal names stay as they are so saved data and links keep working: the `medmate.v1` storage key, file names, repo name, backup file format name. A full technical rename is done later when the app moves host or becomes the real app. The new wordmark, Thai spelling and tagline are waiting for the owner's concept image; the vector wordmark is made from it with the logo master prompt and checked against it before use. Until then nothing is renamed. | Confirmed (assets pending) |
 
 ## Users
 | ID | Requirement | Status |
@@ -124,6 +125,7 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 |---|---|
 | Q-1 | The 3 first jobs: (1) show how much stock is left and when to start preparing an order; (2) one overview of everything to manage for the people in the household; (3) pass medicine and dose information on to other people. |
 | Q-2 | All 17 screens are wanted. 03–05 (login, register, OTP) are kept as pictures for the real app and are not in the running prototype (see Q-3). |
+| Brand | Rename to JudYa: wordmark, Thai spelling and tagline to come from the owner's concept image (P-5). Scope: user-visible names only. |
 | Q-3 | Remove the local login for the test phase; the app opens to Home (D-5). |
 | Review | Owner will judge the look only after using the real prototype, not from the pictures. |
 
