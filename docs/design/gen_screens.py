@@ -5,7 +5,7 @@ Why this exists: the SVG screens are the visual reference for the app. Editing
 one generator is faster and safer than redrawing 20 files by hand.
 
 Draws all 17 screens in one visual language (line icons, 48 px targets, text >= 11 px).
-The logo on 01-05 is the exact drawing from medmate_logo.svg, scaled (logo_mark).
+Logo, illustrations and profile pictures are the approved vector files in assets/ (placed with asset(); geometry is never redrawn).
 
 Rules baked in (see docs/design-system.md):
   * palette only from design-tokens.json; navy is the main colour
@@ -24,6 +24,7 @@ Sample data (all invented, same persona on every screen):
 Run:  python3 gen_screens.py <out_dir>
 """
 import os
+import re
 import sys
 
 NAVY, GREEN, MINT, YELLOW = "#1F3A56", "#22A06B", "#DDF3E6", "#FACC15"
@@ -105,6 +106,9 @@ ICONS = {
               '<path d="M5 11.5V20h14v-8.5"/>', '<path d="M10 20v-5h4v5"/>'],
     "copy": ['<rect x="9" y="9" width="11" height="11" rx="2"/>', '<path d="M5 15V6a2 2 0 0 1 2-2h8"/>'],
     "chat": ['<path d="M4 5h16v11H9l-5 4V5z"/>'],
+    "bell": ['<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>', '<path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>'],
+    "users": ['<circle cx="9" cy="8" r="3.5"/>', '<path d="M2 20v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/>',
+              '<path d="M16 4.5a3.5 3.5 0 0 1 0 7M22 20v-1a5 5 0 0 0-3.5-4.7"/>'],
     "box": ['<rect x="4" y="4" width="16" height="16" rx="4"/>'],
 }
 
@@ -150,6 +154,33 @@ def button(y, label, primary=True, h=52, with_arrow=False):
 
 
 INITIAL = {"คุณพ่อ": "พ", "คุณแม่": "ม", "คุณปู่": "ป", "น้อง": "น", "ฉัน": "ฉ"}
+AVATAR = {"คุณพ่อ": "avatar_dad", "คุณแม่": "avatar_mom", "คุณปู่": "avatar_grandpa", "น้อง": "avatar_kid"}
+ASSET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+
+
+def asset(name, x, y, w, h):
+    """Place an approved vector file from assets/ (exact geometry, only position and size change)."""
+    src = open(os.path.join(ASSET_DIR, name + ".svg"), encoding="utf-8").read().strip()
+    vb = re.search(r'viewBox="([^"]+)"', src).group(1)
+    inner = src[src.index(">") + 1:src.rindex("</svg>")]
+    return '<svg x="%s" y="%s" width="%s" height="%s" viewBox="%s">%s</svg>' % (f(x), f(y), f(w), f(h), vb, inner)
+
+
+def person(who, cx, cy, r, bg=MINT):
+    """Profile picture from the approved set; 'ฉัน' has none in the set, so it keeps an initial."""
+    if who in AVATAR:
+        return asset(AVATAR[who], cx - r, cy - r, 2 * r, 2 * r)
+    return C(cx, cy, r, bg) + T(cx, cy + r * 0.3, INITIAL[who], int(r * 0.9), 700, NAVY, "middle")
+
+
+def logo_lockup(cx, y, mark_h):
+    """Approved logo mark + wordmark side by side, centred on cx; mark_h = height of the mark."""
+    mw, ww, wh = mark_h * 70.443 / 76.932, 0, 0
+    wh = mark_h * 0.62
+    ww = wh * 223.9 / 54.5
+    gap = mark_h * 0.12
+    x0 = cx - (mw + gap + ww) / 2
+    return asset("logo_mark", x0, y, mw, mark_h) + asset("wordmark", x0 + mw + gap, y + (mark_h - wh) / 2, ww, wh)
 
 
 def med_icon(cx, cy, r=20):
@@ -293,18 +324,21 @@ def dose_rows(y, vals):
 def screen_06_home():
     H = 844
     s = head(H, "MedMate — Home")
-    s += icon("menu", 24, 14, 26, NAVY) + T(195, 35, "MedMate", 18, 700, NAVY, "middle") + icon("user", 340, 14, 26, NAVY)
-    # greeting
-    s += R(24, 62, 342, 92, 16, SKY) + T(40, 93, "สวัสดีค่ะ", 18, 700, NAVY)
-    s += T(40, 116, "วันนี้ พุธ 7 ต.ค. 2569", 13, 500, MUTED) + T(40, 138, "มี 3 รายการที่ควรดูแล", 13, 600, NAVY)
-    s += R(262, 82, 88, 48, 24, WHITE) + T(306, 111, "ดูทันที", 14, 600, NAVY, "middle")
+    s += icon("menu", 24, 14, 26, NAVY) + logo_lockup(195, 12, 36) + icon("bell", 340, 14, 26, NAVY)
+    # greeting banner with the approved house illustration
+    s += ('<defs><linearGradient id="gHome" x1="0" y1="0.2" x2="1" y2="0.8"><stop offset="0" stop-color="#F3F8FE"/>'
+          '<stop offset="1" stop-color="#E6F0FC"/></linearGradient></defs>')
+    s += R(24, 62, 342, 139, 20, "url(#gHome)") + asset("home_house", 153, 62, 212, 139)
+    s += T(40, 96, "สวัสดีค่ะ", 20, 700, NAVY) + T(40, 120, "วันนี้ พุธ 7 ต.ค. 2569", 13, 500, MUTED)
+    s += T(40, 140, "มี 3 รายการที่ควรดูแล", 13, 600, NAVY)
+    s += R(40, 150, 88, 44, 22, WHITE) + T(84, 177, "ดูทันที", 14, 600, NAVY, "middle")
     # attention banner (yellow = approaching reorder; red is reserved for out-of-stock)
-    s += R(24, 166, 342, 48, 12, WARN_BG) + C(52, 190, 14, YELLOW) + icon("alert", 43, 181, 18, NAVY, 2.2)
-    s += T(76, 195, "ยาใกล้หมด 3 รายการ", 14, 700, NAVY)
+    s += R(24, 214, 342, 48, 12, WARN_BG) + C(52, 238, 14, YELLOW) + icon("alert", 43, 229, 18, NAVY, 2.2)
+    s += T(76, 243, "ยาใกล้หมด 3 รายการ", 14, 700, NAVY)
     rows = [("Losartan 50 mg", "คุณพ่อ · เหลือ 5 วัน", None),
             ("Vitamin D 1000 IU", "คุณพ่อ · จ. พ. ศ. · เหลือ 9 วัน", True),
             ("Calcium 600 mg", "คุณพ่อ · วันเว้นวัน · เหลือ 7 วัน", False)]
-    y = 226
+    y = 274
     for name, sub, take in rows:
         s += R(24, y, 342, 72, 14, WHITE, BORDER) + med_icon(56, y + 36)
         s += T(88, y + 31, name, 14, 700, NAVY) + T(88, y + 54, sub, 12, 400, MUTED)
@@ -312,13 +346,13 @@ def screen_06_home():
             s += today_chip(334, y + 12, take)
         s += icon("chev", 340, y + 26, 20, MUTED)
         y += 80
-    # household
-    s += T(24, 486, "คนในบ้าน", 15, 700, NAVY)
-    y = 500
-    for who, n in [("คุณพ่อ", "6 รายการ"), ("คุณแม่", "8 รายการ"), ("ฉัน", "5 รายการ")]:
-        s += R(24, y, 342, 52, 12, WHITE, BORDER) + C(54, y + 26, 18, MINT) + T(54, y + 31, INITIAL[who], 14, 700, NAVY, "middle")
-        s += T(84, y + 23, who, 14, 600, TEXT) + T(84, y + 42, n, 12, 400, MUTED) + icon("chev", 340, y + 16, 20, MUTED)
-        y += 60
+    # household: approved profile pictures
+    s += T(24, 534, "คนในบ้าน", 15, 700, NAVY)
+    for i, who in enumerate(["คุณพ่อ", "คุณแม่", "คุณปู่", "น้อง"]):
+        cx = 24 + 28 + i * 70
+        s += person(who, cx, 586, 28) + T(cx, 640, who, 12, 600, TEXT, "middle")
+    s += R(24 + 4 * 70, 558, 56, 56, 28, WHITE, BORDER, dash="4 3") + icon("plus", 24 + 4 * 70 + 16, 574, 24, NAVY, 2.4)
+    s += T(24 + 28 + 4 * 70, 640, "เพิ่ม", 12, 600, TEXT, "middle")
     s += button(704, "เตรียมสั่งยา", with_arrow=True)
     s += bottom_nav(0)
     return s + "</svg>", H
@@ -329,7 +363,7 @@ def screen_07_household():
     s = head(H, "MedMate — Household") + topbar("คนในบ้าน", "+ เพิ่มคน")
     y = 72
     for who, g, n in [("คุณพ่อ", "ชาย", 6), ("คุณแม่", "หญิง", 8), ("คุณปู่", "ชาย", 5), ("น้อง", "หญิง", 2)]:
-        s += R(24, y, 342, 80, 16, WHITE, BORDER) + C(62, y + 40, 26, SKY) + T(62, y + 46, INITIAL[who], 16, 700, NAVY, "middle")
+        s += R(24, y, 342, 80, 16, WHITE, BORDER) + person(who, 62, y + 40, 26)
         s += T(102, y + 35, who, 16, 700, NAVY) + T(102, y + 58, "%s · %d รายการ" % (g, n), 12, 400, MUTED)
         s += icon("chev", 336, y + 28, 24, MUTED)
         y += 90
@@ -346,7 +380,7 @@ def screen_07b_person_meds():
             ("Calcium 600 mg", "เช้า 1 เม็ด · วันเว้นวัน", False, 7)]
     H = max(844, 62 + 96 + 8 + len(meds) * 92 + 24)
     s = head(H, "MedMate — Person medications") + topbar("คุณพ่อ", "+ เพิ่มยา")
-    s += R(24, 62, 342, 80, 16, SKY) + C(62, 102, 26, WHITE) + T(62, 108, "พ", 15, 700, NAVY, "middle")
+    s += R(24, 62, 342, 80, 16, SKY) + person("คุณพ่อ", 62, 102, 26)
     s += T(102, 93, "6 รายการ · วันนี้ พุธ 7 ต.ค.", 14, 700, NAVY) + T(102, 117, "ทานวันนี้ 5 รายการ · พักวันนี้ 1 รายการ", 12, 500, MUTED)
     y = 158
     for name, dose, take, left in meds:
@@ -478,7 +512,7 @@ def screen_12_doctor():
             ("Metformin 500 mg", "เช้า 1 · เย็น 1 เม็ด", None), ("Atorvastatin 20 mg", "ก่อนนอน 1 เม็ด", None),
             ("Vitamin D 1000 IU", "เช้า 1 เม็ด", "จ. พ. ศ."), ("Calcium 600 mg", "เช้า 1 เม็ด", "วันเว้นวัน")]
     s = topbar("ข้อมูลสำหรับแพทย์", "แชร์/พิมพ์", 84)
-    s += R(24, 62, 342, 104, 16, WHITE, BORDER) + C(64, 114, 26, SKY) + T(64, 120, "พ", 16, 700, NAVY, "middle")
+    s += R(24, 62, 342, 104, 16, WHITE, BORDER) + person("คุณพ่อ", 64, 114, 26)
     s += T(104, 96, "คุณพ่อ", 17, 700, NAVY) + T(104, 118, "อายุ 72 ปี · อัปเดตล่าสุดวันนี้", 12, 400, MUTED)
     s += R(104, 128, 178, 28, 14, DANGER_BG) + icon("alert", 114, 134, 16, DANGER, 2.2) + T(136, 147, "แพ้ยา: Penicillin", 12, 700, NAVY)
     s += T(24, 198, "ยาที่ใช้อยู่ (6)", 15, 700, NAVY)
@@ -510,20 +544,6 @@ def screen_12_doctor():
     s += T(195, y + 52 + 28, "สรุปจากข้อมูลที่บันทึกไว้ เพื่อใช้สื่อสารกับแพทย์ ไม่ใช่คำวินิจฉัย", 12, 400, MUTED, "middle")
     H = y + 52 + 28 + 28
     return head(H, "MedMate — Doctor Mode") + s + "</svg>", H
-
-
-# ------------------------------------------------------------------ logo (exact geometry of medmate_logo.svg)
-# The logo file draws a 110 px tile with a capsule group at translate(20,18) from the tile corner.
-# This function scales that exact drawing, so every screen shows the same mark as the logo file.
-LOGO_TILE = 110.0
-
-
-def logo_mark(x, y, size):
-    k = size / LOGO_TILE
-    return ('<g transform="translate(%s,%s) scale(%s)"><rect width="110" height="110" rx="28" fill="%s"/>'
-            '<g transform="translate(20 18) rotate(-42 35 35)" fill="none" stroke="%s" stroke-width="6" '
-            'stroke-linecap="round"><rect x="25" y="4" width="28" height="72" rx="14"/><path d="M25 40h28"/></g></g>'
-            % (f(x), f(y), f(k), SKY, NAVY))
 
 
 APPLE = ('<path fill="currentColor" stroke="none" d="M16.4 12.6c0-2 1.6-3 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7'
@@ -562,10 +582,13 @@ def or_divider(y):
 
 def screen_01_splash():
     H = 844
-    s = head(H, "MedMate — Splash") + logo_mark(147, 188, 96)
-    s += T(195, 336, "MedMate", 32, 700, NAVY, "middle") + T(195, 366, "จัดการยาในบ้านได้ง่ายๆ", 16, 600, NAVY, "middle")
-    s += T(195, 398, "ยาของทุกคนในบ้าน ครบ จบ ในที่เดียว", 14, 400, MUTED, "middle")
-    s += button(730, "เริ่มใช้งาน", with_arrow=True)
+    s = head(H, "MedMate — Splash") + C(195, 183, 95, SKY)
+    s += asset("logo_mark", 130.9, 113, 128.19, 140) + asset("wordmark", 77.4, 300, 235.12, 57.23)
+    s += T(195, 392, "จัดการยาในบ้านได้ง่ายๆ", 19, 600, "#062B60", "middle")
+    s += asset("splash_illustration", 0, 458, 390, 219)
+    s += R(0, 675, 390, 169, 0, WHITE)
+    s += T(195, 713, "ยาของทุกคนในบ้าน", 23, 700, "#062B60", "middle") + T(195, 745, "ครบ จบ ในที่เดียว", 23, 700, "#062B60", "middle")
+    s += button(764, "เริ่มใช้งาน", with_arrow=True)
     return s + "</svg>", H
 
 
@@ -573,24 +596,24 @@ def screen_02_welcome():
     H = 844
     s = head(H, "MedMate — Welcome")
     s += R(290, 6, 76, 44, 22, SKY) + T(328, 34, "ข้าม", 14, 600, NAVY, "middle")
-    s += R(32, 76, 326, 262, 28, WHITE, BORDER) + logo_mark(140, 112, 110)
-    s += T(195, 270, "MedMate", 22, 700, NAVY, "middle") + T(195, 298, "จัดการยาในบ้านได้ง่ายๆ", 14, 500, MUTED, "middle")
-    s += T(195, 392, "จัดการยาในบ้าน", 24, 700, NAVY, "middle") + T(195, 424, "ได้ง่ายขึ้นทุกวัน", 24, 700, NAVY, "middle")
-    for i, t in enumerate(["เตือนเมื่อยาใกล้หมด", "เตรียมสั่งยาอัตโนมัติ", "เทียบราคาและค่าส่ง", "แชร์ข้อมูลให้คนในบ้าน"]):
-        y = 462 + i * 52
-        s += C(58, y + 14, 14, MINT) + icon("check", 50, y + 6, 16, GREEN, 2.6) + T(86, y + 20, t, 16, 500, NAVY)
-    s += button(730, "เริ่มใช้งาน")
+    s += R(24, 76, 342, 250, 28, SKY) + asset("welcome_illustration", 36, 84, 318, 234)
+    s += T(195, 386, "จัดการยาในบ้าน", 24, 700, NAVY, "middle") + T(195, 418, "ได้ง่ายขึ้นทุกวัน", 24, 700, NAVY, "middle")
+    for i, (ic, t) in enumerate([("bell", "เตือนเมื่อยาใกล้หมด"), ("pill", "เตรียมรายการสั่งยาให้พร้อมส่ง"),
+                                 ("bag", "เทียบราคาและค่าส่ง"), ("users", "แชร์ข้อมูลให้คนในบ้าน")]):
+        y = 456 + i * 48
+        s += icon(ic, 24, y, 24, NAVY) + T(62, y + 18, t, 16, 400, TEXT)
+    s += button(714, "เริ่มใช้งาน")
     return s + "</svg>", H
 
 
 def screen_03_login():
     H = 844
-    s = head(H, "MedMate — Login") + topbar("เข้าสู่ระบบ") + logo_mark(159, 68, 72)
-    s += T(195, 176, "MedMate", 24, 700, NAVY, "middle") + T(195, 204, "ยินดีต้อนรับกลับมา", 14, 400, MUTED, "middle")
-    s += field_row(240, "mail", "อีเมล") + field_row(302, "lock", "รหัสผ่าน")
-    s += checkbox(24, 372, True) + T(58, 390, "จดจำฉัน", 14, 500, NAVY) + T(366, 390, "ลืมรหัสผ่าน?", 14, 600, NAVY, "end")
-    s += button(424, "เข้าสู่ระบบ") + or_divider(508) + social(528, "g_in") + social(584, "a_in")
-    s += T(195, 668, "ยังไม่มีบัญชี? สมัครใช้งาน", 14, 600, NAVY, "middle")
+    s = head(H, "MedMate — Login") + topbar("เข้าสู่ระบบ") + logo_lockup(195, 70, 56)
+    s += T(195, 176, "ยินดีต้อนรับกลับมา", 14, 400, MUTED, "middle")
+    s += field_row(210, "mail", "อีเมล") + field_row(272, "lock", "รหัสผ่าน")
+    s += checkbox(24, 342, True) + T(58, 360, "จดจำฉัน", 14, 500, NAVY) + T(366, 360, "ลืมรหัสผ่าน?", 14, 600, NAVY, "end")
+    s += button(394, "เข้าสู่ระบบ") + or_divider(478) + social(498, "g_in") + social(554, "a_in")
+    s += T(195, 638, "ยังไม่มีบัญชี? สมัครใช้งาน", 14, 600, NAVY, "middle")
     return s + "</svg>", H
 
 
@@ -608,7 +631,7 @@ def screen_04_register():
 
 def screen_05_otp():
     H = 844
-    s = head(H, "MedMate — OTP") + topbar("ยืนยันอีเมล") + logo_mark(159, 84, 72)
+    s = head(H, "MedMate — OTP") + topbar("ยืนยันอีเมล") + C(195, 132, 48, SKY) + asset("logo_mark", 195 - 26, 132 - 28.4, 52, 56.8)
     s += T(195, 206, "ยืนยันอีเมล", 22, 700, NAVY, "middle") + T(195, 236, "เราส่งรหัสยืนยัน 6 หลักไปที่", 14, 400, MUTED, "middle")
     s += T(195, 260, "chutimon@example.com", 14, 600, NAVY, "middle")
     for i in range(6):

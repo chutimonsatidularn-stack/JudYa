@@ -6,7 +6,8 @@ Visual reference for the app. Rules and meaning of colours, type, icons and comp
 |---|---|
 | `MEDMATE_SCREEN_OVERVIEW.png` | One picture with all 17 screens (tall screens cropped). |
 | `design-tokens.json` | Colours, type sizes, sizes, icon set (machine-readable). |
-| `medmate_logo.svg` | Logo. |
+| `medmate_logo.svg` | Earlier plain logo from the design package. Not used any more. |
+| `assets/*.svg` | The approved vector graphics taken from the running app: `logo_mark`, `wordmark`, `splash_illustration`, `welcome_illustration`, `home_house`, `avatar_dad/mom/grandpa/kid/add`. To change the brand graphics later, replace these files and re-run `gen_screens.py`; the screens place them with `asset()`. |
 | `screens/*.svg` | The screens, 390 px wide. Open in a browser. |
 | `gen_screens.py` | Draws all 17 screens. Edit this file and re-run instead of redrawing by hand. |
 | `render_png.py` | Makes PNG previews of the SVGs (needs Python + Playwright). |
@@ -14,12 +15,12 @@ Visual reference for the app. Rules and meaning of colours, type, icons and comp
 ## Screens
 | # | Screen | Status |
 |---|---|---|
-| 01 | Splash | **redrawn**: line icons, 48 px targets |
-| 02 | Welcome | **redrawn**: line icons, 48 px targets |
+| 01 | Splash | **redrawn**: approved logo, wordmark and woman illustration from the app |
+| 02 | Welcome | **redrawn**: approved phone-checklist illustration |
 | 03 | Login | **redrawn**: line icons, 48 px targets |
 | 04 | Register | **redrawn**: line icons, 48 px targets |
 | 05 | OTP | **redrawn**: line icons, 48 px targets |
-| 06 | Home | **redrawn**: icons, take/rest chips, yellow attention banner |
+| 06 | Home | **redrawn**: house banner, profile pictures, take/rest chips, yellow attention banner |
 | 07 | Household | **redrawn**: line icons, 48 px+ rows |
 | 07b | Person's medicines | **new**: schedule, today chip, stock status |
 | 08 | Add / edit medicine | **redrawn**: "ทานวันไหน" section; field overlap fixed |
