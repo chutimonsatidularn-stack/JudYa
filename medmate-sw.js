@@ -1,4 +1,4 @@
-const V="medmate-v1";const CORE=["./","./medmate-app.html","./medmate-app.json","./icon-192.png","./icon-512.png"];
+const V="medmate-v2";const CORE=["./","./medmate-app.html","./medmate-app.json","./icon-192.png","./icon-512.png","./favicon.svg"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;

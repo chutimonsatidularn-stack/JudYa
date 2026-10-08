@@ -1,7 +1,7 @@
 {
- "name": "MedMate – จัดการยาในบ้าน",
- "short_name": "MedMate",
- "description": "จัดการยาในบ้านได้ง่ายๆ",
+ "name": "JudYa – ดูแลยา...ง่ายทุกวัน",
+ "short_name": "JudYa",
+ "description": "จัดการยา เตือนยา สั่งยาได้ในที่เดียว",
  "lang": "th",
  "start_url": "./medmate-app.html",
  "scope": "./",
