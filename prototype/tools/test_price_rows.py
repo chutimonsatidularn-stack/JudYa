@@ -1,0 +1,25 @@
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    b=p.chromium.launch();pg=b.new_page(viewport={'width':1300,'height':900})
+    errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.goto('file:///home/claude/judya/out/index.html#proto');pg.wait_for_timeout(800)
+    pg.evaluate("document.querySelector('[data-open=\"medlist\"]').click()");pg.wait_for_timeout(200)
+    ph=pg.locator('#phone')
+    print('nav:',ph.locator('.nav, nav').first.inner_text().replace('\n',' | ')[:80])
+    ph.get_by_text('เพิ่มยา').first.click();pg.wait_for_timeout(200)
+    print('screen after add:',pg.evaluate("S.screen"))
+    pg.fill('#phone [data-dm="n"]','Paracetamol');pg.wait_for_timeout(100)
+    ph.get_by_text('คุณแม่').first.click();pg.wait_for_timeout(150)
+    ph.get_by_text('บันทึก',exact=True).first.click();pg.wait_for_timeout(300)
+    print('after save:',pg.evaluate("S.screen"),pg.evaluate("Object.values(S.saved||{}).length"))
+    print('has para:',pg.evaluate("document.querySelector('#phone').innerText.includes('Paracetamol')"))
+    # buy prices
+    pg.evaluate("go('edit')") if False else None
+    pg.evaluate("document.querySelector('[data-open=\"buy\"]').click()");pg.wait_for_timeout(200)
+    n0=pg.locator('#phone [data-pr]').count()
+    ph.get_by_text('เพิ่มร้าน').first.click() if ph.get_by_text('เพิ่มร้าน').count() else print('no add btn')
+    pg.wait_for_timeout(200)
+    print('pr inputs',n0,'->',pg.locator('#phone [data-pr]').count())
+    pg.evaluate("document.querySelector('[data-open=\"order\"]').click()");pg.wait_for_timeout(200)
+    print(pg.evaluate("document.querySelector('#phone').innerText").replace('\n',' ')[:400])
+    print('errors',errs);b.close()

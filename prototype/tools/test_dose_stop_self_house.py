@@ -1,0 +1,45 @@
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    b=p.chromium.launch();pg=b.new_page(viewport={'width':1300,'height':900})
+    errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.goto('file:///home/claude/judya/out/index.html#proto');pg.wait_for_timeout(800)
+    ph=pg.locator('#phone');ev=pg.evaluate
+    def op(i): ev(f"document.querySelector('[data-open=\"{i}\"]').click()");pg.wait_for_timeout(200)
+    # dose flow
+    op('dose')
+    dis=lambda sel:ph.locator(sel).first.is_disabled()
+    print('dose btn disabled w/o reason:',dis('[data-go="confirm"]'))
+    ph.locator('select[data-rs]').select_option('แพทย์สั่งปรับ');pg.wait_for_timeout(200)
+    print('enabled after reason:',not dis('[data-go="confirm"]'))
+    ph.locator('[data-go="confirm"]').click();pg.wait_for_timeout(200)
+    ph.locator('[data-act="ack"]').click();pg.wait_for_timeout(100)
+    ph.locator('[data-act="save"]').click();pg.wait_for_timeout(300)
+    print('after save',ev("S.screen"),'hist',ev("S.hist.length"),ev("S.hist[0].reason"))
+    # stop flow
+    op('stop')
+    print('stop disabled:',dis('[data-act="stopok"]'))
+    ph.locator('select[data-srs]').select_option('แพ้ยา');pg.wait_for_timeout(200)
+    ph.locator('[data-act="sym:คัน"]').click();pg.wait_for_timeout(100)
+    ph.locator('[data-act="ack"]').click();pg.wait_for_timeout(100)
+    print('stop enabled:',not dis('[data-act="stopok"]'))
+    ph.locator('[data-act="stopok"]').click();pg.wait_for_timeout(300)
+    t=ev("document.querySelector('#phone').innerText")
+    print(ev("S.screen"),'แพ้ยา 1' in t or 'แพ้ยา' in t,'Losartan' in t,'ยาที่หยุดแล้ว' in t)
+    # self toggle
+    op('meds');ev("S.person='พ่อ'");ev("draw()")
+    ph.locator('[data-act="self:พ่อ"]').click();pg.wait_for_timeout(200)
+    print('พ่อ self:',ev("S.self.พ่อ"),'due',ev("dueOf(S,'พ่อ').length"))
+    # house med add
+    op('medlist');ev("S.mf='บ้าน'");ev("draw()")
+    ph.get_by_text('เพิ่มยา').first.click();pg.wait_for_timeout(200)
+    print('who default',ev("S.dm.who"))
+    ph.locator('[data-dm="n"]').fill('Penicillin V');pg.wait_for_timeout(100)
+    ph.locator('[data-act="who:แม่"]').click();pg.wait_for_timeout(100)
+    print('allergy warn:','เคยแพ้' in ev("document.querySelector('#phone').innerText"))
+    ph.locator('[data-act="who:บ้าน"]').click();pg.wait_for_timeout(100)
+    print('modes card hidden for house:',ph.locator('[data-go="modes"]').count()==0, 'warn for house:','เคยแพ้' in ev("document.querySelector('#phone').innerText"))
+    ph.get_by_text('บันทึก',exact=True).first.click();pg.wait_for_timeout(300)
+    print(ev("S.screen"),ev("S.mf"),'Penicillin V' in ev("document.querySelector('#phone').innerText"))
+    # feedback widget: no image button
+    print('img btn count',ev("document.querySelectorAll('.ai,[data-fbfile]').length"))
+    print('errors',errs);b.close()

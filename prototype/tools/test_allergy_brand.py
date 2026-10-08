@@ -1,0 +1,25 @@
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    b=p.chromium.launch();pg=b.new_page(viewport={'width':1300,'height':900})
+    errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.goto('file:///home/claude/judya/out/index.html#proto');pg.wait_for_timeout(800)
+    ph=pg.locator('#phone');ev=pg.evaluate
+    ev("document.querySelector('[data-open=\"meds\"]').click()");pg.wait_for_timeout(200)
+    ph.locator('[data-go="allergy"]').first.click();pg.wait_for_timeout(200)
+    print('screen',ev("S.screen"),'save disabled',ph.locator('[data-act="alsave"]').is_disabled())
+    ph.locator('[data-al="drug"]').fill('Aspirin');ph.locator('[data-act="alsym:คัน"]').click();pg.wait_for_timeout(150)
+    print('enabled',not ph.locator('[data-act="alsave"]').is_disabled(),'drug kept',ev("S.al.drug"))
+    ph.locator('[data-act="alsave"]').click();pg.wait_for_timeout(300)
+    t=ev("document.querySelector('#phone').innerText");print(ev("S.screen"),'Aspirin' in t,'แพ้ยา 1' in t)
+    # brand + new med with allergy generic match
+    ev("document.querySelector('[data-open=\"medlist\"]').click()");pg.wait_for_timeout(200)
+    ph.get_by_text('เพิ่มยา').first.click();pg.wait_for_timeout(200)
+    ph.locator('[data-dm="n"]').fill('Aspirin');ph.locator('[data-dm="n"]').press('Tab');pg.wait_for_timeout(200);ph.locator('[data-dm="br"]').fill('Aspent');pg.wait_for_timeout(100)
+    print('warn Aspirin:','เคยแพ้' in ev("document.querySelector('#phone').innerText"))
+    ph.locator('[data-act="who:บ้าน"]').click();pg.wait_for_timeout(150)
+    ph.locator('[data-dm="exp"]').fill('2027-03-01');pg.wait_for_timeout(100)
+    ph.get_by_text('บันทึก',exact=True).first.click();pg.wait_for_timeout(300)
+    t=ev("document.querySelector('#phone').innerText");print(ev("S.screen"),'ยี่ห้อ Aspent' in t,'1 มี.ค. 2570' in t)
+    ev("document.querySelector('[data-open=\"order\"]').click()");pg.wait_for_timeout(200)
+    print('order msg brand:',ev("orderItems(S)").replace('\n',' | ')[:200])
+    print('errors',errs);b.close()
