@@ -146,6 +146,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 | UI-7 | Settings: pharmacy list with phone + shipping lines, add/edit/delete; default lead/reminder days (one setting, L-11); backup/restore; delete all data. (Prototype shows add/edit, the stepper and สำรอง/นำเข้า buttons only.) | Confirmed |
 | UI-8 | Brand graphics = the approved vector set in `docs/design/assets/` (icon, vertical/horizontal logo, splash illustration, woman illustration), kept as separate files so they can be swapped. Splash and Welcome use them; Login uses the woman illustration without background. | Confirmed |
 | UI-9 | Text sizes in the prototype: body 17, secondary 16, chips 16, nav label 15, H1 22, display 30 (never below 15 for readable text). Primary button navy/white 52 px; touch targets ≥ 44–48 px; 8 px grid; 24 px side padding. | Confirmed |
+| UI-10 | The owner is making **three Welcome pictures** and wants the app to show one depending on what the user most needs to do when opening it: (1) a woman greeting with a medicine list, (2) a reminder that it is time to refill, with medicine bottle and calendar, (3) family members happy with their medicines organised. Not decided: which screen shows them and the rule for choosing. The pictures have not been sent yet; they must be made into vector with the logo master prompt first. (owner 2026-10-07) | Proposed (waiting for pictures and answers) |
 
 ## UX
 | ID | Requirement | Status |
@@ -214,3 +215,4 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 | Q-B | Edit-page details for "real app" members (add/remove member, relationship, birth year, insurance) — not designed yet. | Open |
 | Q-C | Which approach for the build: edit the compiled single file in place, or a readable rebuild? (ADR needed first — see HANDOFF §5.) | Recommended B; confirm with owner in step 0 |
 | Q-D | Phone-number login (OTP) provider for the sellable version — not for now. | Open |
+| Q-E | Do the Welcome illustration, Home house banner and profile pictures also change to the JudYa style/palette? They keep their earlier colours for now. (owner 2026-10-07) | Open |

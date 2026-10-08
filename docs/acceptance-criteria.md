@@ -13,6 +13,9 @@ Format: Given / When / Then. IDs link to requirements. "Test" = automated (unit/
 - **AC-C3 (L-6)** Target 60, stock 12, pack 10 → 48 additional, 5 packs, 50 actual; unknown pack → 48, no rounding.
 - **AC-C4 (PR-3…8)** Demo prices → สุขใจ ฿505, หมอยาเภสัช ฿456 recommended, ฿49 cheaper; ออนไลน์ "เทียบไม่ได้" (missing Losartan); unknown shipping → not ranked; free-over applies when subtotal ≥ threshold; price unit that matches neither base nor pack unit → "เทียบไม่ได้".
 - **AC-C5 (HM-2)** Household medicine expiring in 23 days → soon; −1 day → expired; empty → unknown; none of them ever show days-remaining.
+- **AC-C6 (DS-4/14)** Day-of-month 29–31 skips February (also in a leap year) and shows the note; a cycle crossing New Year keeps its spacing; calendar-day maths is right at midnight Asia/Bangkok on a device in another timezone.
+- **AC-C7 (DS-9)** Home and medicine lists show "ทานวันนี้" / "พักวันนี้" with text and icon for non-daily medicines; every-day medicines show no chip.
+- **AC-C8 (DS-6/10)** The schedule editor shows the Thai one-line summary and, for cycle kinds, the 7-day take/rest preview; changing the schedule shows old → new in a confirmation sheet with a tick box before saving.
 
 ## Members, household medicines, brands
 - **AC-M1 (MB-2)** Turn on "จัดยาทานเอง" for คุณแม่ → Home/Members show "จัดยาเอง · เราดูแลสต๊อก"; ยาวันนี้ and the bell's "ต้องทานยา N คน" exclude her; her low stock still appears in ควรซื้อยา and in the order list.
