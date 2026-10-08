@@ -65,6 +65,7 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 | UI-5 | Doctor Mode: person, age if stored, allergies, current medicines with dose and schedule, recent dose/schedule changes, a "create medication summary" button, and a visible note that it is communication support, not diagnosis. (pkg) | Confirmed |
 | UI-6 | Share: family link, picture summary, PDF, invite; the privacy notice stays visible. (pkg) | Confirmed |
 | UI-8 | Brand graphics (logo, Splash and Welcome illustration, house banner on Home, user profile icons) are the approved vector set made from the ChatGPT concept (owner chose it 2026-10-07). They are kept as separate files in `docs/design/assets/` so the owner can swap them later without redrawing screens. The JudYa files are `judya_icon`, `judya_wordmark`, `judya_splash_illustration`. | Confirmed |
+| UI-9 | The owner is making **three Welcome pictures** and wants the app to show one of them depending on what the user most needs to do when opening the app: (1) a woman greeting with a medicine list, (2) a reminder that it is time to refill, with medicine bottle and calendar, (3) family members happy with their medicines organised. Not decided yet: which screen shows them and the rule for choosing. The pictures have not been sent yet; they must be made into vector with the logo master prompt first. | Proposed (waiting for pictures and answers) |
 | UI-7 | Pharmacy settings: pharmacies, shipping cost (fixed or variable), delivery address, recipient, refill warning days. (pkg) | Confirmed |
 
 ## UX
