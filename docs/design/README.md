@@ -1,4 +1,4 @@
-# MedMate design files
+# JudYa design files
 
 Visual reference for the app. Rules and meaning of colours, type, icons and components: `../design-system.md`. Requirements: `../requirements.md`.
 
@@ -7,6 +7,7 @@ Visual reference for the app. Rules and meaning of colours, type, icons and comp
 | `MEDMATE_SCREEN_OVERVIEW.png` | One picture with all 17 screens (tall screens cropped). |
 | `design-tokens.json` | Colours, type sizes, sizes, icon set (machine-readable). |
 | `medmate_logo.svg` | Earlier plain logo from the design package. Not used any more. |
+| `assets/judya_icon.svg`, `judya_wordmark.svg`, `judya_splash_illustration.svg` | **Current** JudYa logo icon, wordmark and Splash illustration (approved 2026-10-08). The full logos (vertical/horizontal with taglines) are in the Claude Project, `claude/judya-logo_*.svg`. The older `logo_mark`, `wordmark`, `splash_illustration` are MedMate and not used. |
 | `assets/*.svg` | The approved vector graphics taken from the running app: `logo_mark`, `wordmark`, `splash_illustration`, `welcome_illustration`, `home_house`, `avatar_dad/mom/grandpa/kid/add`. To change the brand graphics later, replace these files and re-run `gen_screens.py`; the screens place them with `asset()`. |
 | `screens/*.svg` | The screens, 390 px wide. Open in a browser. |
 | `gen_screens.py` | Draws all 17 screens. Edit this file and re-run instead of redrawing by hand. |
@@ -15,7 +16,7 @@ Visual reference for the app. Rules and meaning of colours, type, icons and comp
 ## Screens
 | # | Screen | Status |
 |---|---|---|
-| 01 | Splash | **redrawn**: approved logo, wordmark and woman illustration from the app |
+| 01 | Splash | **JudYa**: icon, wordmark, two taglines, new woman illustration |
 | 02 | Welcome | **redrawn**: approved phone-checklist illustration |
 | 03 | Login | **redrawn**: line icons, 48 px targets |
 | 04 | Register | **redrawn**: line icons, 48 px targets |
@@ -35,6 +36,8 @@ Visual reference for the app. Rules and meaning of colours, type, icons and comp
 
 ## What was fixed in the originals (2026-10-07)
 Every original SVG had a style rule `.t{... fill:#0F172A}` that overrides the `fill` on each text, so white text on navy buttons and every coloured text came out near-black. The rule was removed; the fill on each text now applies.
+
+Colours on all screens follow design-system v1.2 (JudYa palette). `judya_app_colours_check.png` is a screenshot check of the running app in the new colours.
 
 ## Regenerate
 ```

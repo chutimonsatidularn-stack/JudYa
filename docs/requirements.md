@@ -1,6 +1,6 @@
 # Requirements (living document)
 
-The **current truth** about what MedMate should do. Not a chat log.
+The **current truth** about what JudYa (earlier MedMate) should do. Not a chat log.
 - Update it on **every** owner input about logic, UI, UX, a suggestion, or a requirement — immediately, before changing the app.
 - Edit the existing line when something changes; delete lines that are no longer true. History is in git; big decisions are in `docs/adr/`.
 - Status: `Confirmed` (owner said it) · `Assumed` (inferred from the existing app, needs a yes) · `Suggested` (agent idea, waiting for the owner) · `Open` (question).
@@ -10,11 +10,11 @@ The **current truth** about what MedMate should do. Not a chat log.
 ## Product
 | ID | Requirement | Status |
 |---|---|---|
-| P-1 | MedMate helps people manage the medicines they keep at home. | Assumed |
+| P-1 | JudYa (earlier MedMate) helps people manage the medicines they keep at home. | Assumed |
 | P-2 | Stay simple for beginners; no complex features yet. | Confirmed |
 | P-3 | It is a **family medication management assistant**, not only a reminder app: keep each person's medicines, know the stock, days remaining and reorder date, prepare the order, compare pharmacies, share with family, and give the doctor a readable summary. (pkg) | Confirmed |
 | P-4 | Core principle: **ไม่ต้องจำ ไม่ต้องคำนวณ ไม่ต้องพิมพ์ใหม่** (no remembering, no calculating, no retyping). (pkg) | Confirmed |
-| P-5 | The app is being renamed from MedMate to **JudYa** (owner 2026-10-07). Scope of the first pass: only what users see (name in the app, screens, install name and icon, documents). Internal names stay as they are so saved data and links keep working: the `medmate.v1` storage key, file names, repo name, backup file format name. A full technical rename is done later when the app moves host or becomes the real app. The Splash screen (illustration and layout) changes too (owner 2026-10-07). The new wordmark, Splash artwork, Thai spelling and tagline are waiting for the concept images the owner is having ChatGPT make; the owner wants them delivered as vector; the vector wordmark is made from it with the logo master prompt and checked against it before use. Until then nothing is renamed. | Confirmed (assets pending) |
+| P-5 | The app is being renamed from MedMate to **JudYa** (owner 2026-10-07). Scope of the first pass: only what users see (name in the app, screens, install name and icon, documents). Internal names stay as they are so saved data and links keep working: the `medmate.v1` storage key, file names, repo name, backup file format name. A full technical rename is done later when the app moves host or becomes the real app. The Splash screen (illustration and layout) changes too (owner 2026-10-07). Done 2026-10-08: the app, icons, favicon, install name, Splash and the 17 screen pictures use the approved JudYa vector logo, wordmark and Splash illustration (`docs/design/assets/judya_*.svg`); taglines "ดูแลยา...ง่ายทุกวัน" and "จัดการยา เตือนยา สั่งยาได้ในที่เดียว" (from the approved logo files); the whole UI uses the JudYa palette (design-system v1.2). Left unchanged on purpose: downloaded file names (`medmate-*.png/json`). The old login screens' code is still in the app, unreachable. The Splash dropped the old line "ยาของทุกคนในบ้านครบ จบ ในที่เดียว" and has no page dots (one page only), following the concept picture. | Done |
 
 ## Users
 | ID | Requirement | Status |
@@ -64,7 +64,7 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 | UI-4 | Home is action-first: medicines close to running out, household overview, a "prepare order" button; avoid information overload. (pkg) | Confirmed |
 | UI-5 | Doctor Mode: person, age if stored, allergies, current medicines with dose and schedule, recent dose/schedule changes, a "create medication summary" button, and a visible note that it is communication support, not diagnosis. (pkg) | Confirmed |
 | UI-6 | Share: family link, picture summary, PDF, invite; the privacy notice stays visible. (pkg) | Confirmed |
-| UI-8 | Brand graphics (logo, Splash and Welcome illustration, house banner on Home, user profile icons) are the approved vector set made from the ChatGPT concept (owner chose it 2026-10-07). They are kept as separate files in `docs/design/assets/` so the owner can swap them later without redrawing screens. | Confirmed |
+| UI-8 | Brand graphics (logo, Splash and Welcome illustration, house banner on Home, user profile icons) are the approved vector set made from the ChatGPT concept (owner chose it 2026-10-07). They are kept as separate files in `docs/design/assets/` so the owner can swap them later without redrawing screens. The JudYa files are `judya_icon`, `judya_wordmark`, `judya_splash_illustration`. | Confirmed |
 | UI-7 | Pharmacy settings: pharmacies, shipping cost (fixed or variable), delivery address, recipient, refill warning days. (pkg) | Confirmed |
 
 ## UX
@@ -125,7 +125,7 @@ Why: a daily-only dose could not describe "vitamin on Mon/Wed/Fri" or "every oth
 |---|---|
 | Q-1 | The 3 first jobs: (1) show how much stock is left and when to start preparing an order; (2) one overview of everything to manage for the people in the household; (3) pass medicine and dose information on to other people. |
 | Q-2 | All 17 screens are wanted. 03–05 (login, register, OTP) are kept as pictures for the real app and are not in the running prototype (see Q-3). |
-| Brand | Rename to JudYa: wordmark, Thai spelling and tagline to come from the owner's concept image (P-5). Scope: user-visible names only. |
+| Brand | Rename to JudYa done (P-5). Open: do the Welcome illustration, Home house banner and profile pictures also change to the new style/palette? Not decided, left as they were. |
 | Q-3 | Remove the local login for the test phase; the app opens to Home (D-5). |
 | Review | Owner will judge the look only after using the real prototype, not from the pictures. |
 

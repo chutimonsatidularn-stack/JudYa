@@ -12,20 +12,21 @@ The source of truth for how MedMate looks. Machine-readable values: `docs/design
 ## Colour (locked palette)
 | Token | Hex | Use |
 |---|---|---|
-| navy | `#1F3A56` | brand, navigation, primary button, headings |
-| green | `#22A06B` | success / enough stock, check icons |
-| mint | `#DDF3E6` | success surface, "ทานวันนี้" chip |
-| yellow | `#FACC15` | attention / close to reorder (icon disc) |
-| beige | `#F8F4EB` | notes, "พักวันนี้" chip, soft surfaces |
-| sky | `#EAF4FF` | selected / info surface, icon discs, steppers |
+| navy | `#0B3A6B` | brand, navigation, primary button, headings |
+| green | `#13C596` | success / enough stock, check icons |
+| mint | `#D9F1E9` | success surface, "ทานวันนี้" chip |
+| yellow | `#FFC629` | attention / close to reorder (icon disc) |
+| beige | `#FFF7DB` | notes, "พักวันนี้" chip, soft surfaces |
+| sky | `#E6F4FF` | selected / info surface, icon discs, steppers |
+| blue | `#1976F3` | focus ring, info, selected borders, large marks (new in v1.2) |
 | white | `#FFFFFF` | cards and fields |
-| background | `#F7FAFC` | page |
-| text | `#0F172A` | body text |
-| muted | `#64748B` | secondary text |
-| border | `#E2E8F0` | 1 px outlines |
+| background | `#F5FAFF` | page |
+| text | `#0B3A6B` | body text |
+| muted | `#4F6A85` | secondary text |
+| border | `#D5E3F0` | 1 px outlines |
 | danger / danger bg | `#EF4444` / `#FEECEC` | **only** out of stock, allergy, errors |
-| warning bg | `#FFF7D6` | attention banners and "what will change" cards |
-| success bg | `#EAF8F0` | success banners |
+| warning bg | `#FFF7DB` | attention banners and "what will change" cards |
+| success bg | `#D9F1E9` | success banners |
 
 The running prototype also defines readable "ink" colours for text on tinted backgrounds: `--danger-ink #B91C1C`, `--warning-ink #8A6A00`, `--success-ink #14744C`. Use navy or these inks for text on mint/yellow/red tints; red `#EF4444` is for icons and large marks (small red text on white or pink fails the AA contrast target).
 
@@ -67,3 +68,14 @@ Bottom bar (4): หน้าแรก · สั่งยา · แชร์ · �
 
 ## Known gaps
 All 17 screens now follow this system (2026-10-07). Open: the logo mark is drawn exactly as in `medmate_logo.svg`, which sits about 6% off-centre in its tile (SG-2); the Google/Apple buttons use a plain "G" badge and a simple apple shape, not official brand artwork; Noto Sans Thai was not installed in the drawing tool, so the PNG previews use a fallback font (the SVG files name Noto Sans Thai).
+
+
+## v1.2 — JudYa palette (2026-10-08)
+The whole app uses the JudYa logo palette (navy #0B3A6B, blue #1976F3, green #13C596, yellow #FFC629, light blue #E6F4FF, mint #D9F1E9, cream #FFF7DB, pale blue #F5FAFF). Old v1.1 values are listed in `design/design-tokens.json` (`_note`). Rules that come with it:
+- Primary buttons stay navy fill + white text. Never a blue button with small white text (4.26:1).
+- Blue is not used for small body text on white; use it for the focus ring, icons, borders, large or bold text.
+- Green is for fills and large marks only. A small green icon on a light fill is drawn in `success-ink` (#14744C); a check on a green disc is navy. Text is never green.
+- Yellow is a fill with navy text or mark.
+- Status is never colour alone (text or icon stays).
+- Contrast checked 2026-10-08 on the pairs used: all text pairs pass 4.5:1. Known failures kept visible: card/field outline `#D5E3F0` on white is 1.31:1 (decorative outline, as before), and the green progress bar on white is 2.22:1 (status text sits beside it).
+Not yet restyled to the new palette: the house banner on Home, the Welcome illustration and the profile pictures keep their earlier colours (owner has not decided).

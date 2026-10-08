@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MedMate design screens (SVG, 390 px reference width) -- generator.
+"""JudYa design screens (SVG, 390 px reference width) -- generator.
 
 Why this exists: the SVG screens are the visual reference for the app. Editing
 one generator is faster and safer than redrawing 20 files by hand.
@@ -27,10 +27,12 @@ import os
 import re
 import sys
 
-NAVY, GREEN, MINT, YELLOW = "#1F3A56", "#22A06B", "#DDF3E6", "#FACC15"
-BEIGE, SKY, BG, TEXT = "#F8F4EB", "#EAF4FF", "#F7FAFC", "#0F172A"
-MUTED, BORDER, WHITE = "#64748B", "#E2E8F0", "#FFFFFF"
-DANGER, DANGER_BG, WARN_BG = "#EF4444", "#FEECEC", "#FFF7D6"
+NAVY, GREEN, MINT, YELLOW = "#0B3A6B", "#13C596", "#D9F1E9", "#FFC629"
+BEIGE, SKY, BG, TEXT = "#FFF7DB", "#E6F4FF", "#F5FAFF", "#0B3A6B"
+MUTED, BORDER, WHITE = "#4F6A85", "#D5E3F0", "#FFFFFF"
+DANGER, DANGER_BG, WARN_BG = "#EF4444", "#FEECEC", "#FFF7DB"
+BLUE, SUCCESS_INK = "#1976F3", "#14744C"
+TAG1, TAG2 = "ดูแลยา...ง่ายทุกวัน", "จัดการยา เตือนยา สั่งยาได้ในที่เดียว"   # same text as JY in medmate-app.html
 
 STYLE = ("@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:"
          "wght@400;500;600;700&amp;display=swap');\n"
@@ -161,6 +163,8 @@ ASSET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 def asset(name, x, y, w, h):
     """Place an approved vector file from assets/ (exact geometry, only position and size change)."""
     src = open(os.path.join(ASSET_DIR, name + ".svg"), encoding="utf-8").read().strip()
+    src = re.sub(r"<\?xml[^>]*\?>", "", src).strip()
+    src = re.sub(r"<title>.*?</title>", "", src, flags=re.S)
     vb = re.search(r'viewBox="([^"]+)"', src).group(1)
     inner = src[src.index(">") + 1:src.rindex("</svg>")]
     return '<svg x="%s" y="%s" width="%s" height="%s" viewBox="%s">%s</svg>' % (f(x), f(y), f(w), f(h), vb, inner)
@@ -174,13 +178,13 @@ def person(who, cx, cy, r, bg=MINT):
 
 
 def logo_lockup(cx, y, mark_h):
-    """Approved logo mark + wordmark side by side, centred on cx; mark_h = height of the mark."""
-    mw, ww, wh = mark_h * 70.443 / 76.932, 0, 0
-    wh = mark_h * 0.62
-    ww = wh * 223.9 / 54.5
+    """Approved JudYa icon + wordmark side by side, centred on cx; mark_h = height of the icon."""
+    mw = mark_h * 1253 / 1100
+    wh = mark_h * 0.5
+    ww = wh * 3886 / 1100
     gap = mark_h * 0.12
     x0 = cx - (mw + gap + ww) / 2
-    return asset("logo_mark", x0, y, mw, mark_h) + asset("wordmark", x0 + mw + gap, y + (mark_h - wh) / 2, ww, wh)
+    return asset("judya_icon", x0, y, mw, mark_h) + asset("judya_wordmark", x0 + mw + gap, y + (mark_h - wh) / 2, ww, wh)
 
 
 def med_icon(cx, cy, r=20):
@@ -323,7 +327,7 @@ def dose_rows(y, vals):
 # ------------------------------------------------------------------ screens
 def screen_06_home():
     H = 844
-    s = head(H, "MedMate — Home")
+    s = head(H, "JudYa — Home")
     s += icon("menu", 24, 14, 26, NAVY) + logo_lockup(195, 12, 36) + icon("bell", 340, 14, 26, NAVY)
     # greeting banner with the approved house illustration
     s += ('<defs><linearGradient id="gHome" x1="0" y1="0.2" x2="1" y2="0.8"><stop offset="0" stop-color="#F3F8FE"/>'
@@ -360,7 +364,7 @@ def screen_06_home():
 
 def screen_07_household():
     H = 844
-    s = head(H, "MedMate — Household") + topbar("คนในบ้าน", "+ เพิ่มคน")
+    s = head(H, "JudYa — Household") + topbar("คนในบ้าน", "+ เพิ่มคน")
     y = 72
     for who, g, n in [("คุณพ่อ", "ชาย", 6), ("คุณแม่", "หญิง", 8), ("คุณปู่", "ชาย", 5), ("น้อง", "หญิง", 2)]:
         s += R(24, y, 342, 80, 16, WHITE, BORDER) + person(who, 62, y + 40, 26)
@@ -379,7 +383,7 @@ def screen_07b_person_meds():
             ("Vitamin D 1000 IU", "เช้า 1 เม็ด · จ. พ. ศ.", True, 9),
             ("Calcium 600 mg", "เช้า 1 เม็ด · วันเว้นวัน", False, 7)]
     H = max(844, 62 + 96 + 8 + len(meds) * 92 + 24)
-    s = head(H, "MedMate — Person medications") + topbar("คุณพ่อ", "+ เพิ่มยา")
+    s = head(H, "JudYa — Person medications") + topbar("คุณพ่อ", "+ เพิ่มยา")
     s += R(24, 62, 342, 80, 16, SKY) + person("คุณพ่อ", 62, 102, 26)
     s += T(102, 93, "6 รายการ · วันนี้ พุธ 7 ต.ค.", 14, 700, NAVY) + T(102, 117, "ทานวันนี้ 5 รายการ · พักวันนี้ 1 รายการ", 12, 500, MUTED)
     y = 158
@@ -424,7 +428,7 @@ def screen_08():
     s += r
     s += button(y2 + 28, "บันทึกยา")
     H = y2 + 28 + 52 + 32
-    return head(H, "MedMate — Add Medication (dose schedule)") + s + "</svg>", H
+    return head(H, "JudYa — Add Medication (dose schedule)") + s + "</svg>", H
 
 
 def screen_09():
@@ -454,12 +458,12 @@ def screen_09():
     s += button(y + 64, "หยุดใช้ยา", primary=False, h=48)
     s += T(195, y + 64 + 48 + 28, "การเปลี่ยนยาจะถูกบันทึกในประวัติ ลบย้อนหลังไม่ได้", 12, 400, MUTED, "middle")
     H = y + 64 + 48 + 28 + 28
-    return head(H, "MedMate — Dose Adjust (dose schedule)") + s + "</svg>", H
+    return head(H, "JudYa — Dose Adjust (dose schedule)") + s + "</svg>", H
 
 
 def screen_09b():
     H = 844
-    s = head(H, "MedMate — Confirm schedule change") + topbar("ปรับโดส", "ประวัติ")
+    s = head(H, "JudYa — Confirm schedule change") + topbar("ปรับโดส", "ประวัติ")
     s += R(24, 62, 342, 68, 14, WHITE, BORDER) + T(40, 91, "Vitamin D 1000 IU", 16, 700, NAVY) + T(40, 114, "คุณพ่อ", 12, 400, MUTED)
     s += '<rect width="390" height="844" fill="%s" opacity="0.45"/>' % TEXT
     b = 228
@@ -504,7 +508,7 @@ def screen_08c():
         y = y2 + 24
         body += '<line x1="24" y1="%d" x2="366" y2="%d" stroke="%s" stroke-width="1"/>' % (y - 12, y - 12, BORDER)
         y += 12
-    return head(y, "MedMate — Schedule modes") + body + "</svg>", y
+    return head(y, "JudYa — Schedule modes") + body + "</svg>", y
 
 
 def screen_12_doctor():
@@ -543,7 +547,7 @@ def screen_12_doctor():
     s += button(y, "สร้าง Medication Summary")
     s += T(195, y + 52 + 28, "สรุปจากข้อมูลที่บันทึกไว้ เพื่อใช้สื่อสารกับแพทย์ ไม่ใช่คำวินิจฉัย", 12, 400, MUTED, "middle")
     H = y + 52 + 28 + 28
-    return head(H, "MedMate — Doctor Mode") + s + "</svg>", H
+    return head(H, "JudYa — Doctor Mode") + s + "</svg>", H
 
 
 APPLE = ('<path fill="currentColor" stroke="none" d="M16.4 12.6c0-2 1.6-3 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7'
@@ -581,20 +585,19 @@ def or_divider(y):
 
 
 def screen_01_splash():
+    """Same layout as the app: icon, wordmark, two taglines, woman illustration, start button."""
     H = 844
-    s = head(H, "MedMate — Splash") + C(195, 183, 95, SKY)
-    s += asset("logo_mark", 130.9, 113, 128.19, 140) + asset("wordmark", 77.4, 300, 235.12, 57.23)
-    s += T(195, 392, "จัดการยาในบ้านได้ง่ายๆ", 19, 600, "#062B60", "middle")
-    s += asset("splash_illustration", 0, 458, 390, 219)
-    s += R(0, 675, 390, 169, 0, WHITE)
-    s += T(195, 713, "ยาของทุกคนในบ้าน", 23, 700, "#062B60", "middle") + T(195, 745, "ครบ จบ ในที่เดียว", 23, 700, "#062B60", "middle")
+    s = head(H, "JudYa — Splash")
+    s += asset("judya_icon", 135.75, 48, 118.5, 104) + asset("judya_wordmark", 103.15, 162, 183.7, 52)
+    s += T(195, 252, TAG1, 19, 600, NAVY, "middle") + T(195, 278, TAG2, 14, 400, NAVY, "middle")
+    s += asset("judya_splash_illustration", 45, 440, 300, 302)
     s += button(764, "เริ่มใช้งาน", with_arrow=True)
     return s + "</svg>", H
 
 
 def screen_02_welcome():
     H = 844
-    s = head(H, "MedMate — Welcome")
+    s = head(H, "JudYa — Welcome")
     s += R(290, 6, 76, 44, 22, SKY) + T(328, 34, "ข้าม", 14, 600, NAVY, "middle")
     s += R(24, 76, 342, 250, 28, SKY) + asset("welcome_illustration", 36, 84, 318, 234)
     s += T(195, 386, "จัดการยาในบ้าน", 24, 700, NAVY, "middle") + T(195, 418, "ได้ง่ายขึ้นทุกวัน", 24, 700, NAVY, "middle")
@@ -608,7 +611,7 @@ def screen_02_welcome():
 
 def screen_03_login():
     H = 844
-    s = head(H, "MedMate — Login") + topbar("เข้าสู่ระบบ") + logo_lockup(195, 70, 56)
+    s = head(H, "JudYa — Login") + topbar("เข้าสู่ระบบ") + logo_lockup(195, 70, 56)
     s += T(195, 176, "ยินดีต้อนรับกลับมา", 14, 400, MUTED, "middle")
     s += field_row(210, "mail", "อีเมล") + field_row(272, "lock", "รหัสผ่าน")
     s += checkbox(24, 342, True) + T(58, 360, "จดจำฉัน", 14, 500, NAVY) + T(366, 360, "ลืมรหัสผ่าน?", 14, 600, NAVY, "end")
@@ -619,7 +622,7 @@ def screen_03_login():
 
 def screen_04_register():
     H = 844
-    s = head(H, "MedMate — Register") + topbar("สมัครใช้งาน")
+    s = head(H, "JudYa — Register") + topbar("สมัครใช้งาน")
     s += T(24, 92, "เริ่มจัดการยาในบ้านได้เลย", 15, 500, MUTED)
     for i, (ic, lab) in enumerate([("user", "ชื่อ – นามสกุล"), ("mail", "อีเมล"), ("lock", "รหัสผ่าน"), ("lock", "ยืนยันรหัสผ่าน")]):
         s += field_row(116 + i * 62, ic, lab)
@@ -631,7 +634,7 @@ def screen_04_register():
 
 def screen_05_otp():
     H = 844
-    s = head(H, "MedMate — OTP") + topbar("ยืนยันอีเมล") + C(195, 132, 48, SKY) + asset("logo_mark", 195 - 26, 132 - 28.4, 52, 56.8)
+    s = head(H, "JudYa — OTP") + topbar("ยืนยันอีเมล") + C(195, 132, 48, SKY) + asset("judya_icon", 195 - 29.6, 132 - 26, 59.2, 52)
     s += T(195, 206, "ยืนยันอีเมล", 22, 700, NAVY, "middle") + T(195, 236, "เราส่งรหัสยืนยัน 6 หลักไปที่", 14, 400, MUTED, "middle")
     s += T(195, 260, "name@example.com", 14, 600, NAVY, "middle")
     for i in range(6):
@@ -643,7 +646,7 @@ def screen_05_otp():
 
 def screen_10_order_compare():
     H = 844
-    s = head(H, "MedMate — Order Compare") + topbar("สั่งยา", "เก็บราคา", 100)
+    s = head(H, "JudYa — Order Compare") + topbar("สั่งยา", "เก็บราคา", 100)
     s += R(24, 64, 150, 44, 22, WHITE, BORDER) + T(99, 92, "รายการสั่งยา", 14, 600, NAVY, "middle")
     s += R(182, 64, 150, 44, 22, NAVY) + icon("check", 196, 76, 20, WHITE, 2.6) + T(264, 92, "เทียบราคา", 14, 600, WHITE, "middle")
     s += R(24, 124, 342, 92, 16, WARN_BG) + C(56, 166, 20, YELLOW) + icon("check", 44, 154, 24, NAVY, 2.6)
@@ -662,7 +665,7 @@ def screen_10_order_compare():
 
 def screen_11_order_message():
     H = 844
-    s = head(H, "MedMate — Order Message") + topbar("รายการยาสำหรับสั่ง")
+    s = head(H, "JudYa — Order Message") + topbar("รายการยาสำหรับสั่ง")
     s += R(24, 64, 342, 72, 16, WHITE, BORDER) + T(40, 94, "ร้านยาสุขใจ", 16, 700, NAVY) + T(40, 118, "รวม 8 รายการ · 1,250 บาท", 12, 400, MUTED)
     s += R(306, 76, 48, 48, 12, SKY) + icon("copy", 318, 88, 24, NAVY)
     s += T(24, 168, "สั่งยา:", 14, 700, NAVY)
@@ -681,7 +684,7 @@ def screen_11_order_message():
 
 def screen_13_share():
     H = 844
-    s = head(H, "MedMate — Share") + topbar("แชร์ข้อมูล")
+    s = head(H, "JudYa — Share") + topbar("แชร์ข้อมูล")
     rows = [("link", "ลิงก์สำหรับคนในครอบครัว", "ให้คนในบ้านดูข้อมูลและสถานะยา"),
             ("image", "รูปสรุปข้อมูล", "เป็นรูปภาพพร้อมส่งในไลน์"),
             ("file", "ไฟล์ PDF", "สำหรับแพทย์หรือเก็บไว้"),
@@ -698,7 +701,7 @@ def screen_13_share():
 
 def screen_14_pharmacy():
     H = 844
-    s = head(H, "MedMate — Pharmacy Settings") + topbar("ตั้งค่าร้านยา")
+    s = head(H, "JudYa — Pharmacy Settings") + topbar("ตั้งค่าร้านยา")
     s += R(262, 6, 104, 44, 22, SKY) + icon("plus", 272, 16, 24, NAVY, 2.4) + T(324, 34, "เพิ่มร้าน", 14, 600, NAVY, "middle")
     rows = [("ร้านยาสุขใจ", "ค่าส่ง 80 บาท (คงที่)"), ("ร้านยาคุณภาพ", "ค่าส่ง 60 บาท (คงที่)"),
             ("ร้านยาใกล้บ้าน", "ค่าส่งไม่แน่นอน (กรอกทุกครั้ง)")]
