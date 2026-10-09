@@ -1,81 +1,45 @@
-# MedMate design system v1.1
+# JudYa design system (v0.7)
 
-The source of truth for how MedMate looks. Machine-readable values: `docs/design/design-tokens.json`. Pictures of every screen: `docs/design/screens/` (index and how to regenerate: `docs/design/README.md`). The SVG screens are **visual references**, not production components: the real UI must copy their hierarchy, spacing, colour, type and content with real HTML/CSS.
+Tokens: `docs/design/design-tokens.json` (single source). Pictures: `docs/design/screens/`. Brand SVGs: `docs/design/assets/` (approved; do not redraw; swap files, not screens). **Palette rule:** only the logo palette (navy #0B3A6B, blue #1976F3, green #13C596, yellow #FFC629, sky #E6F4FF, pale #F5FAFF) plus the derived mint/cream/ink/danger tones in the tokens.
 
-## Brand
-- Name **MedMate** · Thai line **จัดการยาในบ้านได้ง่ายๆ** · positioning: family medication management assistant.
-- Principle: **ไม่ต้องจำ ไม่ต้องคำนวณ ไม่ต้องพิมพ์ใหม่**.
-- Direction (from the JotWai reference): premium, clean mobile UI; white and light surfaces; navy brand colour; green/mint as the second colour; yellow as the attention accent; beige and sky-blue supporting surfaces; rounded cards; clean-line icons; Noto Sans Thai; restrained decoration.
-- Not allowed: a green-only "health" look. Illustration: the approved ChatGPT-derived vector set (woman with phone on Splash, phone checklist on Welcome, house banner on Home, profile icons) is part of the brand; use it as is, do not redraw (owner 2026-10-07). It lives in `docs/design/assets/` and may be replaced later.
-- Logo: the approved vector logo (blue/navy two-tone capsule + MedMate wordmark + yellow leaf), file in `docs/design/assets/`. `medmate_logo.svg` (simple capsule) is the earlier package logo and is not used.
+## Principles
+- Calm, clinical-friendly, readable for older users: body 17 px, nothing below 15 px, primary button 52 px, touch targets ≥ 44 px, 8 px grid, 24 px side padding.
+- **Never colour alone**: every status has an icon and a word (ใกล้หมด ⚠, พอใช้ ✓, ยังไม่ทราบ ⓘ, จัดยาเอง ⓘ, ทานวันนี้ 💊 / พักวันนี้ ☾).
+- **Missing data is shown as missing** ("ยังไม่ระบุ", "เทียบไม่ได้"), never a made-up number.
+- Disabled primary buttons explain why in one small line under the button.
+- Destructive or high-risk actions: red-outline button + inline/sheet confirmation + reason (stop medicine, dose change, delete allergy).
+- One topic per screen; summaries on cards tell the current value before opening (the 08 edit pattern).
 
-## Colour (locked palette)
-| Token | Hex | Use |
-|---|---|---|
-| navy | `#0B3A6B` | brand, navigation, primary button, headings |
-| green | `#13C596` | success / enough stock, check icons |
-| mint | `#D9F1E9` | success surface, "ทานวันนี้" chip |
-| yellow | `#FFC629` | attention / close to reorder (icon disc) |
-| beige | `#FFF7DB` | notes, "พักวันนี้" chip, soft surfaces |
-| sky | `#E6F4FF` | selected / info surface, icon discs, steppers |
-| blue | `#1976F3` | focus ring, info, selected borders, large marks (new in v1.2) |
-| white | `#FFFFFF` | cards and fields |
-| background | `#F5FAFF` | page |
-| text | `#0B3A6B` | body text |
-| muted | `#4F6A85` | secondary text |
-| border | `#D5E3F0` | 1 px outlines |
-| danger / danger bg | `#EF4444` / `#FEECEC` | **only** out of stock, allergy, errors |
-| warning bg | `#FFF7DB` | attention banners and "what will change" cards |
-| success bg | `#D9F1E9` | success banners |
+## Components to build once and reuse (C-4)
+`AppShell` (header with back + title + ≤1 pill, bottom nav 4 items) · `Button` (primary / secondary / danger / pill) · `Card` (+ tappable card with disc icon, text, chevron) · `Chip` (low / ok / rest / info) · `Field` (label + input + hint) · `Select` (custom caret, optgroups) · `NumberInput` with unit select · `Stepper` (− value +) · `ChipGroup` (single / multi, with ✓ on selected) · `Switch` (role=switch, 52×30) · `Banner` (yellow) · `SummaryCard` (mint) · `Note` (info / caution / danger) · `Timeline` · `Avatar` (initials, sizes, colour per person; photo when set) · `Sheet` (bottom, 24 px top radius) · `Toast` · `ProgressBar` · `DateInput` · `AllergyBlock`.
 
-The running prototype also defines readable "ink" colours for text on tinted backgrounds: `--danger-ink #B91C1C`, `--warning-ink #8A6A00`, `--success-ink #14744C`. Use navy or these inks for text on mint/yellow/red tints; red `#EF4444` is for icons and large marks (small red text on white or pink fails the AA contrast target).
+## Patterns
+- Header: back arrow + 22 px title + optional 16 px subtitle + one right pill (e.g. "เพิ่มยา", "บันทึก", "ประวัติ").
+- Member card on Home/Members: avatar (56), name 20, chips row.
+- Medicine card: generic + strength, brand line (muted), chip at right, schedule summary, bar, stock line.
+- Allergy: red block with ⚠ title, per-record drug (bold) + symptoms + date + [แก้ไข][ลบ]; delete confirms inline in the same block.
+- Reason box (required select + optional textarea) is shared by 08c and 09; shown read-only on 09b.
 
-Meaning: navy = brand/primary action · green = fine · **yellow = approaching reorder** · red = out of stock/critical only · mint/sky/beige = surfaces.
-**Never show a medicine state by colour alone**: always add text and/or an icon.
-
-## Type
-Noto Sans Thai (fallback Noto Sans), weights 400/500/600/700. Sizes: display 28 · H1 24 · H2 20 · H3 17 · body 16 · label 14 · caption 12 · micro 11. On the 390 px mock-ups card titles are 14–16, secondary lines 12, and nothing is below 11. Thai body text that people must read should be ≥ 16 px in the real app where space allows.
-
-## Geometry
-- Reference frame 390 × 844; 8 px grid; page side padding 24 px.
-- Card radius 16 (list rows 12–14); control radius 12; chips and pills fully round.
-- Primary button 52 px high, secondary 48 px. Minimum touch target **48 × 48 px**; where the drawing is smaller (7 weekday circles, 7-column date grid) the touch area is the whole cell (≈ 49 px wide) so neighbours do not overlap.
-- Shadow: none or very subtle; use space rather than heavy borders.
-- Screens longer than 844 px scroll; the main button of a form sits at the end of the form (in the real app it may be pinned above the bottom bar).
-
-## Icons
-One clean-line family: 24 px box, **2 px stroke, round caps and joins**, navy (or muted when inactive). The set used in the screens: back, chevron, menu, user, home, bag (order), share, sliders (settings), pill, check, moon (rest day), alert, calendar, plus, minus, arrow-down, arrow-right, file. Draw them as SVG components. **No emoji and no text glyphs (✉ ☑ ⌂ …) as production icons.**
-
-## Navigation
-Bottom bar (4): หน้าแรก · สั่งยา · แชร์ · ตั้งค่า. Selected item = sky pill with navy icon and label; others muted. Secondary screens use a back arrow at the top left and at most one pill button at the top right (44 px high).
-
-## Components added for the dose schedule (2026-10-07)
-- **Schedule kind chips** (row of 5): ทุกวัน · เลือกวัน · วันเว้นวัน · ทุกกี่วัน · วันที่ของเดือน. 48 px high, round. Selected = navy fill + white check + white text; others white with border.
-- **Weekday picker**: 7 round buttons อา จ อ พ พฤ ศ ส (Sunday first); selected = navy fill/white text.
-- **Cycle editor** (every other day / every N days): optional stepper "ทุก [−] N วัน [+]", a "เริ่มนับวันที่" date row, and a 7-day strip: take = navy block "ทาน", rest = dashed outline "พัก".
-- **Month-day grid**: 7 columns × up to 5 rows of 44 px cells, selected = navy; beige note: months without that date are skipped.
-- **Summary card** (sky): bold Thai sentence ("ทุก จ. พ. ศ. · 3 วันต่อสัปดาห์") + muted next dates.
-- **Stepper**: 48 × 48 sky square with a minus or plus icon; value 17 px bold between; dose rows are 56 px high.
-- **Today chip**: "ทานวันนี้" = mint pill + green check icon; "พักวันนี้" = beige pill with border + moon icon; text navy 12 px semibold. Shown only for not-every-day medicines.
-- **Schedule tag** (Doctor Mode): sky pill with calendar icon and the schedule ("จ. พ. ศ.", "วันเว้นวัน"); every-day shows plain muted "ทุกวัน".
-- **Change card** (warning bg): alert icon + "สิ่งที่จะเปลี่ยน (ต้องยืนยันก่อนบันทึก)" + old → new line.
-- **Confirmation sheet** (bottom sheet over a dimmed screen): old card, arrow-down, new card (sky with navy outline), beige notice, tick row "ฉันตรวจสอบตารางนี้แล้ว", primary "ยืนยันและบันทึก", secondary "กลับไปแก้ไข".
-- **History timeline** (Doctor Mode): date on the left, navy dot on a 2 px line, medicine name and the change below.
-
-## Accessibility
-- Thai body text ≥ 16 px where readability needs it; touch targets ≥ 48 px; visible focus ring; WCAG AA contrast target; status always has text; icon-only buttons have an accessible name (e.g. "ย้อนกลับ", "เพิ่ม", "ลด").
-- Critical medication information (dose, schedule, allergy) must stay legible at normal phone size.
-
-## Known gaps
-All 17 screens now follow this system (2026-10-07). Open: the logo mark is drawn exactly as in `medmate_logo.svg`, which sits about 6% off-centre in its tile (SG-2); the Google/Apple buttons use a plain "G" badge and a simple apple shape, not official brand artwork; Noto Sans Thai was not installed in the drawing tool, so the PNG previews use a fallback font (the SVG files name Noto Sans Thai).
-
-
-## v1.2 — JudYa palette (2026-10-08)
-The whole app uses the JudYa logo palette (navy #0B3A6B, blue #1976F3, green #13C596, yellow #FFC629, light blue #E6F4FF, mint #D9F1E9, cream #FFF7DB, pale blue #F5FAFF). Old v1.1 values are listed in `design/design-tokens.json` (`_note`). Rules that come with it:
+## Colour usage rules (v1.2, carried over from the earlier design system)
 - Primary buttons stay navy fill + white text. Never a blue button with small white text (4.26:1).
 - Blue is not used for small body text on white; use it for the focus ring, icons, borders, large or bold text.
 - Green is for fills and large marks only. A small green icon on a light fill is drawn in `success-ink` (#14744C); a check on a green disc is navy. Text is never green.
 - Yellow is a fill with navy text or mark.
-- Status is never colour alone (text or icon stays).
-- Contrast checked 2026-10-08 on the pairs used: all text pairs pass 4.5:1. Known failures kept visible: card/field outline `#D5E3F0` on white is 1.31:1 (decorative outline, as before), and the green progress bar on white is 2.22:1 (status text sits beside it).
-Not yet restyled to the new palette: the house banner on Home, the Welcome illustration and the profile pictures keep their earlier colours (owner has not decided).
+- Text on tinted backgrounds uses navy or the ink colours: `danger-ink #B91C1C`, `warning-ink #8A6A00`, `success-ink #14744C`. Red `#EF4444` is for icons and large marks only (small red text on white or pink fails AA).
+- Contrast checked 2026-10-08: all text pairs used pass 4.5:1. Known failures kept visible: card/field outline `#D5E3F0` on white is 1.31:1 (decorative), and the green progress bar on white is 2.22:1 (status text sits beside it).
+- Home banner (3 states, UI-10) and profile pictures (20-icon set, MB-1) use the new JudYa pictures. Welcome stays as it is (owner 2026-10-09).
+
+## Schedule components (added 2026-10-07)
+- **Schedule kind chips** (row of 5): ทุกวัน · เลือกวัน · วันเว้นวัน · ทุกกี่วัน · วันที่ของเดือน. 48 px high, round. Selected = navy fill + white check + white text.
+- **Weekday picker**: 7 round buttons อา จ อ พ พฤ ศ ส (Sunday first); selected = navy fill, white text. Touch area is the whole cell.
+- **Cycle editor** (every other day / every N days): stepper "ทุก [−] N วัน [+]", a "เริ่มนับวันที่" date row, and a 7-day strip: take = navy block "ทาน", rest = dashed outline "พัก".
+- **Month-day grid**: 7 columns × up to 5 rows of ≥ 44 px cells, selected = navy; beige note says months without that date are skipped.
+- **Summary card** (sky): bold Thai sentence ("ทุก จ. พ. ศ. · 3 วันต่อสัปดาห์") + muted next dates.
+- **Today chip**: "ทานวันนี้" = mint pill + green check icon; "พักวันนี้" = beige pill with border + moon icon; navy semibold text. Shown only for not-every-day medicines.
+- **Schedule tag** (Doctor Mode): sky pill with calendar icon and the schedule; every-day shows plain muted "ทุกวัน".
+- **Change card** (warning bg): alert icon + "สิ่งที่จะเปลี่ยน (ต้องยืนยันก่อนบันทึก)" + old → new line.
+- **Confirmation sheet** (bottom sheet over a dimmed screen): old card, arrow-down, new card (sky with navy outline), beige notice, tick row "ฉันตรวจสอบตารางนี้แล้ว", primary "ยืนยันและบันทึก", secondary "กลับไปแก้ไข".
+- **History timeline** (Doctor Mode): date on the left, navy dot on a 2 px line, medicine name and the change below.
+
+## Review-only chrome (do not ship)
+The flow page, per-screen comment boxes, the jump bar and phone frame belong to the review artifact only (C-5).

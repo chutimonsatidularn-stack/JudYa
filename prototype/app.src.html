@@ -1,0 +1,954 @@
+<title>JudYa แผนผังแอป</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: หน้าเดียว 2 มุมมอง — (1) แผนผัง flow แถวละหมวด วางหน้าจอจริงย่อ 60% พร้อมลูกศร (2) ต้นแบบกดได้ในกรอบมือถือ 390×844 */
+:root{
+  --pg-bg:#F5FAFF; --pg-fg:#0B3A6B; --pg-mut:#4F6A85; --pg-card:#FFFFFF; --pg-line:#D5E3F0; --pg-sky:#E6F4FF; --pg-acc:#0B3A6B; --pg-acc-fg:#FFFFFF;
+  --ok-bg:#D9F1E9;--ok-fg:#14744C;--fix-bg:#FFF7DB;--fix-fg:#8A6A00;--font:'Noto Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--pg-bg:#071A2E;--pg-fg:#E6F4FF;--pg-mut:#9DB6CE;--pg-card:#0E2A45;--pg-line:#1F4469;--pg-sky:#12365A;--pg-acc:#E6F4FF;--pg-acc-fg:#0B3A6B;--ok-bg:#0F3B30;--ok-fg:#7BE0B8;--fix-bg:#4A3C0B;--fix-fg:#FFD76A;color-scheme:dark}}
+:root[data-theme="dark"]{--pg-bg:#071A2E;--pg-fg:#E6F4FF;--pg-mut:#9DB6CE;--pg-card:#0E2A45;--pg-line:#1F4469;--pg-sky:#12365A;--pg-acc:#E6F4FF;--pg-acc-fg:#0B3A6B;--ok-bg:#0F3B30;--ok-fg:#7BE0B8;--fix-bg:#4A3C0B;--fix-fg:#FFD76A;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--font);padding-inline:16px;padding-block:20px 48px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto}
+.head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.head img{width:56px;height:auto}
+.head h1{font-size:26px;line-height:1.25;margin:0;font-weight:700}
+.head p{margin:2px 0 0;color:var(--pg-mut);font-size:16px}
+.tabs{display:flex;gap:8px;margin:20px 0 4px;flex-wrap:wrap}
+.tab{font:600 17px var(--font);padding:10px 18px;border-radius:999px;border:1.5px solid var(--pg-line);background:var(--pg-card);color:var(--pg-fg);cursor:pointer;min-height:44px}
+.tab[aria-selected="true"]{background:var(--pg-acc);color:var(--pg-acc-fg);border-color:var(--pg-acc)}
+:focus-visible{outline:3px solid #1976F3;outline-offset:2px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:16px 0 8px}
+.rule{background:var(--pg-card);border:1px solid var(--pg-line);border-radius:16px;padding:14px 16px;font-size:16px;color:var(--pg-mut)}
+.rule b{display:block;color:var(--pg-fg);font-size:17px;margin-bottom:6px}
+.sw{display:flex;flex-wrap:wrap;gap:6px}
+.sw i{display:inline-flex;align-items:center;gap:6px;font-style:normal;font-size:14px;color:var(--pg-fg)}
+.sw i::before{content:"";width:16px;height:16px;border-radius:50%;background:var(--c);border:1px solid var(--pg-line)}
+.row{margin-top:32px}
+.row h2{font-size:22px;margin:0;font-weight:700}
+.row>p{margin:2px 0 14px;color:var(--pg-mut);font-size:16px;max-width:70ch}
+.lane{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:4px 4px 16px}
+.node{flex:0 0 auto;width:234px}
+.thumbbtn{display:block;padding:0;border:0;background:none;cursor:pointer;border-radius:30px}
+.thumb{width:234px;height:507px;border-radius:28px;overflow:hidden;border:1.5px solid var(--pg-line);box-shadow:0 8px 24px rgba(11,58,107,.14);background:#F5FAFF;position:relative}
+.thumb .scr{transform:scale(.6);transform-origin:0 0;pointer-events:none}
+.node h3{font-size:17px;margin:12px 0 2px;display:flex;gap:8px;align-items:baseline;font-weight:600}
+.node h3 .no{font-size:14px;font-weight:700;background:var(--pg-acc);color:var(--pg-acc-fg);border-radius:999px;padding:1px 9px}
+.node p{margin:0;font-size:16px;color:var(--pg-mut);line-height:1.45}
+.arr{flex:0 0 auto;width:72px;height:507px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--pg-fg);text-align:center;padding:0 4px}
+.arr svg{width:44px;height:24px}
+.arr span{font-size:15px;line-height:1.3;color:var(--pg-mut)}
+.arr.dash svg line{stroke-dasharray:5 5}
+.arr.dash{opacity:.75}
+.proto{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;margin-top:20px;align-items:start}
+@media(min-width:900px){.proto{grid-template-columns:minmax(0,430px) minmax(0,1fr)}}
+.phone-wrap{width:calc(390px*var(--k,1));height:calc(844px*var(--k,1));margin-inline:auto;border-radius:calc(36px*var(--k,1));overflow:hidden;box-shadow:0 0 0 calc(8px*var(--k,1)) #0B3A6B,0 20px 50px rgba(11,58,107,.28)}
+.phone{transform:scale(var(--k,1));transform-origin:0 0}
+.jump{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;align-content:start}
+.jump h2{grid-column:1/-1;margin:0;font-size:19px}
+.jump p{grid-column:1/-1;margin:0 0 4px;color:var(--pg-mut);font-size:16px}
+.jb{display:flex;gap:8px;align-items:center;text-align:left;font:500 16px var(--font);padding:10px 12px;border-radius:12px;border:1.5px solid var(--pg-line);background:var(--pg-card);color:var(--pg-fg);cursor:pointer;min-height:44px}
+.jb .no{font-size:14px;font-weight:700;background:var(--pg-sky);border-radius:999px;padding:1px 8px}
+.jb[aria-current="true"]{border-color:var(--pg-acc);background:var(--pg-sky)}
+.foot-note{margin-top:28px;color:var(--pg-mut);font-size:15px;max-width:80ch}
+
+/* ===== หน้าจอแอป (สีคงที่ ไม่เปลี่ยนตามธีมของหน้าเว็บ) ===== */
+.scr{--navy:#0B3A6B;--blue:#1976F3;--green:#13C596;--yellow:#FFC629;--sky:#E6F4FF;--pale:#F5FAFF;--mint:#D9F1E9;--cream:#FFF7DB;--mut:#4F6A85;--line:#D5E3F0;--dng:#EF4444;--dngbg:#FEECEC;--dngink:#B91C1C;--warnink:#8A6A00;--okink:#14744C;
+  width:390px;height:844px;position:relative;overflow:hidden;background:var(--pale);color:var(--navy);font:400 17px/1.45 var(--font);display:flex;flex-direction:column;text-align:left}
+.scr *{box-sizing:border-box}
+:where(.scr) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0;text-align:inherit}
+.scr h1,.scr h2,.scr h3,.scr p{margin:0}
+.scr .ic{flex:none;display:block}
+.sb{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:16px;font-weight:600}
+.sb .r{display:flex;gap:6px;align-items:center}
+.top{flex:none;display:flex;align-items:center;gap:12px;padding:8px 24px 12px}
+.top .ico{width:46px;height:auto}
+.top .tt{flex:1;display:flex;flex-direction:column;line-height:1.25}
+.top .tt b{font-size:22px}
+.top .tt small{font-size:17px;color:var(--mut)}
+.hdr{flex:none;display:flex;align-items:center;gap:8px;padding:8px 16px 12px 12px;min-height:60px}
+.hdr h1{flex:1;font-size:22px;font-weight:700;line-height:1.25}
+.hdr h1 small{display:block;font-size:17px;font-weight:400;color:var(--mut)}
+.ib{position:relative;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ib.sky{background:var(--sky)}
+.pill{height:44px;border-radius:999px;background:var(--sky);padding:0 16px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:16px;flex:none}
+.body{flex:1;min-height:0;overflow:hidden auto;padding:4px 24px 16px;display:flex;flex-direction:column;gap:16px;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+.foot{flex:none;padding:12px 24px 16px;display:flex;flex-direction:column;gap:8px;background:linear-gradient(to top,var(--pale) 80%,transparent)}
+.btn{height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:18px;width:100%;text-align:center!important}
+.btn.p{background:var(--navy);color:#fff}
+.btn.s{height:48px;background:#fff;border:1.5px solid var(--navy);font-weight:600;font-size:17px}
+.btn[disabled]{background:var(--line);color:var(--mut);cursor:not-allowed;border:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+.card.tap{display:flex;align-items:center;gap:12px;width:100%}
+.sec{display:flex;justify-content:space-between;align-items:center}
+.sec h2{font-size:18px;font-weight:700}
+.sec .lnk{font-size:17px;font-weight:600;text-decoration:underline;padding:8px 0}
+.mut{color:var(--mut)}
+.sm{font-size:17px}.cap{font-size:16px}
+.grow{flex:1;min-width:0}
+.hello{display:flex;align-items:center;gap:8px;background:var(--sky);border-radius:16px;padding:12px 14px;flex:none}
+.hello .tx{flex:1;min-width:0}
+.hello .tx b{display:block;font-size:20px}
+.hello .tx span{display:block;font-size:16px;margin-top:4px}
+.hello .pic{width:38%;height:104px;flex:none;display:flex;align-items:center;justify-content:center}
+.hello .pic img{max-width:100%;max-height:100%;object-fit:contain}
+.banner{display:flex;align-items:center;gap:12px;width:100%;background:var(--yellow);border-radius:16px;padding:14px 16px}
+.banner .d{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
+.banner b{display:block;font-size:17px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:16px;font-weight:600;white-space:nowrap;flex:none}
+.chip.ok{background:var(--mint);color:var(--okink)}
+.chip.rest{background:var(--cream);color:var(--warnink)}
+.chip.low{background:var(--dngbg);color:var(--dngink)}
+.chip.info{background:var(--sky);color:var(--navy)}
+.av{width:44px;height:44px;border-radius:50%;display:block;object-fit:cover;flex:none;background:var(--sky)}
+.av.m{background:var(--mint)}.av.c{background:var(--cream)}.av.h{background:var(--yellow)}
+.disc{width:40px;height:40px;border-radius:12px;background:var(--sky);display:grid;place-items:center;flex:none}
+.list{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;align-items:center;gap:12px;padding:10px 0}
+.li+.li{border-top:1px solid var(--line)}
+.li b,.card b{font-weight:600}
+.bar{height:8px;border-radius:999px;background:var(--sky);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--blue)}
+.bar.low i{background:var(--dng)}
+.nav{flex:none;height:84px;display:flex;justify-content:space-around;padding:8px 12px 20px;background:#fff;border-top:1px solid var(--line)}
+.ni{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:80px;border-radius:16px;font-size:15px;color:var(--mut);font-weight:500}
+.ni.on{background:var(--sky);color:var(--navy);font-weight:700}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>span{font-size:17px;font-weight:600}
+.inp{height:52px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:17px}
+.inp.act{border-color:var(--blue);box-shadow:0 0 0 3px #E6F4FF}
+.inp .ph{color:var(--mut)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--sky);border-radius:12px;padding:12px 14px;font-size:16px}
+.note.cr{background:var(--cream)}
+.note .ic{margin-top:1px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.sch{height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;display:inline-flex;align-items:center;gap:6px;font-size:17px;font-weight:500}
+.sch.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+.days{display:flex;justify-content:space-between}
+.dc{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);background:#fff;display:grid;place-items:center;font-weight:600;font-size:17px}
+.dc.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.strip{display:flex;justify-content:space-between}
+.cell{width:46px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px}
+.cell b{font-size:18px;line-height:1.1}
+.cell.t{background:var(--mint);border-color:var(--mint)}
+.cell.r{background:var(--cream);border-color:var(--cream)}
+.grid31{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.g{height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:16px;font-weight:500}
+.g.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+.sum{background:var(--mint);border-radius:16px;padding:12px 16px}
+.sum small{display:block;font-size:16px;font-weight:600;color:var(--okink)}
+.sum b{font-size:17px;font-weight:600}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dose{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 10px 10px 14px}
+.dose>small{font-size:17px;font-weight:600;color:var(--mut);display:block}
+.step{display:flex;align-items:center;justify-content:space-between}
+.step button{width:44px;height:44px;border-radius:12px;background:var(--sky);display:grid;place-items:center}
+.step output{min-width:44px!important;font-size:22px;font-weight:700;min-width:28px;text-align:center}
+.step.big button{width:48px;height:48px}
+.dr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0}
+.dr+.dr{border-top:1px solid var(--line)}
+.dim{position:absolute;inset:0;background:rgba(11,58,107,.5);z-index:5}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:#fff;border-radius:24px 24px 0 0;padding:10px 24px 24px;display:flex;flex-direction:column;gap:12px}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 4px}
+.old,.new{border-radius:12px;padding:10px 14px;font-size:17px}
+.old{background:var(--pale);border:1px solid var(--line)}
+.new{background:var(--cream);border:1px solid #F2DB8E}
+.old small,.new small{display:block;font-size:16px;font-weight:600;color:var(--mut)}
+.ack{display:flex;align-items:center;gap:12px;min-height:48px;width:100%}
+.ack .bx{width:28px;height:28px;border-radius:8px;border:2px solid var(--navy);display:grid;place-items:center;flex:none;background:#fff}
+.ack .bx.on{background:var(--navy);color:#fff}
+.otp{display:flex;gap:8px;justify-content:space-between}
+.otp div{width:50px;height:60px;border:1.5px solid var(--line);border-radius:12px;background:#fff;display:grid;place-items:center;font-size:28px;font-weight:700}
+.otp div.act{border-color:var(--blue);box-shadow:0 0 0 3px #E6F4FF}
+.msg{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;font-size:17px;line-height:1.7;white-space:pre-line}
+.rad{width:24px;height:24px;border-radius:50%;border:2px solid var(--navy);display:grid;place-items:center;flex:none;background:#fff}
+.rad.on{background:var(--navy);color:#fff}
+.tg{width:52px;height:30px;border-radius:999px;background:var(--line);position:relative;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.tg.on{background:var(--navy)}.tg.on::after{left:25px}
+.dots{display:flex;gap:8px;justify-content:center;align-items:center;padding:12px 0 36px}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--sky)}
+.dots i.on{width:28px;border-radius:999px;background:var(--navy)}
+.toast{position:absolute;left:24px;right:24px;bottom:104px;z-index:9;background:var(--navy);color:#fff;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;text-align:center}
+.feat{display:flex;gap:14px;align-items:center}
+.feat .disc{width:48px;height:48px;border-radius:50%}
+.feat b{display:block}
+.hr{height:1px;background:var(--line);margin:4px 0}
+@media (prefers-reduced-motion:no-preference){.toast{animation:tin .2s ease-out}@keyframes tin{from{opacity:0;transform:translateY(8px)}}}
+
+.disc.buy{background:var(--yellow);color:var(--navy)}.disc.today{background:var(--mint);color:var(--okink)}
+.dot-n{position:absolute;top:0;right:0;min-width:22px;height:22px;border-radius:999px;background:var(--dng);color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center;padding:0 5px;border:2px solid var(--pale)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:14px;background:#fff;border:1px solid var(--line);border-radius:16px;width:100%;line-height:1.3}
+.tile .disc{margin-bottom:4px}.tile b{font-size:18px;font-weight:600}
+.pr{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0}
+.pr+.pr{border-top:1px solid var(--line)}
+.chips.tight{gap:6px}.chips.tight .sch{padding:0 9px;gap:3px;font-size:16px}
+.scr select,.scr .bare{font:inherit;color:inherit;border:0;background:none;outline:0;min-width:0;border-radius:0}
+.scr .bare{flex:1;width:100%;height:100%}
+.selw{position:relative;display:inline-flex;align-items:center;height:100%;max-width:100%}
+.selw.full{flex:1;width:100%}
+.selw select{appearance:none;-webkit-appearance:none;height:100%;padding-right:28px;cursor:pointer;font-weight:600;text-overflow:ellipsis}
+.selw.full select{width:100%;font-weight:400}
+.selw .ic{position:absolute;right:0;pointer-events:none}
+.inp:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px #E6F4FF}
+.inp .unit{color:var(--mut)}
+.hx{font-size:16px;color:var(--mut);line-height:1.4}
+.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.avb{position:relative;aspect-ratio:1;border-radius:50%;padding:3px!important;border:3px solid transparent!important;display:block}
+.avb img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.avb.on{border-color:var(--navy)!important}
+.avck{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;border:2px solid #fff}
+.av.lg{width:56px;height:56px;font-size:26px}.av.xl{width:76px;height:76px;font-size:34px}
+.btn.d{height:48px;background:#fff;border:1.5px solid #F2B8B8;color:var(--dngink);font-weight:700;font-size:17px}
+.tl{display:flex;flex-direction:column}.tli{position:relative;padding:0 0 18px 30px}
+.tli::before{content:"";position:absolute;left:8px;top:8px;bottom:-8px;width:2px;background:var(--line)}.tli:last-child::before{display:none}
+.tli>i{position:absolute;left:0;top:3px;width:18px;height:18px;border-radius:50%;background:var(--blue);border:4px solid var(--sky);box-sizing:border-box}
+.tli.stop>i{background:var(--dng);border-color:var(--dngbg)}
+.ta.rbx{min-height:96px}
+.ck{width:32px;height:32px;border-radius:10px;border:2px solid var(--navy);background:#fff;display:grid;place-items:center;flex:none}
+.ck.on{background:var(--navy);color:#fff}
+.un{width:12px;height:12px;border-radius:50%;background:var(--blue);flex:none}
+.ta{width:100%;min-height:190px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font:400 17px/1.6 var(--font);color:var(--navy);background:#fff;resize:none;display:block}
+.in1{width:100%;height:52px;border:1.5px solid var(--line);border-radius:12px;padding:0 16px;font:400 17px var(--font);color:var(--navy);background:#fff;display:block}
+.hero{height:200px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;flex:none}
+.thumb .scr.flow{height:auto;min-height:844px}
+.thumb .scr.flow .body{overflow:visible;flex:1 0 auto}
+.imgs{display:flex;flex-wrap:wrap;gap:8px}.imgs:empty{display:none}
+.imgs .th{position:relative;width:76px;height:76px;border-radius:12px;overflow:hidden;border:1px solid var(--pg-line)}
+.imgs img{width:100%;height:100%;object-fit:cover;display:block}
+.imgs .th button{position:absolute;top:2px;right:2px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(11,58,107,.88);color:#fff;font:700 18px var(--font);cursor:pointer;line-height:1}
+.ai{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:12px;border:1.5px dashed var(--pg-fg);background:var(--pg-card);color:var(--pg-fg);font:600 16px var(--font);cursor:pointer}
+.ai[hidden]{display:none}
+.ai-note{font-size:14px;color:var(--pg-mut)}
+
+/* ===== ความเห็นรายหน้าจอ ===== */
+.hint{margin:16px 0 0;padding:12px 16px;border-radius:12px;background:var(--pg-sky);font-size:16px;max-width:90ch}
+.tab .bdg{display:inline-block;min-width:22px;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--fix-bg);color:var(--fix-fg);font-size:14px;line-height:20px;font-weight:700;text-align:center}
+.cm{margin-top:12px;display:flex;flex-direction:column;gap:8px;width:100%}
+.cmv{display:flex;gap:8px}
+.vb{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 10px;border-radius:12px;border:1.5px solid var(--pg-line);background:var(--pg-card);color:var(--pg-fg);font:600 16px var(--font);cursor:pointer}
+.vb.ok[aria-pressed="true"]{background:var(--ok-bg);color:var(--ok-fg);border-color:var(--ok-fg)}
+.vb.fix[aria-pressed="true"]{background:var(--fix-bg);color:var(--fix-fg);border-color:var(--fix-fg)}
+.cm textarea{width:100%;min-height:84px;resize:vertical;padding:10px 12px;border-radius:12px;border:1.5px solid var(--pg-line);background:var(--pg-card);color:var(--pg-fg);font:400 17px/1.5 var(--font)}
+.cm.dirty textarea{border-color:var(--fix-fg)}
+.cm.big textarea{min-height:112px}
+.cmf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sv{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 18px;border-radius:12px;border:0;background:var(--pg-acc);color:var(--pg-acc-fg);font:700 17px var(--font);cursor:pointer}
+.sv[disabled]{background:var(--pg-sky);color:var(--pg-mut);cursor:default}
+.cms{font-size:15px;color:var(--pg-mut);min-width:0}
+.cm.dirty .cms{color:var(--fix-fg);font-weight:600}
+.cmr{font-size:15px;padding:8px 12px;border-radius:12px;background:var(--pg-sky);white-space:pre-line}
+.rv-sum{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0}
+.rv-sum .pl{padding:6px 14px;border-radius:999px;background:var(--pg-card);border:1px solid var(--pg-line);font-size:16px;font-weight:600}
+.rv-list{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.rvi{background:var(--pg-card);border:1px solid var(--pg-line);border-radius:16px;padding:16px;min-width:0}
+.rvi header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.rvi h3{margin:0;font-size:17px;display:flex;gap:8px;align-items:baseline}
+.rvi h3 .no{font-size:14px;font-weight:700;background:var(--pg-acc);color:var(--pg-acc-fg);border-radius:999px;padding:1px 9px}
+.side{display:flex;flex-direction:column;gap:24px;min-width:0}
+.pfb{background:var(--pg-card);border:1px solid var(--pg-line);border-radius:16px;padding:16px}
+.pfb h2{margin:0;font-size:18px}
+.pfb p{margin:2px 0 0;font-size:15px;color:var(--pg-mut)}
+.node .cm{margin-top:12px}
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <img id="hIcon" alt="โลโก้ JudYa">
+    <div>
+      <h1>JudYa · แผนผังแอปและต้นแบบ</h1>
+      <p>รุ่นทดลอง 0.7 · 26 หน้าจอ · ตัวอย่างข้อมูลเป็นข้อมูลสมมุติทั้งหมด</p>
+    </div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="มุมมอง">
+    <button class="tab" role="tab" id="t-flow" aria-selected="true" data-view="flow">แผนผัง flow ทุกหน้าจอ</button>
+    <button class="tab" role="tab" id="t-proto" aria-selected="false" data-view="proto">ลองกดใช้งาน</button>
+    <button class="tab" role="tab" id="t-review" aria-selected="false" data-view="review">ความเห็นทั้งหมด<span class="bdg" id="fbBadge" hidden></span></button>
+  </div>
+
+  <section id="v-flow" aria-labelledby="t-flow">
+    <p class="hint"><b>วิธีให้ความเห็น</b> เลือก ผ่าน หรือ ต้องแก้ แล้วพิมพ์ใต้หน้าจอที่ต้องการ แนบรูปอ้างอิงได้ด้วยปุ่มเพิ่มรูป กดบันทึกเมื่อพร้อม ร่างที่ยังไม่ได้บันทึกเก็บในเครื่องนี้ให้อัตโนมัติ กลับมาพิมพ์ต่อระหว่างวันได้ ที่บันทึกแล้วอยู่ครบในแท็บ ความเห็นทั้งหมด</p>
+    <div class="rules" id="rules"></div>
+    <div id="rows"></div>
+    <p class="foot-note">แตะที่หน้าจอใดก็ได้เพื่อเปิดในโหมดลองกดใช้งาน หน้าจอ 03 ถึง 05 เก็บไว้เป็นภาพสำหรับแอปจริงในอนาคต รุ่นทดลองเปิดเข้าหน้าแรกโดยไม่ต้องเข้าสู่ระบบ ข้อมูลทั้งหมดเก็บในเครื่องเท่านั้น</p>
+  </section>
+
+  <section id="v-proto" hidden aria-labelledby="t-proto">
+    <div class="proto">
+      <div class="phone-wrap" id="pw"><div class="phone" id="phone"></div></div>
+      <div class="side"><div class="pfb" id="pfb"></div><nav class="jump" id="jump" aria-label="ข้ามไปหน้าจอ"></nav></div>
+    </div>
+  </section>
+
+  <section id="v-review" hidden aria-labelledby="t-review">
+    <div class="rv-sum" id="rvSum"></div>
+    <div class="rv-list" id="rvList"></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+const IMG={logoV:'__LOGO_V__',logoNT:'__LOGO_NT__',icon:'__ICON__',splash:'__SPLASH__',woman:'__WOMAN__',bnNormal:'__BN_NORMAL__',bnReminder:'__BN_REMINDER__',bnFamily:'__BN_FAMILY__'};
+const AVATARS=__AVATARS__;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- ไอคอน: เส้น 2px ปลายมน กล่อง 24px ชุดเดียว ---------- */
+const ICONS={
+ back:'<path d="M15 5l-7 7 7 7"/>',chev:'<path d="M9 5l7 7-7 7"/>',check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ moon:'<path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',
+ alert:'<path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/>',bell:'<path d="M6 16v-5a6 6 0 1112 0v5l2 2H4l2-2zM10 21h4"/>',
+ home:'<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/>',bag:'<path d="M5 8h14l-1 12H6L5 8zM9 8a3 3 0 016 0"/>',
+ share:'<path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14"/>',
+ gear:'<path d="M4 6h8M16 6h4M4 12h4M12 12h8M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>',
+ copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/>',
+ lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+ camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>',
+ pill:'<path d="M10.5 20.5a5 5 0 01-7-7l10-10a5 5 0 017 7l-10 10zM8.5 8.5l7 7"/>',
+ store:'<path d="M4 9l1-5h14l1 5M4 9a3 3 0 006 0 3 3 0 006 0 3 3 0 004 0M5 12v8h14v-8M10 20v-5h4v5"/>',
+ down:'<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>',up:'<path d="M12 15V3M7 8l5-5 5 5M4 20h16"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ edit:'<path d="M4 20h4L19 9l-4-4L4 16v4zM13 7l4 4"/>',steth:'<path d="M6 3v6a4 4 0 008 0V3M10 13v2a5 5 0 0010 0v-1"/><circle cx="20" cy="12" r="2"/>',
+ cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',chat:'<path d="M4 5h16v11H9l-5 4V5z"/>',
+ arrdown:'<path d="M12 4v16M6 14l6 6 6-6"/>',phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+ img:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5L5 20"/>',
+ caret:'<path d="M6 9l6 6 6-6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ call:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
+ hist:'<path d="M3 12a9 9 0 109-9 9 9 0 00-7 3.5M3 4v4h4M12 8v4l3 2"/>'
+};
+const ic=(n,s=24)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ---------- ข้อมูลตัวอย่าง (สมมุติ) ---------- */
+const DN=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'],DS=['อา','จ','อ','พ','พฤ','ศ','ส'];
+const PER=['เช้า','กลางวัน','เย็น','ก่อนนอน'];
+const TODAY={dow:4,d:8,label:'พฤ. 8 ต.ค. 2569',short:'8 ต.ค. 2569'};
+const z=()=>({เช้า:0,กลางวัน:0,เย็น:0,ก่อนนอน:0});
+const sch=(mode,o={})=>({mode,days:[],n:2,dates:[],step:.5,doses:{...z(),เช้า:1},...o});
+const FRC={.25:'¼',.5:'½',.75:'¾'};
+const fr=n=>{const w=Math.floor(n+1e-9),f=+(n-w).toFixed(2),q=FRC[f];return(w||!q?String(w):'')+(q||'')};
+const PEOPLE={พ่อ:{name:'คุณพ่อ',cls:'',ch:'พ',av:'profile-11'},แม่:{name:'คุณแม่',cls:'m',ch:'ม',av:'profile-19'},ฉัน:{name:'ฉัน',cls:'c',ch:'ฉ',av:'profile-02'},บ้าน:{name:'ยาสามัญประจำบ้าน',cls:'h',ch:'บ',house:true}};
+const MEMBERS=()=>Object.keys(PEOPLE).filter(w=>!PEOPLE[w].house);
+const isSelf=(s,w)=>!!(s.self&&s.self[w]);
+const MEDS={
+ พ่อ:[{id:'los',br:'Cozaar',bq:30,buy:'30 เม็ด',n:'Losartan',st:'50 mg',left:'5 เม็ด',days:5},{id:'vitd',bq:60,buy:'1 ขวด',n:'Vitamin D',st:'1,000 IU',left:'20 เม็ด',days:70},{id:'cal',bq:60,buy:'1 ขวด',n:'Calcium',st:'600 mg',left:'24 เม็ด',days:48}],
+ แม่:[{id:'met',br:'Glucophage',bq:60,buy:'60 เม็ด',n:'Metformin',st:'500 mg',left:'12 เม็ด',days:6},{id:'ome',bq:14,buy:'1 แผง',n:'Omeprazole',st:'20 mg',left:'21 เม็ด',days:21}],
+ ฉัน:[{id:'vitc',bq:100,buy:'1 ขวด',n:'Vitamin C',st:'500 mg',left:'30 เม็ด',days:30}],
+ บ้าน:[{id:'par',exp:'2026-10-31',bq:20,buy:'1 แผง',n:'Paracetamol',st:'500 mg',left:'18 เม็ด',days:null}]
+};
+const ALLMEDS=Object.entries(MEDS).flatMap(([w,a])=>a.map(m=>({...m,who:w})));
+const reindex=()=>Object.keys(PEOPLE).forEach(w=>{MEDS[w]=ALLMEDS.filter(m=>m.who===w&&!m.stopped)});reindex();
+const medById=id=>ALLMEDS.find(m=>m.id===id)||{id,n:(S.dm&&S.dm.n)||'ยาใหม่',st:(S.dm&&S.dm.st)||'',who:(S.dm&&S.dm.who)||'พ่อ',bq:0,days:null};
+const FORMS=[['เม็ด','เม็ด','แผง'],['แคปซูล','แคปซูล','แผง'],['ผงชง/ซอง','ซอง','กล่อง'],['น้ำ/ไซรัป','มล.','ขวด'],['ยาหยอด/พ่น','มล.','ขวด'],['ครีม/ขี้ผึ้ง','กรัม','หลอด'],['แผ่นแปะ','แผ่น','กล่อง']].map(([k,bu,cu])=>({k,bu,cu}));
+const BASEU=['เม็ด','แคปซูล','ซอง','มล.','กรัม','แผ่น'],CONTU=['แผง','กล่อง','ขวด','หลอด','แพ็ก','ถุง'];
+const U=sc=>sc.u||'เม็ด';
+const opts=(l,sel)=>l.map(x=>`<option ${x===sel?'selected':''}>${esc(x)}</option>`).join('');
+const selw=(attr,label,inner,full)=>`<span class="selw ${full?'full':''}"><select ${attr} aria-label="${label}">${inner}</select>${ic('caret',18)}</span>`;
+const qf=n=>(Number.isInteger(n)||FRC[+(n%1).toFixed(2)])?fr(n):String(n);
+const PK={los:['แผง',10],vitd:['ขวด',60],cal:['ขวด',60],met:['แผง',10],ome:['แผง',14],vitc:['ขวด',100],par:['แผง',10]};
+const initInv=()=>Object.fromEntries(ALLMEDS.map(m=>[m.id,{qty:parseInt(m.left),form:'เม็ด',unit:'เม็ด',bu:'เม็ด',pu:PK[m.id][0],ps:PK[m.id][1],cycle:30,lead:7}]));
+const invTxt=(s,id)=>`${qf(s.inv[id].qty)} ${s.inv[id].unit}`;
+const STEPS=[1,.5,.25];
+const stepSel=sc=>`<div class="fld"><span>กดแต่ละครั้งเปลี่ยนทีละ</span><div class="chips" role="group" aria-label="กดแต่ละครั้งเปลี่ยนทีละ">${STEPS.map(v=>`<button class="sch ${(sc.step||.5)===v?'on':''}" data-act="step:${v}" aria-pressed="${(sc.step||.5)===v}">${(sc.step||.5)===v?ic('check',16):''}${fr(v)} ${U(sc)}</button>`).join('')}</div></div>`;
+const TPL0='สวัสดีครับ/ค่ะ {ร้านยา}\nขอสั่งยาตามรายการนี้\n{รายการยา}\nรบกวนแจ้งราคารวมและเวลารับยาด้วย ขอบคุณครับ/ค่ะ';
+const TPLS=()=>[{id:'t1',name:'แบบทั่วไป',body:TPL0},{id:'t2',name:'แบบสั้น',body:'{ร้านยา} ขอสั่งยา\n{รายการยา}\nขอบคุณครับ/ค่ะ'}];
+const PH0=[{id:'a',n:'ร้านยาสุขใจ',sub:'ใกล้บ้าน · 1.2 กม.',tel:'02-123-4567',ship:40,free:500},{id:'b',n:'ร้านหมอยาเภสัช',sub:'หน้าตลาด · 2.4 กม.',tel:'081-234-5678',ship:30,free:null},{id:'c',n:'ร้านยาออนไลน์ (LINE)',sub:'ส่งถึงบ้าน',tel:'',ship:60,free:300}];
+const PR0=()=>({los:[{ph:'a',price:35,unit:'แผง'},{ph:'b',price:3.2,unit:'เม็ด'}],met:[{ph:'a',price:60,unit:'แผง'},{ph:'b',price:5.5,unit:'เม็ด'},{ph:'c',price:58,unit:'แผง'}],vitd:[{ph:'a',price:250,unit:'ขวด'},{ph:'b',price:240,unit:'ขวด'}],cal:[{ph:'b',price:180,unit:'ขวด'}],ome:[{ph:'a',price:90,unit:'แผง'}],vitc:[{ph:'a',price:120,unit:'ขวด'},{ph:'c',price:110,unit:'ขวด'}],par:[{ph:'a',price:25,unit:'แผง'}]});
+const phOf=s=>s.ph.find(x=>x.id===s.pharm)||s.ph[0];
+const telOk=v=>!v||/^[0-9][0-9\- ]{7,13}[0-9]$/.test(v);
+const LOW=7;
+
+const initSaved=()=>({los:sch('daily'),vitd:sch('weekdays',{days:[1,4]}),cal:sch('alternate',{start:1}),met:sch('daily',{doses:{...z(),เช้า:1,เย็น:1}}),ome:sch('daily'),vitc:sch('daily'),par:sch('daily',{doses:z()})});
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+/* ข้อความสรุปตารางเป็นภาษาไทย ใช้ร่วมกันทุกหน้า */
+const joinTh=a=>a.length<2?a.join(''):a.slice(0,-1).join(' ')+' และ '+a[a.length-1];
+function when(s){
+ if(s.mode==='daily')return'ทุกวัน';
+ if(s.mode==='weekdays')return s.days.length?'ทุกวัน'+joinTh(s.days.slice().sort((a,b)=>a-b).map(d=>DN[d])):'ยังไม่ได้เลือกวัน';
+ if(s.mode==='alternate')return`วันเว้นวัน ครั้งถัดไป ${TODAY.d+(s.start||0)} ต.ค.`;
+ if(s.mode==='everyN')return`ทุก ${s.n} วัน ครั้งถัดไป ${TODAY.d+s.n} ต.ค.`;
+ return s.dates.length?'ทุกวันที่ '+s.dates.slice().sort((a,b)=>a-b).join(', ')+' ของเดือน':'ยังไม่ได้เลือกวันที่';
+}
+function doseTxt(s){const p=PER.filter(k=>s.doses[k]>0).map(k=>`${k} ${fr(s.doses[k])} ${U(s)}`);return p.length?p.join(' · '):'ยังไม่ได้ตั้งขนาดยา'}
+const full=s=>`${when(s)} · ${doseTxt(s)}`;
+function takeOn(s,off){ // off = จำนวนวันนับจากวันนี้
+ const dow=(TODAY.dow+off)%7;
+ if(s.mode==='daily')return true;
+ if(s.mode==='weekdays')return s.days.includes(dow);
+ if(s.mode==='alternate'){const o=off-(s.start||0);return o>=0&&o%2===0}
+ if(s.mode==='everyN')return off%s.n===0;
+ return s.dates.includes(TODAY.d+off);
+}
+function changes(a,b){
+ const o=[];
+ if(when(a)!==when(b))o.push(['วันที่ทาน',when(a),when(b)]);
+ PER.forEach(k=>{if(a.doses[k]!==b.doses[k])o.push([`ขนาดยา${k}`,`${fr(a.doses[k])} ${U(a)}`,`${fr(b.doses[k])} ${U(b)}`])});
+ return o;
+}
+
+/* ---------- ชิ้นส่วนที่ใช้ซ้ำ ---------- */
+const sbar=()=>`<div class="sb"><span>9:41</span><span class="r"><svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1" fill="#0B3A6B"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#0B3A6B"/><rect x="10" y="2" width="3" height="10" rx="1" fill="#0B3A6B"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#0B3A6B"/></svg><svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><rect x=".75" y=".75" width="21" height="10.5" rx="3" fill="none" stroke="#0B3A6B" stroke-width="1.5"/><rect x="3" y="3" width="15" height="6" rx="1.5" fill="#0B3A6B"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#0B3A6B"/></svg></span></div>`;
+function hdr(title,{back,pill,sub}={}){
+ return`<div class="hdr" ${back?'':'style="padding-left:24px"'}>${back?`<button class="ib" data-go="${back}" aria-label="ย้อนกลับ">${ic('back')}</button>`:''}<h1>${title}${sub?`<small>${sub}</small>`:''}</h1>${pill?`<button class="pill" data-go="${pill.go||''}" ${pill.act?`data-act="${pill.act}"`:''} ${pill.newmed?'data-newmed="1"':''}>${pill.ic?ic(pill.ic,20):''}${pill.t}</button>`:''}</div>`;
+}
+const TABS=[['home','หน้าแรก','home'],['medlist','ยา','pill'],['share','แชร์','share'],['pharm','ตั้งค่า','gear']];
+const nav=a=>`<nav class="nav" aria-label="เมนูหลัก">${TABS.map(([id,t,i])=>`<button class="ni ${id===a?'on':''}" data-go="${id}" ${id==='order'?'data-of=""':''} ${id===a?'aria-current="page"':''}>${ic(i)}${t}</button>`).join('')}</nav>`;
+const stat=days=>days==null?`<span class="chip rest">${ic('info',14)}ยังไม่ทราบ</span>`:days<=LOW?`<span class="chip low">${ic('alert',14)}ใกล้หมด</span>`:`<span class="chip ok">${ic('check',14)}พอใช้</span>`;
+// Profile pictures: always through getAvatar (profiles.json index, built in by build.py); unknown id -> first icon.
+const getAvatar=id=>AVATARS.find(a=>a.id===id)||AVATARS[0];
+const avatar=(s,w,c='')=>{const a=getAvatar((s.av&&s.av[w])||PEOPLE[w].av);return`<img class="av ${c}" src="${a.src}" alt="${a.alt}" style="background:${a.bg}">`};
+const lowCount=()=>ALLMEDS.filter(m=>!m.stopped&&m.days!=null&&m.days<=LOW);
+const minDays=w=>{const a=MEDS[w].map(m=>m.days).filter(v=>v!=null);return a.length?Math.min(...a):null};
+const dueOf=(s,w)=>isSelf(s,w)?[]:MEDS[w].map(m=>({m,sc:s.saved[m.id]})).filter(x=>takeOn(x.sc,0)&&PER.some(k=>x.sc.doses[k]>0));
+const restOf=(s,w)=>isSelf(s,w)?[]:MEDS[w].filter(m=>!takeOn(s.saved[m.id],0));
+const perOf=x=>PER.filter(k=>x.sc.doses[k]>0);
+// Home banner (UI-10): reminder > family > normal. Pure function; inputs are counts, no clock.
+function getHomeBannerState(i){i=i||{};if(i.lowCount>0||i.dueNow>0)return'reminder';if(i.othersOpen>0)return'family';return'normal'}
+const HOME_BANNERS={normal:{src:IMG.bnNormal,alt:'ผู้หญิงโบกมือทักทาย',txt:'วันนี้ยังไม่มีเรื่องเร่งด่วน'},reminder:{src:IMG.bnReminder,alt:'ปฏิทินและขวดยาเตือนให้จัดการยา',txt:'มีเรื่องที่ควรดูวันนี้'},family:{src:IMG.bnFamily,alt:'ครอบครัวกับกล่องยา',txt:'ดูแลสมาชิกในบ้านให้ครบ'}};
+const homeBannerInput=s=>{const ppl=MEMBERS();return{lowCount:lowCount().length,dueNow:ppl.reduce((a,w)=>a+dueOf(s,w).flatMap(x=>perOf(x).filter(k=>!s.done[x.m.id+':'+k])).length,0),othersOpen:ppl.filter(w=>w!=='ฉัน'&&(dueOf(s,w).length||buyOf(w).length)).length}};
+const homeBanner=s=>{const b=HOME_BANNERS[getHomeBannerState(homeBannerInput(s))]||HOME_BANNERS.normal;return`<div class="hello"><div class="tx"><b>สวัสดีค่ะ</b><span>${b.txt}</span></div><div class="pic"><img src="${b.src}" alt="${b.alt}"></div></div>`};
+const buyOf=w=>MEDS[w].filter(m=>m.days!=null&&m.days<=LOW);
+const notifCount=s=>(MEMBERS().some(w=>dueOf(s,w).length)?1:0)+lowCount().length+expList().length;
+const personChips=(s,w)=>{const n=dueOf(s,w).length,b=buyOf(w).length;return(isSelf(s,w)?`<span class="chip info">${ic('info',14)}จัดยาเอง</span>`:n?`<span class="chip info">${ic('pill',14)}ทานวันนี้ ${n}</span>`:`<span class="chip rest">${ic('moon',14)}พักวันนี้</span>`)+(b?`<span class="chip low">${ic('alert',14)}ต้องซื้อ ${b}</span>`:`<span class="chip ok">${ic('check',14)}สต๊อกพอ</span>`)};
+const orderList=s=>lowCount().filter(m=>!s.of||m.who===s.of);
+const orderQty=(s,m)=>{const iv=s.inv[m.id]||{};return `${m.bq} ${iv.bu||'เม็ด'}`+(iv.ps&&m.bq%iv.ps===0?` (${m.bq/iv.ps} ${iv.pu})`:'')};
+const orderItems=s=>{const L=orderList(s);return L.length?L.map((m,i)=>`${i+1}) ${m.n}${m.br?' ('+m.br+')':''} ${m.st} x ${orderQty(s,m)} (${PEOPLE[m.who].name})`).join('\n'):'(ยังไม่มียาที่ต้องสั่ง)'};
+const perDay=sc=>{const d=PER.reduce((a,k)=>a+(sc.doses[k]||0),0);return sc.mode==='daily'?d:sc.mode==='weekdays'?d*sc.days.length/7:sc.mode==='alternate'?d/2:sc.mode==='everyN'?d/sc.n:d*sc.dates.length/30};
+const calcDays=(m,s)=>{const iv=s.inv[m.id],sc=s.saved[m.id];if(!iv||!sc)return m.days;const base=iv.unit===iv.bu?iv.qty:(iv.unit===iv.pu&&iv.ps?iv.qty*iv.ps:null),pd=perDay(sc);return base==null||!pd?null:Math.floor(base/pd)};
+const costOf=(s,m,r)=>{const iv=s.inv[m.id];if(!iv||!r||r.price==null||!m.bq)return null;if(r.unit===iv.bu)return r.price*m.bq;if(r.unit===iv.pu&&iv.ps)return r.price*Math.ceil(m.bq/iv.ps);return null};
+const baht=n=>'฿'+(Math.round(n*100)/100).toLocaleString('en-US');
+function cmpShops(s){const L=orderList(s);
+ const rows=s.ph.map(p=>{let sub=0;const miss=[];L.forEach(m=>{const c=costOf(s,m,(s.prices[m.id]||[]).find(x=>x.ph===p.id));if(c==null)miss.push(m.n);else sub+=c});
+  const fee=p.ship==null?null:(p.free!=null&&sub>=p.free?0:p.ship);return{p,sub,miss,fee,total:fee==null?null:sub+fee,ok:L.length>0&&!miss.length&&fee!=null}});
+ const ok=rows.filter(r=>r.ok).sort((a,b)=>a.total-b.total);
+ let split=null;
+ if(L.length>1&&ok.length){let tot=0,fail=false;const used={};
+  L.forEach(m=>{let bc=null,bp=null;rows.forEach(r=>{if(r.p.ship==null)return;const c=costOf(s,m,(s.prices[m.id]||[]).find(x=>x.ph===r.p.id));if(c!=null&&(bc==null||c<bc)){bc=c;bp=r.p}});if(bc==null){fail=true;return}tot+=bc;(used[bp.id]=used[bp.id]||{p:bp,sub:0}).sub+=bc});
+  if(!fail){let fee=0;const us=Object.values(used);us.forEach(u=>{fee+=(u.p.free!=null&&u.sub>=u.p.free)?0:u.p.ship});if(us.length>1&&tot+fee<ok[0].total)split={total:tot+fee,shops:us.map(u=>u.p.n)}}}
+ return{L,rows,best:ok[0]||null,next:ok[1]||null,split}}
+const medCard=(s,m)=>`<button class="card" data-go="edit" data-med="${m.id}" data-reset="1" style="display:block;width:100%"><span style="display:flex;align-items:center;gap:10px"><span class="grow"><b style="font-size:18px">${esc(m.n)}</b> <span class="mut sm">${esc(m.st)}</span>${m.br?`<br><span class="mut sm">ยี่ห้อ ${esc(m.br)}</span>`:''}</span>${PEOPLE[m.who].house?expChip(m):stat(m.days)}</span>
+ <span class="mut sm" style="display:block;margin:4px 0 10px">${PEOPLE[m.who].house?'ใช้เมื่อมีอาการ · '+(m.exp?'หมดอายุ '+thDate(m.exp):'ยังไม่ระบุวันหมดอายุ'):full(s.saved[m.id])}</span>
+ ${PEOPLE[m.who].house?'':`<span class="bar ${m.days!=null&&m.days<=LOW?'low':''}" style="display:block"><i style="width:${m.days==null?0:Math.min(100,m.days*3)}%"></i></span>`}
+ <span class="sm mut" style="display:block;margin-top:6px">เหลือ ${invTxt(s,m.id)}${PEOPLE[m.who].house?'':' · '+(m.days==null?'ยังไม่ทราบว่าพอทานกี่วัน':'พอทานอีก '+m.days+' วัน')}</span></button>`;
+
+
+const EXPW=30,THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const daysTo=iso=>iso?Math.round((new Date(iso+'T00:00:00')-new Date('2026-10-08T00:00:00'))/864e5):null;
+const thDate=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-');return`${+d} ${THM[m-1]} ${+y+543}`};
+const expList=()=>ALLMEDS.filter(m=>!m.stopped&&m.exp&&daysTo(m.exp)<=EXPW);
+const expChip=m=>{const d=daysTo(m.exp);return d==null?`<span class="chip rest">${ic('info',14)}ยังไม่ระบุวันหมดอายุ</span>`:d<0?`<span class="chip low">${ic('alert',14)}หมดอายุแล้ว</span>`:d<=EXPW?`<span class="chip low">${ic('alert',14)}ใกล้หมดอายุ อีก ${d} วัน</span>`:`<span class="chip ok">${ic('check',14)}ยังไม่หมดอายุ</span>`};
+const REASONS=['แพทย์สั่งปรับ','เภสัชกรแนะนำ','ผลตรวจเลือดหรือผลตรวจอื่น','มีผลข้างเคียง','อื่นๆ'];
+const STOPR=['แพทย์สั่งหยุด','หายแล้ว ไม่ต้องใช้แล้ว','มีผลข้างเคียง','แพ้ยา','เปลี่ยนไปใช้ยาอื่น','อื่นๆ'];
+const SYMS=['ผื่น/ลมพิษ','คัน','บวมที่หน้า/ปาก','หายใจลำบาก','คลื่นไส้/อาเจียน','ท้องเสีย','เวียนหัว/ใจสั่น','อื่นๆ'],SEVERE=['บวมที่หน้า/ปาก','หายใจลำบาก'];
+const needReason=s=>!(s.dm&&s.dm.isNew),reasonOk=s=>!needReason(s)||!!s.rs;
+const HIST0=()=>[{med:'vitd',date:'15 ส.ค. 2569',kind:'dose',chg:'วันที่ทาน: ทุกวัน → จันทร์ และ พฤหัสบดี · ขนาดยาเช้า: ½ เม็ด → 1 เม็ด',reason:'แพทย์สั่งปรับ',note:'หมอปรับหลังตรวจเลือด'},{med:'vitd',date:'2 ก.ค. 2569',kind:'dose',chg:'ขนาดยาเช้า: 1 เม็ด → ½ เม็ด',reason:'เภสัชกรแนะนำ',note:''}];
+const AL0=()=>({พ่อ:[],แม่:[{drug:'Penicillin',sym:['ผื่น/ลมพิษ','คัน'],note:'เกิดหลังทานยา 2 วัน',date:'12 ก.ค. 2568'}],ฉัน:[]});
+const reasonBox=s=>`<div class="fld"><span>เหตุผล / แหล่งข้อมูล${needReason(s)?'':' (ไม่บังคับ)'}</span><div class="inp">${selw('data-rs="1"','เหตุผลที่ปรับโดส','<option value="">เลือกแหล่งที่มา…</option>'+REASONS.map(r=>`<option ${s.rs===r?'selected':''}>${r}</option>`).join(''),1)}</div></div>
+ <div class="fld"><span>รายละเอียดเพิ่มเติม (ไม่บังคับ)</span><textarea class="ta rbx" data-rn maxlength="200" placeholder="เช่น หมอปรับหลังตรวจเลือด">${esc(s.rn)}</textarea></div>`;
+const allergyHit=(s,dm)=>{const n=(dm.n||'').trim().toLowerCase();if(n.length<3)return[];return(PEOPLE[dm.who]&&PEOPLE[dm.who].house?MEMBERS():[dm.who]).flatMap(w=>(s.allergies[w]||[]).filter(a=>{const d=a.drug.toLowerCase();return d.includes(n)||n.includes(d)}).map(a=>[w,a]))};
+const eqNote=v=>{const e=v.ps?(v.unit===v.bu?`เท่ากับ ${+(v.qty/v.ps).toFixed(1)} ${v.pu}`:v.unit===v.pu?`เท่ากับ ${qf(v.qty*v.ps)} ${v.bu}`:null):'ยังไม่ระบุขนาดบรรจุ ระบบจะไม่ปัดจำนวนซื้อเป็นแพ็กเต็ม';
+ return e?`<div class="note">${ic('info',20)}<span>${e}</span></div>`:`<div class="note cr">${ic('alert',20)}<span>หน่วย <b>${v.unit}</b> ไม่ตรงกับขนาดบรรจุ เลือกหน่วยเป็น <b>${v.bu}</b> หรือ <b>${v.pu}</b> เพื่อให้คำนวณวันที่พอทานได้</span></div>`};
+const unitGroups=(v,sel)=>{const G=[...new Set([v.bu,v.pu])],rest=[...BASEU,...CONTU].filter(u=>!G.includes(u));return `<optgroup label="ตรงกับขนาดบรรจุ">${opts(G,sel)}</optgroup><optgroup label="หน่วยอื่น">${opts(rest,sel)}</optgroup>`};
+function loadMed(st,id){const m=ALLMEDS.find(x=>x.id===id);st.med=id;st.draft=clone(st.saved[id]);st.dinv=clone(st.inv[id]);st.dpr=clone(st.prices[id]||[]);st.dm={id,n:m.n,st:m.st,br:m.br||'',exp:m.exp||'',who:m.who,isNew:false};st.ack=false}
+function newMed(st,who){const id='n'+(Date.now()%100000);st.saved[id]=sch('daily');st.inv[id]={qty:0,form:'เม็ด',unit:'เม็ด',bu:'เม็ด',pu:'แผง',ps:null,cycle:30,lead:7};st.prices[id]=[];st.med=id;st.draft=clone(st.saved[id]);st.dinv=clone(st.inv[id]);st.dpr=[];st.dm={id,n:'',st:'',br:'',exp:'',who,isNew:true};st.ack=false}
+const fillTpl=(b,p,s)=>b.replace(/\{ร้านยา\}/g,p.n).replace(/\{รายการยา\}/g,orderItems(s)).replace(/\{ผู้สั่ง\}/g,'บ้านของเรา');
+const orderText=s=>fillTpl(s.tpls.find(x=>x.id===s.tpl).body,phOf(s),s);
+const toast=s=>s.toast?`<div class="toast" role="status">${s.toast}</div>`:'';
+
+/* ---------- 20 หน้าจอ ---------- */
+const SCREENS={
+splash:{no:'01',name:'Splash',note:'โลโก้และภาพประกอบ ระยะบนของโลโก้เท่ากับระยะระหว่างโลโก้กับภาพ แตะเพื่อไปต่อ',
+ r:s=>`<div style="flex:1;display:flex;flex-direction:column;min-height:0;background:#fff">${sbar()}<button class="body" style="padding:32px 24px 0;align-items:center;gap:76px;justify-content:flex-start;overflow:hidden" data-go="welcome" aria-label="เริ่มต้น"><img src="${IMG.logoV}" alt="JudYa ดูแลยา...ง่ายทุกวัน" style="width:210px;height:auto;display:block"><img src="${IMG.splash}" alt="" style="width:330px;height:auto;display:block"></button><div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div></div>`},
+welcome:{no:'02',name:'Welcome',note:'โลโก้แนวตั้ง (ไม่มีสโลแกน) เป็นโลโก้หลัก บอกสิ่งที่แอปทำ แล้วเลือกเริ่มใช้งาน',
+ r:s=>`${sbar()}<div class="body" style="gap:22px;padding-top:8px"><img src="${IMG.logoNT}" alt="JudYa" style="width:190px;height:auto;display:block;align-self:center"><div style="text-align:center"><h1 style="font-size:30px;line-height:1.3;font-weight:700">ดูแลยาของคนที่คุณรัก<br>ได้ในที่เดียว</h1><p class="mut" style="margin-top:8px">เก็บรายการยาของทุกคนในบ้านไว้ด้วยกัน</p></div>
+ <div class="list" style="gap:16px">
+ <div class="feat"><span class="disc">${ic('pill')}</span><div><b>เช็คสต๊อกยา</b><span class="mut sm">รู้ว่ายาแต่ละตัวพอทานอีกกี่วัน</span></div></div>
+ <div class="feat"><span class="disc">${ic('bell')}</span><div><b>เตือนซื้อยา</b><span class="mut sm">เตือนก่อนยาหมดตามจำนวนวันที่ตั้งไว้</span></div></div>
+ <div class="feat"><span class="disc">${ic('steth')}</span><div><b>ส่งต่อข้อมูลยา</b><span class="mut sm">สรุปให้แพทย์หรือคนดูแลคนอื่นได้ทันที</span></div></div></div></div>
+ <div class="foot"><button class="btn p" data-go="home">เริ่มใช้งาน</button><button class="btn s" data-go="login">ฉันมีบัญชีแล้ว</button></div>`},
+login:{no:'03',name:'Login',note:'ภาพผู้หญิงกดโทรศัพท์ไม่มีพื้นหลัง ขอบล่างค่อยๆ จางหาย ภาพสำหรับแอปจริง รุ่นทดลองข้ามขั้นนี้',
+ r:s=>`${sbar()}${hdr('เข้าสู่ระบบ',{back:'welcome'})}<div class="body" style="gap:20px"><div class="hero"><img src="${IMG.woman}" alt="" style="width:240px;height:auto;display:block;-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent);mask-image:linear-gradient(to bottom,#000 72%,transparent)"></div><p class="mut">กรอกเบอร์โทรศัพท์ เราจะส่งรหัส OTP ให้ทาง SMS</p>
+ <div class="fld"><span>เบอร์โทรศัพท์</span><div class="inp act"><span>081-234-5678</span></div></div>
+ <div class="note">${ic('lock',20)}<span>ไม่ต้องจำรหัสผ่าน ข้อมูลยาของคุณเป็นข้อมูลส่วนตัว</span></div></div>
+ <div class="foot"><button class="btn p" data-go="otp">รับรหัส OTP</button><button class="btn s" data-go="register">สร้างบัญชีใหม่</button></div>`},
+register:{no:'04',name:'Register',note:'ภาพสำหรับแอปจริง ตั้งชื่อที่ใช้เรียกและเบอร์โทร',
+ r:s=>`${sbar()}${hdr('สร้างบัญชีใหม่',{back:'login'})}<div class="body" style="gap:16px">
+ <div class="fld"><span>ชื่อที่ใช้เรียก</span><div class="inp act"><span>ฉัน</span></div></div>
+ <div class="fld"><span>เบอร์โทรศัพท์</span><div class="inp"><span class="ph">08x-xxx-xxxx</span></div></div>
+ <div class="fld"><span>ชื่อบ้านหรือครอบครัว</span><div class="inp"><span>บ้านของเรา</span></div></div>
+ <div class="ack"><span class="bx on">${ic('check',18)}</span><span class="sm">ฉันยอมรับเงื่อนไขการใช้งานและการเก็บข้อมูลส่วนตัว</span></div></div>
+ <div class="foot"><button class="btn p" data-go="otp">ขอรหัส OTP</button></div>`},
+otp:{no:'05',name:'OTP',note:'ภาพสำหรับแอปจริง ยืนยันรหัส 6 หลัก',
+ r:s=>`${sbar()}${hdr('ยืนยันรหัส',{back:'login'})}<div class="body" style="gap:20px"><p>ส่งรหัส 6 หลักไปที่ <b>08x-xxx-5678</b></p>
+ <div class="otp"><div>4</div><div>8</div><div>1</div><div class="act">&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div></div>
+ <p class="mut sm">ส่งรหัสใหม่ได้ในอีก 0:42</p></div>
+ <div class="foot"><button class="btn p" data-go="home">ยืนยัน</button></div>`},
+home:{no:'06',name:'หน้าแรก (Dashboard)',note:'แบนเนอร์ยาใกล้หมด และป้ายของแต่ละคนบอกว่าวันนี้ต้องทานยากี่ตัวและต้องซื้อกี่ตัว ไม่แสดงซ้ำ ระฆังรวมการเตือนทั้งหมด',
+ r:s=>{const lw=lowCount(),first=lw[0],ppl=MEMBERS(),n=notifCount(s);
+ return`${sbar()}<div class="top"><img class="ico" src="${IMG.icon}" alt="JudYa"><div class="tt"><b>บ้านของเรา</b><small>${TODAY.label}</small></div><button class="ib sky" data-go="notif" aria-label="การแจ้งเตือน ${n} รายการ">${ic('bell')}<span class="dot-n" aria-hidden="true">${n}</span></button></div>
+ <div class="body" style="gap:14px">
+ ${homeBanner(s)}
+ <button class="banner" data-go="order" data-of=""><span class="d">${ic('alert',24)}</span><span class="grow"><b>ยาใกล้หมด ${lw.length} รายการ</b><span class="sm">${first.n} ของ${PEOPLE[first.who].name} เหลือ ${first.days} วัน</span></span>${ic('chev',20)}</button>
+ <div class="sec"><h2>สมาชิก</h2><button class="lnk" data-go="household">ดูทั้งหมด</button></div>
+ <div class="list" style="gap:8px;margin-top:-6px">${ppl.map(w=>`<button class="card tap" style="padding:12px 14px" data-go="meds" data-person="${w}">${avatar(s,w,'lg')}<span class="grow"><b style="font-size:20px">${PEOPLE[w].name}</b><span class="chips" style="gap:6px;margin-top:6px;display:flex">${personChips(s,w)}</span></span>${ic('chev',20)}</button>`).join('')}</div></div>
+ <div class="foot"><button class="btn p" data-go="order" data-of="">${ic('bag',22)}เตรียมสั่งยา</button></div>${nav('home')}`}},
+notif:{no:'06b',name:'การแจ้งเตือน',note:'ระฆังรวมการเตือนไว้ที่เดียว: ยาที่ต้องทานวันนี้ ยาที่ควรซื้อ และทางไปตั้งค่าการเตือน',
+ r:s=>{const ppl=MEMBERS(),due=ppl.filter(w=>dueOf(s,w).length),lw=lowCount();return`${sbar()}${hdr('การแจ้งเตือน',{back:'home',sub:`${notifCount(s)} รายการ`})}<div class="body" style="gap:12px">
+ <div class="sec"><h2>วันนี้</h2></div>
+ <button class="card tap" data-go="today" data-tf="all"><span class="disc today">${ic('pill',22)}</span><span class="grow"><b>ต้องทานยา ${due.length} คน</b><br><span class="mut sm">${joinTh(due.map(w=>PEOPLE[w].name))}</span></span><i class="un"></i>${ic('chev',20)}</button>
+ <div class="sec" style="margin-top:4px"><h2>ควรซื้อยา</h2></div>
+ ${lw.map(m=>`<button class="card tap" data-go="order" data-of="${m.who}"><span class="disc buy">${ic('alert',22)}</span><span class="grow"><b>${m.n} ${m.st}</b><br><span class="mut sm">${PEOPLE[m.who].name} · เหลือ ${m.days} วัน</span></span><i class="un"></i>${ic('chev',20)}</button>`).join('')}
+ ${expList().length?`<div class="sec" style="margin-top:4px"><h2>ใกล้หมดอายุ</h2></div>${expList().map(m=>`<button class="card tap" data-go="edit" data-med="${m.id}" data-reset="1"><span class="disc buy">${ic('alert',22)}</span><span class="grow"><b>${esc(m.n)} ${esc(m.st)}</b><br><span class="mut sm">${PEOPLE[m.who].name} · หมดอายุ ${thDate(m.exp)} (อีก ${daysTo(m.exp)} วัน)</span></span><i class="un"></i>${ic('chev',20)}</button>`).join('')}`:''}
+ <div class="sec" style="margin-top:4px"><h2>ตั้งค่า</h2></div>
+ <button class="card tap" data-go="pharm"><span class="disc">${ic('gear',22)}</span><span class="grow"><b>ตั้งค่าการเตือน</b><br><span class="mut sm">เตือนซื้อเมื่อเหลือไม่เกิน ${s.thr} วัน</span></span>${ic('chev',20)}</button></div>`}},
+today:{no:'06c',name:'ยาที่ต้องทานวันนี้',note:'จัดยาตามช่วงเวลา แตะติ๊กเมื่อจัดแล้ว กรองดูทีละคนได้',
+ r:s=>{const ppl=MEMBERS(),sel=s.tf==='all'?ppl:[s.tf],tasks=[];
+ sel.forEach(w=>dueOf(s,w).forEach(x=>perOf(x).forEach(k=>tasks.push({w,m:x.m,k,d:x.sc.doses[k]}))));
+ const dn=tasks.filter(t=>s.done[t.m.id+':'+t.k]).length,rest=sel.flatMap(w=>restOf(s,w).map(m=>({w,m})));
+ return`${sbar()}${hdr('ยาวันนี้',{back:'home',sub:TODAY.label})}<div class="body" style="gap:14px">
+ <div class="chips" role="group" aria-label="เลือกคน"><button class="sch ${s.tf==='all'?'on':''}" data-act="tf:all" aria-pressed="${s.tf==='all'}">${s.tf==='all'?ic('check',16):''}ทุกคน</button>${ppl.map(w=>`<button class="sch ${s.tf===w?'on':''}" data-act="tf:${w}" aria-pressed="${s.tf===w}">${s.tf===w?ic('check',16):''}${w}</button>`).join('')}</div>
+ <div class="sum"><small>${dn===tasks.length&&tasks.length?'จัดยาครบแล้ว':'ความคืบหน้าการจัดยา'}</small><b>จัดแล้ว ${dn} จาก ${tasks.length} รายการ · เหลืออีก ${tasks.length-dn}</b><span class="sm" style="display:block;color:var(--mut);margin-top:2px">1 รายการ = ยา 1 ตัวในช่วงเวลาหนึ่ง</span></div>
+ ${PER.map(k=>{const L=tasks.filter(t=>t.k===k);return L.length?`<div class="card" style="padding:4px 16px"><h2 style="font-size:19px;padding:12px 0 2px">${k}</h2>${L.map(t=>{const on=s.done[t.m.id+':'+k];return`<button class="pr" data-act="done:${t.m.id}:${k}" role="checkbox" aria-checked="${!!on}"><span class="ck ${on?'on':''}">${on?ic('check',20):''}</span><span class="grow"><b>${t.m.n} ${t.m.st}</b><br><span class="mut sm">${PEOPLE[t.w].name} · ${fr(t.d)} ${U(s.saved[t.m.id])}</span></span>${on?`<span class="chip ok">${ic('check',14)}จัดแล้ว</span>`:''}</button>`}).join('')}</div>`:''}).join('')}
+ ${rest.length?`<div class="note cr">${ic('moon',20)}<span><b>พักวันนี้</b><br>${rest.map(r=>`${r.m.n} (${PEOPLE[r.w].name})`).join(', ')}</span></div>`:''}
+ ${sel.filter(w=>isSelf(s,w)).length?`<div class="note">${ic('info',20)}<span>ไม่รวม ${joinTh(sel.filter(w=>isSelf(s,w)).map(w=>PEOPLE[w].name))} เพราะจัดยาเอง</span></div>`:''}</div>`}},
+household:{no:'07',name:'สมาชิก',note:'รายชื่อทุกคน สต๊อกนับแยกรายคน และมีป้ายบอกว่าวันนี้ต้องจัดยาให้คนนี้หรือไม่',
+ r:s=>`${sbar()}${hdr('สมาชิก',{back:'home',pill:{t:'เพิ่มสมาชิก',ic:'plus',act:'toast:เพิ่มสมาชิกใหม่ได้ในแอปจริง'}})}<div class="body">
+ ${MEMBERS().map(w=>`<button class="card tap" data-go="meds" data-person="${w}">${avatar(s,w,'lg')}<span class="grow"><b style="font-size:21px">${PEOPLE[w].name}</b><br><span class="mut sm">ยา ${MEDS[w].length} รายการ<br>ตัวที่น้อยสุดพอทาน ${minDays(w)} วัน</span><span style="display:flex;margin-top:6px">${isSelf(s,w)?`<span class="chip info">${ic('info',14)}จัดยาเอง · เราดูแลสต๊อก</span>`:dueOf(s,w).length?`<span class="chip info">${ic('pill',14)}ต้องจัดยาวันนี้ ${dueOf(s,w).length} ตัว</span>`:`<span class="chip rest">${ic('moon',14)}วันนี้ไม่ต้องจัดยา</span>`}</span></span>${stat(minDays(w))}${ic('chev',20)}</button>`).join('')}
+ <div class="note">${ic('info',20)}<span>สต๊อกนับเป็นรายวัน แยกตามแต่ละคน คนที่จัดยาเอง (เปิดสวิตช์ในหน้าของเขา) จะไม่ขึ้นรายการจัดยาประจำวัน แต่เรายังดูสต๊อกและเตือนซื้อให้</span></div></div>`},
+meds:{no:'07b',name:'หน้าของแต่ละคน',note:'รูปโปรไฟล์และสถานะ "จัดยาเอง" อยู่ด้านบน ตามด้วยข้อมูลแพ้ยา ทางลัดงาน และรายการยา',
+ r:s=>{const w=s.person,P=PEOPLE[w],self=isSelf(s,w),n=dueOf(s,w).length,b=buyOf(w).length,al=s.allergies[w]||[],stp=ALLMEDS.filter(m=>m.who===w&&m.stopped);return`${sbar()}${hdr(P.name,{back:'household',pill:{t:'เพิ่มยา',ic:'plus',go:'edit',newmed:1},sub:`ยา ${MEDS[w].length} รายการ`})}<div class="body" style="gap:14px">
+ <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px 16px">${avatar(s,w,'xl')}<span class="grow"><b style="font-size:22px">${P.name}</b><br><span class="chip ${self?'info':'ok'}" style="margin-top:6px">${self?ic('info',14)+'จัดยาเอง':ic('check',14)+'เราจัดยาให้'}</span></span><button class="pill" data-go="avatarpick" aria-label="เปลี่ยนรูปโปรไฟล์ของ${P.name}">${ic('edit',20)}เปลี่ยนรูป</button></div>
+ <div class="card" style="padding:4px 16px"><button class="li" style="width:100%" data-act="self:${w}" role="switch" aria-checked="${self}"><span class="grow"><b>${P.name}จัดยาทานเอง</b><br><span class="mut cap">เราดูแลแค่สต๊อกและซื้อยาให้ ไม่ขึ้นรายการจัดยาประจำวัน</span></span><span class="tg ${self?'on':''}"></span></button></div>
+ ${al.length?`<div class="card" style="border:2px solid var(--dng);background:var(--dngbg)"><b style="color:var(--dngink);font-size:18px;display:flex;gap:8px;align-items:center">${ic('alert',22)}แพ้ยา ${al.length} รายการ</b>${al.map((a,i)=>`<div style="margin-top:12px;padding-top:12px;${i?'border-top:1px solid #F2B8B8':''}"><b>${esc(a.drug)}</b><br><span class="sm">อาการ: ${a.sym.map(esc).join(', ')}${a.note?' · '+esc(a.note):''}</span><br><span class="mut sm">บันทึกเมื่อ ${esc(a.date)}</span>${s.aldel===w+':'+i?`<div style="margin-top:10px"><span class="sm"><b>ลบรายการนี้ใช่ไหม?</b> ถ้าลบ จะไม่ขึ้นเตือนแพ้ยานี้อีก</span><div style="display:flex;gap:8px;margin-top:8px"><button class="btn d" style="flex:1;height:44px" data-act="aldel:${i}">ยืนยันลบ</button><button class="btn s" style="flex:1;height:44px" data-act="aldelno">ยกเลิก</button></div></div>`:`<div style="display:flex;gap:8px;margin-top:8px"><button class="btn s" style="flex:1;height:44px;font-size:16px" data-act="aledit:${i}">${ic('edit',18)}แก้ไข</button><button class="btn d" style="flex:1;height:44px;font-size:16px" data-act="aldelask:${i}">${ic('x',18)}ลบ</button></div>`}</div>`).join('')}<button class="btn s" style="margin-top:12px;height:44px;flex:none" data-go="allergy">${ic('plus',18)}เพิ่มแพ้ยา</button></div>`:`<div class="note">${ic('info',20)}<span>ยังไม่มีบันทึกแพ้ยา เพิ่มได้ที่ปุ่มด้านล่าง หรือตอนหยุดยาด้วยเหตุผล "แพ้ยา"</span></div><button class="btn s" style="height:44px;flex:none;width:100%" data-go="allergy">${ic('plus',18)}เพิ่มแพ้ยา</button>`}
+ <div class="tiles">
+ ${self?`<button class="tile" data-act="toast:${P.name}จัดยาเอง ไม่ต้องจัดให้"><span class="disc">${ic('pill',22)}</span><b>จัดยาเอง</b><span class="mut sm">เราดูแลแค่สต๊อก</span></button>`:`<button class="tile" data-go="today" data-tf="${w}"><span class="disc">${ic('pill',22)}</span><b>จัดยาวันนี้</b><span class="mut sm">${n?`ทานวันนี้ ${n} ตัว`:'พักวันนี้'}</span></button>`}
+ <button class="tile" data-go="order" data-of="${w}"><span class="disc">${ic('bag',22)}</span><b>สั่งยา</b><span class="mut sm">${b?`ต้องซื้อ ${b} ตัว`:'สต๊อกพอ'}</span></button>
+ <button class="tile" data-go="share"><span class="disc">${ic('share',22)}</span><b>แชร์ให้แพทย์</b><span class="mut sm">เลือกข้อมูลที่ส่ง</span></button>
+ <button class="tile" data-go="doctor"><span class="disc">${ic('hist',22)}</span><b>สรุปพบแพทย์</b><span class="mut sm">ยา ประวัติ แพ้ยา</span></button></div>
+ <div class="sec"><h2>รายการยา</h2></div>
+ ${MEDS[w].length?MEDS[w].map(m=>medCard(s,m)).join(''):`<p class="mut" style="padding:8px 0">ยังไม่มียาของ${PEOPLE[w].name} กด เพิ่มยา มุมขวาบน</p>`}
+ ${stp.length?`<div class="sec"><h2>ยาที่หยุดแล้ว</h2></div>${stp.map(m=>`<div class="card" style="padding:12px 16px"><b>${esc(m.n)}</b> <span class="mut sm">${esc(m.st)}</span><br><span class="mut sm">หยุด ${esc(m.stopped.date)} · ${esc(m.stopped.reason)}</span></div>`).join('')}`:''}</div>`}},
+medlist:{no:'07c',name:'ยา (เมนูที่ 2)',note:'เมนู "ยา": รายการยาทุกตัวของทุกสมาชิก เพิ่มยารายตัวและเลือกว่าเป็นของใคร มีทางไปเทียบร้านก่อนสั่งเมื่อยาใกล้หมด',
+ r:s=>{const ppl=Object.keys(PEOPLE),sel=s.mf==='all'?ppl:[s.mf],lw=lowCount();return`${sbar()}${hdr('ยา',{pill:{t:'เพิ่มยา',ic:'plus',go:'edit',newmed:1},sub:`ทั้งหมด ${ALLMEDS.filter(m=>!m.stopped).length} รายการ`})}<div class="body" style="gap:14px">
+ <div class="chips" role="group" aria-label="กรองตามสมาชิก"><button class="sch ${s.mf==='all'?'on':''}" data-act="mf:all" aria-pressed="${s.mf==='all'}">${s.mf==='all'?ic('check',16):''}ทุกคน</button>${ppl.map(w=>`<button class="sch ${s.mf===w?'on':''}" data-act="mf:${w}" aria-pressed="${s.mf===w}">${s.mf===w?ic('check',16):''}${PEOPLE[w].house?'ยาบ้าน':w}</button>`).join('')}</div>
+ ${lw.length?`<button class="banner" data-go="order" data-of=""><span class="d">${ic('bag',24)}</span><span class="grow"><b>ยาใกล้หมด ${lw.length} รายการ</b><span class="sm">เทียบราคาร้านยาก่อนสั่ง</span></span>${ic('chev',20)}</button>`:''}
+ ${sel.map(w=>MEDS[w].length?`<div class="sec"><h2>${PEOPLE[w].name}</h2><span class="sm mut">${MEDS[w].length} รายการ</span></div>${MEDS[w].map(m=>medCard(s,m)).join('')}`:'').join('')}</div>${nav('medlist')}${toast(s)}`}},
+edit:{no:'08',name:'แก้ไขยา',note:'หน้านี้เหลือเฉพาะข้อมูลหลัก ส่วนที่ต้องคิดมาก (ขนาดบรรจุ รอบเติมยา ราคา) แยกไปหน้า 08d และตารางทานยาอยู่ที่ 08c มีบรรทัดสรุปบอกค่าปัจจุบันของแต่ละส่วน',
+ r:s=>{const v=s.dinv,dm=s.dm,sc=s.draft,hs=!!PEOPLE[dm.who].house,ah=allergyHit(s,dm),fm=FORMS.find(f=>f.k===v.form)||FORMS[0];
+ const bsum=[v.ps?`1 ${v.pu} = ${v.ps} ${v.bu}`:'ยังไม่ระบุขนาดบรรจุ',...(hs?[]:[`เติมทุก ${v.cycle} วัน`]),s.dpr.length?`ราคา ${s.dpr.length} ร้าน`:'ยังไม่มีราคา'].join(' · ');
+ return`${sbar()}${hdr(dm.isNew?'เพิ่มยา':'แก้ไขยา',{back:s.efrom||'meds',pill:{t:'บันทึก',act:'saveinv'}})}<div class="body" style="gap:16px">
+ <div class="fld"><span>ตัวยาสามัญ (ชื่อสามัญ)</span><input class="in1" data-dm="n" maxlength="40" value="${esc(dm.n)}" placeholder="เช่น Losartan" aria-label="ตัวยาสามัญ"></div>
+ <div class="fld"><span>ยี่ห้อ (ถ้ามี)</span><input class="in1" data-dm="br" maxlength="40" value="${esc(dm.br||'')}" placeholder="เช่น Cozaar" aria-label="ยี่ห้อ"><span class="hx">ยาตัวเดียวกันคนละยี่ห้อ ขนาดแพ็กและราคาต่างกัน ให้เพิ่มเป็นรายการแยก</span></div>
+ <div class="fld"><span>ความแรง</span><input class="in1" data-dm="st" maxlength="20" value="${esc(dm.st)}" placeholder="เช่น 50 mg" aria-label="ความแรง"></div>
+ <div class="fld"><span>ยานี้ของใคร</span><div class="chips" role="group" aria-label="เจ้าของยา">${Object.keys(PEOPLE).map(w=>`<button class="sch ${dm.who===w?'on':''}" data-act="who:${w}" aria-pressed="${dm.who===w}">${dm.who===w?ic('check',16):''}${PEOPLE[w].name}</button>`).join('')}</div>${hs?`<span class="hx">ยาที่ใช้ได้กับทุกคน เช่น พาราเซตามอล ไม่มีตารางทานประจำ ใช้เมื่อมีอาการ</span>`:''}</div>
+ ${ah.length?`<div class="note" style="background:var(--dngbg)">${ic('alert',20)}<span><b style="color:var(--dngink)">ระวัง: ${ah.map(([w,a])=>PEOPLE[w].name+' เคยแพ้ '+esc(a.drug)).join(', ')}</b><br>อาการที่เคยเกิด: ${ah[0][1].sym.map(esc).join(', ')}</span></div>`:''}
+ <div class="fld"><span>รูปแบบยา</span><div class="inp">${selw('data-sel="form"','รูปแบบยา',opts(FORMS.map(f=>f.k),v.form),1)}</div></div>
+ <div class="fld"><span>จำนวนที่เหลือ</span><div class="inp"><input class="bare" data-num="qty" inputmode="decimal" value="${v.qty}" aria-label="จำนวนที่เหลือ">${selw('data-sel="unit"','หน่วยของจำนวนที่เหลือ',unitGroups(v,v.unit))}</div><span class="hx">หน่วยเปลี่ยนตามรูปแบบยาให้เอง และเลือกเปลี่ยนเองได้</span></div>
+ ${eqNote(v)}
+ ${hs?`<div class="fld"><span>วันหมดอายุ</span><input class="in1" type="date" data-dm="exp" value="${esc(dm.exp||'')}" aria-label="วันหมดอายุ"><span class="hx">ยาสามัญประจำบ้านเตือนตามวันหมดอายุ ก่อนหมดอายุ ${EXPW} วัน</span></div>`:''}
+ <button class="card tap" data-go="buy"><span class="disc">${ic('bag',22)}</span><span class="grow"><b>ขนาดบรรจุและการซื้อ</b><br><span class="mut sm">${bsum}</span></span>${ic('chev',20)}</button>
+ ${hs?'':`<button class="card tap" data-go="modes"><span class="disc">${ic('cal',22)}</span><span class="grow"><b>ตารางทานยา</b><br><span class="mut sm">${full(sc)}</span></span>${ic('chev',20)}</button>`}
+ ${hs||dm.isNew?'':`<button class="card tap" data-go="dose"><span class="disc">${ic('pill',22)}</span><span class="grow"><b>ปรับโดส</b><br><span class="mut sm">เมื่อแพทย์สั่ง พร้อมเหตุผลและประวัติ หรือหยุดใช้ยา</span></span>${ic('chev',20)}</button>`}</div>`}},
+buy:{no:'08d',name:'ขนาดบรรจุและการซื้อ',note:'ขนาดต่อแพ็ก รอบเติมยา สั่งล่วงหน้า และราคายาในแต่ละร้านที่สั่งประจำ ใช้เทียบร้านตอนสั่งยา',
+ r:s=>{const m=medById(s.med),v=s.dinv,cust=v.cust||![30,60,90].includes(v.cycle),used=s.dpr.map(r=>r.ph),free=s.ph.filter(p=>!used.includes(p.id));
+ return`${sbar()}${hdr('การซื้อยา',{back:'edit',sub:`${esc(m.n)} ${esc(m.st)}${m.br?' · '+esc(m.br):''}`,pill:{t:'เสร็จ',go:'edit'}})}<div class="body" style="gap:16px">
+ <div class="fld"><span>ขนาดต่อแพ็ก/กล่อง (ถ้ามี) ของยี่ห้อนี้</span><div class="card" style="padding:14px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:12px"><b style="width:30px">1</b><div class="inp grow">${selw('data-sel="pu"','หน่วยของแพ็ก',opts(CONTU,v.pu),1)}</div></div>
+  <div style="display:flex;align-items:center;gap:12px"><b style="width:30px">มี</b><div class="inp grow"><input class="bare" data-num="ps" inputmode="numeric" value="${v.ps==null?'':v.ps}" placeholder="ไม่ระบุ" aria-label="จำนวนต่อแพ็ก">${selw('data-sel="bu"','หน่วยของจำนวนต่อแพ็ก',opts(BASEU,v.bu))}</div></div></div>
+  <span class="hx">ใช้ปัดจำนวนซื้อให้เป็นแพ็กเต็ม แต่ละยี่ห้อไม่เท่ากัน พิมพ์เองได้</span></div>
+ ${eqNote(v)}
+ ${PEOPLE[m.who].house?'':`<div class="fld"><span>กำหนดการเติมยา (ซื้อให้พอใช้)</span><div class="chips tight" role="group" aria-label="รอบการเติมยา">${[30,60,90].map(n=>`<button class="sch ${!cust&&v.cycle===n?'on':''}" data-act="cyc:${n}" aria-pressed="${!cust&&v.cycle===n}">ทุก ${n} วัน</button>`).join('')}<button class="sch ${cust?'on':''}" data-act="cyc:custom" aria-pressed="${cust}">กำหนดเอง</button></div>
+  ${cust?`<div class="inp"><span class="unit">ทุก</span><input class="bare" data-num="cycle" inputmode="numeric" value="${v.cycle}" aria-label="เติมยาทุกกี่วัน" style="text-align:center"><span class="unit">วัน</span></div>`:''}</div>
+ <div class="fld"><span>ต้องสั่งล่วงหน้า (วัน)</span><div class="inp"><input class="bare" data-num="lead" inputmode="numeric" value="${v.lead}" aria-label="ต้องสั่งล่วงหน้ากี่วัน"><span class="unit">วัน</span></div><span class="hx">ใช้คำนวณ "วันที่ควรสั่ง" = วันที่ยาหมด − จำนวนวันนี้</span></div>`}
+ <div class="sec" style="margin-top:4px"><h2>ราคายาแต่ละร้าน</h2></div>
+ <span class="hx" style="margin-top:-10px">ใส่ราคาร้านที่สั่งประจำ 2–3 ร้าน เลือกหน่วยของราคาเอง แอปจะเทียบให้ตอนสั่งยาว่าร้านไหนรวมค่าส่งถูกกว่า</span>
+ ${s.dpr.map((r,i)=>`<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:10px;align-items:center"><div class="inp grow">${selw(`data-pr="ph:${i}"`,'ร้านยา',s.ph.filter(p=>p.id===r.ph||!used.includes(p.id)).map(p=>`<option value="${p.id}" ${p.id===r.ph?'selected':''}>${esc(p.n)}</option>`).join(''),1)}</div><button class="ib" data-act="prdel:${i}" aria-label="ลบราคาร้านนี้">${ic('x',20)}</button></div>
+  <div class="inp"><span class="unit">฿</span><input class="bare" data-pr="price:${i}" inputmode="decimal" value="${r.price==null?'':r.price}" placeholder="ราคา" aria-label="ราคา"><span class="unit">ต่อ</span>${selw(`data-pr="unit:${i}"`,'หน่วยของราคา',unitGroups(v,r.unit))}</div>
+  ${r.unit!==v.bu&&r.unit!==v.pu?`<span class="hx" style="color:var(--warnink)">หน่วยราคาไม่ตรงกับขนาดบรรจุ แอปจะยังเทียบราคาร้านนี้ไม่ได้</span>`:''}</div>`).join('')}
+ <button class="btn s" data-act="pradd" ${free.length?'':'disabled'}>${ic('plus',20)}เพิ่มราคาจากร้านอื่น</button>
+ ${free.length?'':`<span class="hx">ใส่ครบทุกร้านที่มีแล้ว เพิ่มร้านใหม่ได้ที่ตั้งค่า</span>`}
+ <div class="note">${ic('info',20)}<span>ข้อมูลทั้งหมดบันทึกเมื่อกด <b>บันทึก</b> ที่หน้าแก้ไขยา</span></div></div>`}},
+modes:{no:'08c',name:'โหมดตารางทาน',note:'5 โหมด สรุปเป็นภาษาไทย และตั้งขนาดยาแต่ละช่วงเวลา',
+ r:s=>{const sc=s.draft,m=medById(s.med);
+ const MODES=[['daily','ทุกวัน'],['weekdays','เลือกวัน'],['alternate','วันเว้นวัน'],['everyN','ทุกกี่วัน'],['monthdates','วันที่ของเดือน']];
+ const strip=()=>`<div class="strip">${Array.from({length:7},(_,i)=>{const t=takeOn(sc,i),dd=(TODAY.dow+i)%7;return`<div class="cell ${t?'t':'r'}"><span>${DS[dd]}</span><b>${TODAY.d+i}</b>${t?ic('check',16):ic('moon',16)}</div>`}).join('')}</div>`;
+ let panel='';
+ if(sc.mode==='daily')panel=`<p class="mut sm">ทานทุกวัน ไม่ต้องเลือกวัน</p>`;
+ if(sc.mode==='weekdays')panel=`<div class="days">${DS.map((t,i)=>`<button class="dc ${sc.days.includes(i)?'on':''}" data-act="day:${i}" aria-pressed="${sc.days.includes(i)}" aria-label="วัน${DN[i]}">${t}</button>`).join('')}</div>`;
+ if(sc.mode==='alternate')panel=`<p class="mut sm" style="margin-bottom:8px">ทานวันนี้ แล้วพักวันถัดไป สลับกันไป</p>${strip()}`;
+ if(sc.mode==='everyN')panel=`<div class="dr" style="padding:0 0 10px"><b>ทานทุก</b><div class="step big"><button data-act="n:-1" aria-label="ลดจำนวนวัน">${ic('minus')}</button><output>${sc.n}</output><button data-act="n:1" aria-label="เพิ่มจำนวนวัน">${ic('plus')}</button></div><b>วัน</b></div>${strip()}`;
+ if(sc.mode==='monthdates')panel=`<div class="grid31">${Array.from({length:31},(_,i)=>`<button class="g ${sc.dates.includes(i+1)?'on':''}" data-act="date:${i+1}" aria-pressed="${sc.dates.includes(i+1)}">${i+1}</button>`).join('')}</div>`;
+ return`${sbar()}${hdr('ตารางทานยา',{back:'edit',sub:`${m.n} ${m.st}`})}<div class="body" style="gap:14px">
+ <div class="chips" role="group" aria-label="โหมดตาราง">${MODES.map(([k,t])=>`<button class="sch ${sc.mode===k?'on':''}" data-act="mode:${k}" aria-pressed="${sc.mode===k}">${sc.mode===k?ic('check',16):''}${t}</button>`).join('')}</div>
+ <div>${panel}</div>
+ <div class="sum"><small>สรุป</small><b>${when(sc)}</b></div>
+ ${stepSel(sc)}<div><b style="font-size:17px">ขนาดยาแต่ละช่วงเวลา (${U(sc)})</b><div class="dgrid" style="margin-top:8px">${PER.map(k=>`<div class="dose"><small>${k}</small><div class="step"><button data-act="dose:${k}:-1" aria-label="ลดขนาดยา${k}">${ic('minus')}</button><output>${fr(sc.doses[k])}</output><button data-act="dose:${k}:1" aria-label="เพิ่มขนาดยา${k}">${ic('plus')}</button></div></div>`).join('')}</div></div>
+ ${s.dm&&s.dm.isNew?'':reasonBox(s)}</div>
+ <div class="foot">${s.dm&&s.dm.isNew?`<button class="btn p" data-go="edit">เสร็จ กลับไปหน้าเพิ่มยา</button>`:`<button class="btn p" data-go="confirm" ${changes(s.saved[s.med],sc).length&&reasonOk(s)?'':'disabled'}>ตรวจสอบก่อนบันทึก</button>${changes(s.saved[s.med],sc).length?(reasonOk(s)?'':'<p class="mut cap" style="text-align:center">เลือกเหตุผลก่อนบันทึก</p>'):'<p class="mut cap" style="text-align:center">ยังไม่ได้เปลี่ยนตาราง</p>'}`}</div>`}},
+dose:{no:'09',name:'ปรับโดส',note:'ใช้เมื่อแพทย์หรือเภสัชกรให้ปรับโดส เห็นโดสเดิมและโดสใหม่คู่กัน ต้องเลือกเหตุผลทุกครั้ง มีปุ่มประวัติและปุ่มหยุดใช้ยา',
+ r:s=>{const m=medById(s.med),old=s.saved[s.med],cg=changes(old,s.draft),ok=cg.length&&reasonOk(s);return`${sbar()}${hdr('ปรับโดส',{back:'edit',sub:`${m.n} ${m.st}`,pill:{t:'ประวัติ',ic:'hist',go:'hist'}})}<div class="body" style="gap:14px">
+ <div><h2 style="font-size:19px;margin-bottom:8px">โดสปัจจุบัน</h2><div class="card" style="background:var(--sky);border-color:var(--sky);padding:12px 16px"><b>${when(old)}</b><br><span class="mut sm">${doseTxt(old)}</span></div></div>
+ <h2 style="font-size:19px;margin-bottom:-6px">โดสใหม่</h2>
+ ${stepSel(s.draft)}<div class="card" style="padding:4px 16px">${PER.map(k=>`<div class="dr"><span><b>${k}</b>${old.doses[k]!==s.draft.doses[k]?` <span class="chip info" style="margin-left:6px">เปลี่ยน</span>`:''}</span><div class="step big"><button data-act="dose:${k}:-1" aria-label="ลดขนาดยา${k}">${ic('minus')}</button><output>${fr(s.draft.doses[k])}</output><button data-act="dose:${k}:1" aria-label="เพิ่มขนาดยา${k}">${ic('plus')}</button></div></div>`).join('')}</div>
+ <div class="note cr" style="flex-direction:column;gap:6px;padding:14px 16px"><b>สิ่งที่จะเปลี่ยน (ต้องยืนยันก่อนบันทึก)</b>
+ ${cg.length?cg.map(c=>`<span class="sm">${c[0]}: ${c[1]} → <b>${c[2]}</b></span>`).join(''):'<span class="sm">ยังไม่มีการเปลี่ยนแปลง</span>'}</div>
+ ${reasonBox(s)}
+ <p class="mut cap">การเปลี่ยนแปลงถูกบันทึกต่อท้ายประวัติ และแก้ไขย้อนหลังไม่ได้</p></div>
+ <div class="foot"><button class="btn p" data-go="confirm" ${ok?'':'disabled'}>ตรวจสอบก่อนบันทึก</button><button class="btn d" data-go="stop">${ic('x',20)}หยุดใช้ยา</button></div>`}},
+hist:{no:'09c',name:'ประวัติการปรับโดส',note:'Timeline ของยาตัวนี้ เรียงใหม่สุดก่อน เห็นเหตุผลทุกครั้ง ลบหรือแก้ย้อนหลังไม่ได้',
+ r:s=>{const m=medById(s.med),L=s.hist.filter(x=>x.med===s.med);return`${sbar()}${hdr('ประวัติ',{back:'dose',sub:`${m.n} ${m.st}`})}<div class="body" style="gap:14px">
+ ${L.length?`<div class="tl">${L.map(x=>`<div class="tli ${x.kind==='stop'?'stop':''}"><i></i><b>${esc(x.date)} · ${x.kind==='stop'?'หยุดใช้ยา':'ปรับโดส'}</b><br><span class="sm">${esc(x.chg)}</span>${x.sym&&x.sym.length?`<br><span class="sm">อาการ: ${x.sym.map(esc).join(', ')}</span>`:''}<br><span class="chip info" style="margin-top:6px">เหตุผล: ${esc(x.reason||'ไม่ระบุ')}</span>${x.note?`<br><span class="mut sm">${esc(x.note)}</span>`:''}</div>`).join('')}</div>`:`<div class="note">${ic('info',20)}<span>ยังไม่มีการปรับโดสของยาตัวนี้ เมื่อบันทึกการปรับโดสครั้งแรกจะมาแสดงที่นี่</span></div>`}
+ <p class="mut cap">ประวัติเพิ่มได้อย่างเดียว ลบหรือแก้ย้อนหลังไม่ได้</p></div>`}},
+stop:{no:'09d',name:'หยุดใช้ยา',note:'ต้องเลือกเหตุผลทุกครั้ง ถ้าเลือก "แพ้ยา" ต้องบอกอาการ แล้วระบบขึ้นเตือนแพ้ยาในโปรไฟล์และในสรุปพบแพทย์',
+ r:s=>{const m=medById(s.med),al=s.stopR==='แพ้ยา',sv=s.stopS.some(x=>SEVERE.includes(x)),ok=s.stopR&&(!al||s.stopS.length)&&s.ack;return`${sbar()}${hdr('หยุดใช้ยา',{back:'dose',sub:`${m.n} ${m.st} · ${PEOPLE[m.who].name}`})}<div class="body" style="gap:14px">
+ <div class="note cr">${ic('info',20)}<span>ยาจะย้ายไป "ยาที่หยุดแล้ว" ประวัติไม่ถูกลบ และไม่นับในการจัดยาหรือเตือนซื้อ</span></div>
+ <div class="fld"><span>เหตุผลที่หยุด</span><div class="inp">${selw('data-srs="1"','เหตุผลที่หยุดใช้ยา','<option value="">เลือกเหตุผล…</option>'+STOPR.map(r=>`<option ${s.stopR===r?'selected':''}>${r}</option>`).join(''),1)}</div></div>
+ ${al?`<div class="fld"><span>อาการที่เกิดขึ้น (เลือกได้หลายอย่าง)</span><div class="chips" role="group" aria-label="อาการแพ้ยา">${SYMS.map(x=>`<button class="sch ${s.stopS.includes(x)?'on':''}" data-act="sym:${x}" aria-pressed="${s.stopS.includes(x)}">${s.stopS.includes(x)?ic('check',16):''}${x}</button>`).join('')}</div></div>
+ ${sv?`<div class="note" style="background:var(--dngbg)">${ic('alert',20)}<span><b style="color:var(--dngink)">อาการรุนแรง</b> ถ้าเกิดอีก ให้ไปโรงพยาบาลหรือโทร 1669 ทันที</span></div>`:''}
+ <div class="note">${ic('info',20)}<span>จะขึ้นเตือนแพ้ยา <b>${esc(m.n)}</b> ในโปรไฟล์ของ${PEOPLE[m.who].name} และในสรุปที่แชร์ให้แพทย์</span></div>`:''}
+ <div class="fld"><span>รายละเอียดเพิ่มเติม (ไม่บังคับ)</span><textarea class="ta rbx" data-stn maxlength="200" placeholder="เช่น หมอสั่งหยุดหลังตรวจเลือด">${esc(s.stopN)}</textarea></div>
+ <button class="ack" data-act="ack" role="checkbox" aria-checked="${!!s.ack}"><span class="bx ${s.ack?'on':''}">${s.ack?ic('check',18):''}</span><span>ฉันยืนยันว่าจะหยุดใช้ยาตัวนี้</span></button></div>
+ <div class="foot"><button class="btn p" data-act="stopok" ${ok?'':'disabled'}>ยืนยันหยุดใช้ยา</button>${!ok?`<p class="mut cap" style="text-align:center">${!s.stopR?'เลือกเหตุผลก่อน':al&&!s.stopS.length?'เลือกอาการอย่างน้อย 1 อย่าง':'ติ๊กยืนยันก่อน'}</p>`:''}</div>`}},
+confirm:{no:'09b',name:'ยืนยันเปลี่ยนตาราง',note:'Bottom sheet เดิม → ใหม่ พร้อมเหตุผลที่เลือกไว้ ต้องติ๊กก่อน ปุ่มบันทึกจึงใช้ได้',
+ r:s=>{const m=medById(s.med),old=s.saved[s.med],cg=changes(old,s.draft),ok=s.ack&&cg.length&&reasonOk(s);
+ return`<div style="display:flex;flex-direction:column;flex:1;min-height:0">${SCREENS.dose.r(s)}</div><div class="dim" data-go="dose" aria-hidden="true"></div>
+ <div class="sheet" role="dialog" aria-label="ยืนยันการเปลี่ยนตาราง"><div class="grab"></div><h2 style="font-size:22px">ยืนยันการเปลี่ยนตาราง</h2><p class="mut sm" style="margin-top:-6px">${m.n} ${m.st} ของ${PEOPLE[m.who].name}</p>
+ ${cg.length?`<div class="old"><small>เดิม</small>${full(old)}</div><div style="text-align:center;color:var(--mut);height:20px;margin:-4px 0">${ic('arrdown',20)}</div><div class="new"><small>ใหม่</small><b>${full(s.draft)}</b></div><div class="old" style="margin-top:2px"><small>เหตุผล</small>${s.rs?esc(s.rs)+(s.rn?' · '+esc(s.rn):''):'<span style="color:var(--dngink)">ยังไม่ได้เลือกเหตุผล</span>'}</div>`:'<div class="old">ยังไม่ได้เปลี่ยนอะไร</div>'}
+ <button class="ack" data-act="ack" role="checkbox" aria-checked="${!!s.ack}"><span class="bx ${s.ack?'on':''}">${s.ack?ic('check',18):''}</span><span>ฉันตรวจสอบตารางนี้แล้ว</span></button>
+ <button class="btn p" data-act="save" ${ok?'':'disabled'}>บันทึกตารางใหม่</button><button class="btn s" data-go="modes">กลับไปแก้</button></div>`}},
+allergy:{no:'07d',name:'บันทึกแพ้ยา',note:'เพิ่มหรือแก้ไขแพ้ยาได้ตรงจากโปรไฟล์ แม้เป็นยาที่ไม่เคยใช้ในแอป ต้องบอกชื่อยาและอาการ ลบได้โดยกดยืนยันอีกครั้ง',
+ r:s=>{const a=s.al,sv=a.sym.some(x=>SEVERE.includes(x)),ok=a.drug.trim()&&a.sym.length;return`${sbar()}${hdr(s.alIdx>=0?'แก้ไขแพ้ยา':'บันทึกแพ้ยา',{back:'meds',sub:PEOPLE[s.person].name})}<div class="body" style="gap:14px">
+ <div class="fld"><span>ชื่อยาที่แพ้ (ชื่อสามัญหรือยี่ห้อ)</span><input class="in1" data-al="drug" maxlength="40" value="${esc(a.drug)}" placeholder="เช่น Penicillin" aria-label="ชื่อยาที่แพ้"></div>
+ <div class="fld"><span>อาการที่เกิดขึ้น (เลือกได้หลายอย่าง)</span><div class="chips" role="group" aria-label="อาการแพ้ยา">${SYMS.map(x=>`<button class="sch ${a.sym.includes(x)?'on':''}" data-act="alsym:${x}" aria-pressed="${a.sym.includes(x)}">${a.sym.includes(x)?ic('check',16):''}${x}</button>`).join('')}</div></div>
+ ${sv?`<div class="note" style="background:var(--dngbg)">${ic('alert',20)}<span><b style="color:var(--dngink)">อาการรุนแรง</b> ถ้าเกิดอีก ให้ไปโรงพยาบาลหรือโทร 1669 ทันที</span></div>`:''}
+ <div class="fld"><span>รายละเอียดเพิ่มเติม (ไม่บังคับ)</span><textarea class="ta rbx" data-al="note" maxlength="200" placeholder="เช่น เกิดหลังทานยา 2 วัน">${esc(a.note)}</textarea></div>
+ <div class="note">${ic('info',20)}<span>จะขึ้นกรอบเตือนแพ้ยาในโปรไฟล์ของ${PEOPLE[s.person].name} และในสรุปที่แชร์ให้แพทย์ ถ้าเพิ่มยาที่ชื่อตรงกัน แอปจะเตือนทันที</span></div></div>
+ <div class="foot"><button class="btn p" data-act="alsave" ${ok?'':'disabled'}>${s.alIdx>=0?'บันทึกการแก้ไข':'บันทึกแพ้ยา'}</button>${ok?'':`<p class="mut cap" style="text-align:center">${!a.drug.trim()?'ใส่ชื่อยาก่อน':'เลือกอาการอย่างน้อย 1 อย่าง'}</p>`}</div>`}},
+avatarpick:{no:'07e',name:'เลือกรูปโปรไฟล์',note:'เลือกรูปโปรไฟล์ของสมาชิกจากไอคอน 20 แบบ รูปที่เลือกมีเครื่องหมายถูกและกรอบสีน้ำเงินเข้ม กด ใช้รูปนี้ เพื่อบันทึก ย้อนกลับเพื่อไม่เปลี่ยน',
+ r:s=>{const w=s.person,cur=s.avp||s.av[w]||PEOPLE[w].av,a=getAvatar(cur);return`${sbar()}${hdr('เลือกรูปโปรไฟล์',{back:'meds',sub:PEOPLE[w].name})}<div class="body" style="gap:16px">
+ <div style="display:flex;justify-content:center"><img class="av xl" style="width:96px;height:96px;background:${a.bg}" src="${a.src}" alt="${a.alt}"></div>
+ <div class="avgrid" role="group" aria-label="รูปโปรไฟล์ 20 แบบ">${AVATARS.map((x,i)=>`<button class="avb ${x.id===cur?'on':''}" data-act="avsel:${x.id}" aria-pressed="${x.id===cur}" aria-label="รูปที่ ${i+1}"><img src="${x.src}" alt="" style="background:${x.bg}">${x.id===cur?`<span class="avck">${ic('check',16)}</span>`:''}</button>`).join('')}</div></div>
+ <div class="foot"><button class="btn p" data-act="avsave">ใช้รูปนี้</button></div>`}},
+order:{no:'10',name:'เทียบร้านก่อนสั่ง',note:'รวมค่ายาทุกรายการ + ค่าส่งของแต่ละร้าน แนะนำร้านที่รวมแล้วถูกที่สุด ร้านที่ราคาไม่ครบจะไม่ถูกจัดอันดับและบอกว่าขาดอะไร',
+ r:s=>{const c=cmpShops(s),L=c.L,b=c.best;return`${sbar()}${hdr('สั่งยา',{back:s.ofrom||'home',sub:`ควรสั่ง ${L.length} รายการ${s.of?' · '+PEOPLE[s.of].name:''}`,pill:s.of?{t:'ดูทุกคน',act:'of:'}:undefined})}<div class="body" style="gap:12px">
+ <div class="card" style="padding:4px 16px">${L.length?L.map(m=>`<div class="li"><span class="bx on" style="width:28px;height:28px;border-radius:8px;background:var(--navy);color:#fff;display:grid;place-items:center;flex:none">${ic('check',18)}</span><span class="grow"><b>${esc(m.n)} ${esc(m.st)}</b><br><span class="mut sm">${m.br?'ยี่ห้อ '+esc(m.br)+' · ':''}${PEOPLE[m.who].name} · สั่ง ${orderQty(s,m)}</span></span><span class="chip low">${ic('alert',14)}${m.days} วัน</span></div>`).join(''):`<p class="mut" style="padding:14px 0">ยังไม่มียาที่ต้องสั่ง</p>`}</div>
+ ${b?`<div class="sum"><small>แนะนำรอบนี้ (รวมค่าส่งแล้ว)</small><b>${esc(b.p.n)} · ${baht(b.total)}</b><span class="sm" style="display:block;color:var(--mut);margin-top:2px">ค่ายา ${baht(b.sub)} + ค่าส่ง ${baht(b.fee)}${c.next?` · ถูกกว่าร้านถัดไป ${baht(c.next.total-b.total)}`:''}</span></div>`:`<div class="note cr">${ic('alert',20)}<span>ยังเทียบร้านไม่ได้ ต้องมีราคาครบทุกรายการและค่าส่งอย่างน้อย 1 ร้าน ใส่ราคาได้ในหน้าแก้ไขยา</span></div>`}
+ ${c.split?`<div class="note">${ic('info',20)}<span>ถ้าแยกซื้อ ${c.split.shops.length} ร้าน (${c.split.shops.map(esc).join(' + ')}) รวมค่าส่งแล้ว ${baht(c.split.total)} ถูกกว่าซื้อร้านเดียวอีก ${baht(b.total-c.split.total)}</span></div>`:''}
+ <div class="sec"><h2>เลือกร้าน</h2><span class="sm mut">รวมค่าส่ง</span></div>
+ ${c.rows.map(r=>{const p=r.p,sel=s.pharm===p.id;return`<button class="card tap" style="padding:12px 14px;${sel?'border:2px solid var(--navy);':''}" data-act="pharm:${p.id}" aria-pressed="${sel}"><span class="rad ${sel?'on':''}">${sel?ic('check',14):''}</span><span class="grow"><b>${esc(p.n)}</b>${b&&b.p.id===p.id?` <span class="chip ok" style="margin-left:4px">${ic('check',14)}ถูกที่สุด</span>`:''}<br>${r.ok?`<span class="mut sm">ค่ายา ${baht(r.sub)} + ส่ง ${baht(r.fee)}</span>`:`<span class="sm" style="color:var(--warnink)">${r.miss.length?'ขาดราคา: '+r.miss.map(esc).join(', '):'ไม่ระบุค่าส่ง'}</span>`}<br><span class="mut sm">${p.tel?'โทร '+esc(p.tel):'ยังไม่มีเบอร์โทร'}</span></span>${r.ok?`<b style="font-size:19px">${baht(r.total)}</b>`:`<span class="mut sm">เทียบไม่ได้</span>`}</button>`}).join('')}</div>
+ <div class="foot"><button class="btn p" data-go="message">${ic('chat',22)}สร้างข้อความสั่งยา</button>${phOf(s).tel?`<button class="btn s" data-act="toast:แอปจริงจะเปิดหน้าโทรไปที่ ${phOf(s).tel}">${ic('call',20)}โทรสั่งที่ ${esc(phOf(s).n)}</button>`:`<button class="btn s" disabled>${esc(phOf(s).n)} ยังไม่มีเบอร์โทร</button>`}</div>`}},
+message:{no:'11',name:'ข้อความสั่งยา',note:'เลือกแบบฟอร์ม คัดลอกข้อความแล้วเปิด LINE เอง แอปไม่ส่งให้อัตโนมัติ',
+ r:s=>`${sbar()}${hdr('ข้อความสั่งยา',{back:'order',pill:{t:'แก้แบบฟอร์ม',ic:'edit',go:'tpled'}})}<div class="body" style="gap:14px">
+ <div class="fld"><span>แบบฟอร์มข้อความ</span><div class="chips" role="group" aria-label="แบบฟอร์ม">${s.tpls.map(t=>`<button class="sch ${s.tpl===t.id?'on':''}" data-act="tpl:${t.id}" aria-pressed="${s.tpl===t.id}">${s.tpl===t.id?ic('check',16):''}${esc(t.name)}</button>`).join('')}</div></div>
+ <div class="msg" id="msgText">${esc(orderText(s))}</div>
+ <div class="note">${ic('info',20)}<span>แอปไม่ส่งข้อความให้เอง คัดลอกข้อความนี้ แล้วเปิด LINE เพื่อวางและส่งด้วยตัวคุณเอง</span></div></div>
+ <div class="foot"><button class="btn p" data-act="copy">${ic('copy',22)}คัดลอกข้อความ</button><button class="btn s" data-act="toast:เปิด LINE เองแล้ววางข้อความที่คัดลอกไว้">ฉันจะเปิด LINE เอง</button></div>${toast(s)}`},
+tpled:{no:'11b',name:'แบบฟอร์มข้อความ',note:'สร้างและแก้ข้อความสั่งยาที่ใช้ซ้ำ แทรกตัวแทนอัตโนมัติ ดูตัวอย่างก่อนบันทึก',
+ r:s=>`${sbar()}${hdr('แบบฟอร์มข้อความ',{back:'message',pill:{t:'ใหม่',ic:'plus',act:'tplnew'}})}<div class="body" style="gap:14px">
+ <div class="chips" role="group" aria-label="เลือกแบบฟอร์มที่จะแก้">${s.tpls.map(t=>`<button class="sch ${s.etpl===t.id?'on':''}" data-act="tsel:${t.id}" aria-pressed="${s.etpl===t.id}">${s.etpl===t.id?ic('check',16):''}${esc(t.name)}</button>`).join('')}</div>
+ <div class="fld"><span>ชื่อแบบฟอร์ม</span><input class="in1" data-tname maxlength="30" value="${esc(s.tname)}"></div>
+ <div class="fld"><span>ข้อความ</span><textarea class="ta" data-tbody>${esc(s.tbody)}</textarea></div>
+ <div class="fld"><span>แตะเพื่อแทรกตัวแทน</span><div class="chips">${['{ร้านยา}','{รายการยา}','{ผู้สั่ง}'].map(p=>`<button class="sch" data-act="ins:${p}">${p}</button>`).join('')}</div></div>
+ <div class="fld"><span>ตัวอย่างข้อความ</span><div class="msg" id="tprev">${esc(fillTpl(s.tbody,phOf(s),s))}</div></div></div>
+ <div class="foot"><button class="btn p" data-act="tplsave">บันทึกแบบฟอร์ม</button></div>`},
+doctor:{no:'12',name:'โหมดแพทย์',note:'สรุปยาให้อ่านง่ายตอนพบแพทย์ ไม่ใช่การวินิจฉัย',
+ r:s=>{const w=s.person;return`${sbar()}${hdr('สรุปสำหรับพบแพทย์',{back:'share',sub:PEOPLE[w].name})}<div class="body" style="gap:12px">
+ <div class="note">${ic('info',20)}<span>หน้านี้ช่วยสื่อสารกับแพทย์ ไม่ใช่การวินิจฉัยหรือคำแนะนำทางการแพทย์</span></div>
+ ${MEDS[w].map(m=>`<div class="card" style="padding:12px 16px"><b>${m.n} ${m.st}</b><br><span class="sm">${full(s.saved[m.id])}</span></div>`).join('')}
+ <div class="card" style="padding:12px 16px"><b>ประวัติการเปลี่ยนล่าสุด</b>${(()=>{const ids=ALLMEDS.filter(m=>m.who===w).map(m=>m.id),L=s.hist.filter(x=>ids.includes(x.med)).slice(0,3);return L.length?L.map(x=>`<br><span class="sm">${esc(x.date)} · ${esc(medById(x.med).n)}: ${esc(x.chg)} <span class="mut">(${esc(x.reason||'ไม่ระบุ')})</span></span>`).join(''):'<br><span class="sm mut">ยังไม่มีการเปลี่ยนแปลงตั้งแต่เริ่มใช้แอป</span>'})()}</div>
+ ${(s.allergies[w]||[]).length?`<div class="card" style="padding:12px 16px;border:2px solid var(--dng);background:var(--dngbg)"><b style="color:var(--dngink)">ประวัติแพ้ยา</b>${s.allergies[w].map(a=>`<br><span class="sm"><b>${esc(a.drug)}</b> · อาการ: ${a.sym.map(esc).join(', ')}${a.note?' · '+esc(a.note):''}</span>`).join('')}</div>`:`<div class="card" style="padding:12px 16px"><b>ประวัติแพ้ยา</b><br><span class="sm mut">ยังไม่มีบันทึกแพ้ยา</span></div>`}</div>
+ <div class="foot"><button class="btn p" data-go="share">${ic('share',22)}แชร์สรุปนี้</button></div>`}},
+share:{no:'13',name:'แชร์ข้อมูลยา',note:'เลือกคน เลือกข้อมูล และเห็นข้อความความเป็นส่วนตัวตลอด',
+ r:s=>{const w=s.person,sh=s.shares,T=(k,t,d)=>`<button class="li" style="width:100%" data-act="share:${k}" role="switch" aria-checked="${sh[k]}"><span class="grow"><b>${t}</b><br><span class="mut cap">${d}</span></span><span class="tg ${sh[k]?'on':''}"></span></button>`;
+ return`${sbar()}${hdr('แชร์ข้อมูลยา')}<div class="body" style="gap:12px">
+ <div class="note cr">${ic('lock',20)}<span><b>ข้อมูลยาเป็นข้อมูลส่วนตัว</b><br>ส่งให้เฉพาะคนที่คุณไว้ใจ และตรวจข้อความก่อนส่งทุกครั้ง</span></div>
+ <div class="chips">${MEMBERS().map(k=>`<button class="sch ${w===k?'on':''}" data-act="person:${k}" aria-pressed="${w===k}">${w===k?ic('check',16):''}${PEOPLE[k].name}</button>`).join('')}</div>
+ <div class="card" style="padding:4px 16px">${T('list','รายการยา','ชื่อยาและความแรง')}${T('sched','ตารางทาน','วันที่และขนาดยา')}${T('stock','สต๊อกคงเหลือ','จำนวนวันที่พอทาน')}</div>
+ <button class="card tap" data-go="doctor"><span class="disc">${ic('steth',22)}</span><span class="grow"><b>สรุปสำหรับพบแพทย์</b><br><span class="mut cap">เปิดหน้าสรุปที่อ่านง่าย</span></span>${ic('chev',20)}</button></div>
+ <div class="foot"><button class="btn p" data-act="toast:คัดลอกข้อความสรุปแล้ว ส่งผ่านแอปที่คุณเลือกเอง">${ic('copy',22)}คัดลอกข้อความสรุป</button></div>${nav('share')}`}},
+pharm:{no:'14',name:'ตั้งค่าและร้านยา',note:'เพิ่มร้านเอง พร้อมเบอร์โทรสำหรับโทรสั่ง ตั้งค่าเริ่มต้น สำรองและนำเข้าข้อมูล',
+ r:s=>`${sbar()}${hdr('ตั้งค่า',{pill:{t:'เพิ่มร้าน',ic:'plus',go:'pform',new:1}})}<div class="body" style="gap:12px">
+ <div class="sec"><h2>ร้านยาของฉัน</h2></div>
+ <div class="card" style="padding:4px 16px">${s.ph.map(p=>`<div class="li"><span class="disc">${ic('store',22)}</span><span class="grow"><b>${esc(p.n)}</b><br><span class="mut sm">${esc(p.sub||'')}</span><br><span class="mut sm">${p.tel?'โทร '+esc(p.tel):'ยังไม่มีเบอร์โทร'}</span><br><span class="mut sm">${p.ship==null?'ยังไม่ระบุค่าส่ง':'ค่าส่ง '+baht(p.ship)+(p.free!=null?' · ฟรีเมื่อซื้อครบ '+baht(p.free):'')}</span></span><button class="ib" aria-label="แก้ไข ${esc(p.n)}" data-go="pform" data-pfid="${p.id}">${ic('edit',20)}</button></div>`).join('')}</div>
+ <div class="card"><div class="dr" style="padding:0"><span class="grow"><b>สั่งล่วงหน้าตั้งต้น</b><br><span class="mut sm">ใช้กับยาใหม่ แก้รายตัวได้ในหน้าแก้ไขยา</span></span><div class="step big"><button data-act="thr:-1" aria-label="ลดจำนวนวัน">${ic('minus')}</button><output style="min-width:40px;font-size:19px">${s.thr}</output><button data-act="thr:1" aria-label="เพิ่มจำนวนวัน">${ic('plus')}</button></div><span>วัน</span></div></div>
+ <div class="sec"><h2>ข้อมูลของฉัน</h2></div>
+ <div style="display:flex;gap:8px"><button class="btn s" data-act="toast:สำรองข้อมูลเป็นไฟล์ในแอปจริง">${ic('down',20)}สำรอง</button><button class="btn s" data-act="toast:นำเข้าไฟล์สำรองในแอปจริง">${ic('up',20)}นำเข้า</button></div>
+ <p class="mut sm">ข้อมูลเก็บในเครื่องนี้เท่านั้น JudYa รุ่นทดลอง 0.7</p></div>${nav('pharm')}${toast(s)}`},
+pform:{no:'14b',name:'เพิ่ม/แก้ไขร้านยา',note:'กรอกชื่อร้าน เบอร์โทร (ไม่บังคับ ใช้โทรสั่งจากแอป) ค่าส่ง และเงื่อนไขส่งฟรี ใช้คำนวณว่าร้านไหนรวมแล้วถูกกว่า',
+ r:s=>{const f=s.pf,bad=!telOk(f.tel);return`${sbar()}${hdr(f.id?'แก้ไขร้านยา':'เพิ่มร้านยา',{back:'pharm'})}<div class="body" style="gap:16px">
+ <div class="fld"><span>ชื่อร้าน</span><input class="in1" data-pf="n" maxlength="40" value="${esc(f.n)}" placeholder="เช่น ร้านยาสุขใจ" aria-label="ชื่อร้าน"></div>
+ <div class="fld"><span>รายละเอียด (ไม่บังคับ)</span><input class="in1" data-pf="sub" maxlength="50" value="${esc(f.sub)}" placeholder="เช่น ใกล้บ้าน หน้าตลาด" aria-label="รายละเอียดร้าน"></div>
+ <div class="fld"><span>เบอร์โทรร้านยา (ไม่บังคับ)</span><input class="in1" data-pf="tel" inputmode="tel" maxlength="14" value="${esc(f.tel)}" placeholder="เช่น 02-123-4567" aria-label="เบอร์โทรร้านยา" ${bad?'aria-invalid="true" style="border-color:var(--dng)"':''}><span class="hx" id="telhx" ${bad?'style="color:var(--dngink)"':''}>${bad?'เบอร์โทรไม่ถูกต้อง ใส่ตัวเลขและขีดเท่านั้น':'ถ้ามีเบอร์ จะมีปุ่มโทรสั่งยาในหน้าสั่งยา'}</span></div>
+ <div class="fld"><span>ค่าส่ง (ไม่บังคับ)</span><div class="inp"><input class="bare" data-pf="ship" inputmode="numeric" maxlength="5" value="${esc(f.ship)}" placeholder="ไม่ระบุ" aria-label="ค่าส่ง"><span class="unit">บาท</span></div><span class="hx">ถ้ารับที่ร้านเอง ใส่ 0 ถ้าไม่ใส่ แอปจะเทียบร้านนี้ไม่ได้</span></div>
+ <div class="fld"><span>ส่งฟรีเมื่อซื้อครบ (ไม่บังคับ)</span><div class="inp"><input class="bare" data-pf="free" inputmode="numeric" maxlength="5" value="${esc(f.free)}" placeholder="ไม่มี" aria-label="ส่งฟรีเมื่อซื้อครบ"><span class="unit">บาท</span></div></div></div></div>
+ <div class="foot"><button class="btn p" data-act="pfsave" ${f.n.trim()&&!bad?'':'disabled'}>บันทึกร้านยา</button></div>`}}
+};
+/* ---------- สถานะ ---------- */
+const mk=()=>{const tp=TPLS();return{screen:'splash',person:'พ่อ',med:'vitd',saved:initSaved(),draft:null,dinv:null,inv:initInv(),done:{},tf:'all',of:'',tpls:tp,tpl:'t1',etpl:'t1',tname:tp[0].name,tbody:tp[0].body,ack:false,pharm:'b',thr:7,prices:PR0(),dpr:[],dm:null,mf:'all',self:{แม่:true},rs:'',rn:'',hist:HIST0(),allergies:AL0(),stopR:'',stopN:'',stopS:[],alIdx:-1,aldel:'',al:{drug:'',sym:[],note:''},efrom:'meds',ofrom:'home',shares:{list:true,sched:true,stock:false},ph:clone(PH0),pf:{id:'',n:'',sub:'',tel:'',ship:'',free:''},pferr:false,toast:'',av:Object.fromEntries(Object.keys(PEOPLE).map(w=>[w,PEOPLE[w].av])),avp:''}};
+let S=mk();loadMed(S,'vitd');
+/* สถานะตัวอย่างสำหรับแผนผัง: ร่างที่ถูกแก้แล้ว เพื่อให้เห็นหน้า 08c 09 09b ครบ */
+const DEMO=(()=>{const d=mk();d.draft=sch('weekdays',{days:[1,4,6],doses:{...z(),เช้า:1.5}});loadMed(d,'vitd');d.draft=sch('weekdays',{days:[1,4,6],doses:{...z(),เช้า:1.5}});d.done={'los:เช้า':1,'vitd:เช้า':1,'met:เช้า':1};d.rs='แพทย์สั่งปรับ';d.rn='หมอปรับหลังตรวจเลือด';d.al={drug:'Aspirin',sym:['ผื่น/ลมพิษ','หายใจลำบาก'],note:'',};return d})();
+const DEMO_STOP=(()=>{const d=mk();loadMed(d,'los');d.stopR='แพ้ยา';d.stopS=['ผื่น/ลมพิษ','บวมที่หน้า/ปาก'];d.stopN='ขึ้นผื่นทั้งตัวหลังทานยา';d.ack=true;return d})();
+
+/* ---------- แผนผัง ---------- */
+const ROWS=[
+ {t:'1 · เริ่มต้นใช้งาน',d:'จากโลโก้ไปหน้าต้อนรับ รุ่นทดลองกดเริ่มแล้วเข้าหน้าแรกเลย ส่วน 03 ถึง 05 ใช้กับแอปจริง',ids:['splash','welcome','login','register','otp'],ar:['แตะต่อ','ฉันมีบัญชีแล้ว','สร้างบัญชีใหม่','ขอรหัส OTP'],dash:[0,0,1,1]},
+ {t:'2 · หน้าแรก การแจ้งเตือน และยาวันนี้',d:'หน้าแรกเป็น Dashboard: ป้ายของแต่ละคนบอกว่าทานยาวันนี้กี่ตัวและต้องซื้อกี่ตัว ระฆังรวมการเตือน แล้วไปจัดยาตามช่วงเวลา',ids:['home','notif','today'],ar:['แตะระฆัง','ยาที่ต้องทานวันนี้']},
+ {t:'3 · สมาชิก',d:'แตะชื่อสมาชิกเพื่อเข้าหน้าของคนนั้น มีทางลัดงาน 4 อย่าง',ids:['household','meds','avatarpick'],ar:['เลือกคน','เปลี่ยนรูป']},
+ {t:'4 · เมนู "ยา" เพิ่มและแก้ไขยา',d:'เมนูที่ 2 คือ "ยา" ดูยาทั้งหมด เพิ่มยารายตัว เลือกว่าเป็นของสมาชิกคนไหน หน้าแก้ไขเหลือข้อมูลหลัก ส่วนขนาดบรรจุ รอบเติมยา และราคาแต่ละร้านอยู่หน้าถัดไป',ids:['medlist','edit','buy'],ar:['แตะยา หรือเพิ่มยา','ขนาดบรรจุและการซื้อ']},
+ {t:'5 · ตั้งตารางและปรับโดส',d:'เปลี่ยนโดสทีละ 1 ½ หรือ ¼ หน่วย ต้องเลือกเหตุผลทุกครั้ง และผ่านหน้ายืนยัน ติ๊กรับทราบก่อนปุ่มบันทึกจึงใช้ได้',ids:['edit','modes','dose','confirm'],ar:['ตารางทานยา','ปรับโดส','ตรวจสอบ']},
+ {t:'6 · ประวัติ หยุดยา และแพ้ยา',d:'หน้าปรับโดสมีปุ่มประวัติและปุ่มหยุดใช้ยา หยุดยาต้องบอกเหตุผล ถ้าแพ้ยาต้องบอกอาการ แล้วโปรไฟล์ขึ้นกรอบเตือนแพ้ยา',ids:['hist','dose','stop','meds','allergy'],ar:['ย้อนกลับ','ปุ่มหยุดใช้ยา','ยืนยันแล้วเห็นเตือนแพ้ยา','ปุ่มเพิ่มแพ้ยา']},
+ {t:'7 · เทียบร้านและสั่งยา',d:'แอปรวมค่ายาและค่าส่งของแต่ละร้านจากราคาที่ใส่ไว้ แนะนำร้านที่ถูกที่สุด แล้วคัดลอกข้อความหรือโทรสั่ง',ids:['medlist','order','message','tpled'],ar:['ยาใกล้หมด','สร้างข้อความ','แก้แบบฟอร์ม']},
+ {t:'8 · แชร์และตั้งค่า',d:'แชร์ข้อมูลเท่าที่เลือก มีโหมดแพทย์ และตั้งค่าร้านยา เบอร์โทร ค่าส่ง การสำรองและนำเข้าข้อมูล',ids:['share','doctor','pharm','pform'],ar:['สรุปพบแพทย์','เมนูตั้งค่า','เพิ่มร้าน'],dash:[0,1,0]}
+];
+const arrow=(l,dash)=>`<div class="arr ${dash?'dash':''}" aria-hidden="true"><svg viewBox="0 0 44 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="40" y2="12"/><path d="M33 5l7 7-7 7"/></svg><span>${l}</span></div>`;
+const FIXED=['splash','confirm'];
+function fitThumbs(){document.querySelectorAll('.thumb').forEach(th=>{const h=th.firstElementChild.offsetHeight;if(h)th.style.height=Math.round(h*.6)+'px'})}
+function buildFlow(){
+ const sw=[['#0B3A6B','น้ำเงินเข้ม ปุ่มหลัก'],['#1976F3','น้ำเงิน ไอคอนและเส้น'],['#13C596','เขียว พื้นหรือเครื่องหมาย'],['#FFC629','เหลือง เรื่องสำคัญ'],['#E6F4FF','ฟ้าอ่อน แท็บที่เลือก'],['#D9F1E9','มิ้นต์ ทานวันนี้'],['#FFF7DB','ครีม พักวันนี้']];
+ $('#rules').innerHTML=`<div class="rule"><b>สีของแอปมาจากโลโก้</b><div class="sw">${sw.map(([c,t])=>`<i style="--c:${c}">${t}</i>`).join('')}</div></div>
+ <div class="rule"><b>การวางปุ่ม</b>ปุ่มหลักสีน้ำเงินเข้มอยู่ล่างจอ เหนือแถบเมนู 4 ช่อง หน้ารองมีลูกศรย้อนกลับและปุ่มมุมขวาบนไม่เกิน 1 ปุ่ม</div>
+ <div class="rule"><b>อ่านง่ายและไม่พึ่งสีอย่างเดียว</b>ตัวหนังสือหลักขนาด 17 คำอธิบายไม่เล็กกว่า 15 สถานะมีไอคอนและคำกำกับ ปุ่มกดสูงอย่างน้อย 44 พิกเซล</div>`;
+ $('#rows').innerHTML=ROWS.map(r=>`<section class="row"><h2>${r.t}</h2><p>${r.d}</p><div class="lane">${r.ids.map((id,i)=>{const sc=SCREENS[id];
+  return`<article class="node"><div class="thumbbtn" role="button" tabindex="0" data-open="${id}" aria-label="เปิด ${sc.no} ${sc.name} ในโหมดลองกด"><div class="thumb"><div class="scr ${FIXED.includes(id)?'':'flow'}" inert>${sc.r(id==='stop'?DEMO_STOP:DEMO)}</div></div></div><h3><span class="no">${sc.no}</span>${sc.name}</h3><p>${sc.note}</p>${cmt(id,'f'+r.t[0])}</article>${i<r.ids.length-1?arrow(r.ar[i],r.dash&&r.dash[i]):''}`}).join('')}</div></section>`).join('');
+ fitThumbs();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitThumbs);
+}
+
+/* ---------- ต้นแบบกดได้ ---------- */
+const $=(q,r=document)=>r.querySelector(q);
+let tt;
+function say(m){S.toast=m;draw();clearTimeout(tt);tt=setTimeout(()=>{S.toast='';draw()},2200)}
+function draw(){const sc=SCREENS[S.screen],a=document.activeElement,fk=a&&a.closest&&a.closest('#phone')&&['num','sel','pf','pr','dm'].map(k=>a.dataset[k]?k+'='+a.dataset[k]:'').find(Boolean);$('#phone').innerHTML=`<div class="scr" data-screen="${S.screen}">${sc.r(S)}</div>`;
+ if(fk){const [k,v]=fk.split('='),n=$(`#phone [data-${k}="${v}"]`);if(n){n.focus();try{n.setSelectionRange(n.value.length,n.value.length)}catch(e){}}}
+ $('#jump').querySelectorAll('.jb').forEach(b=>b.setAttribute('aria-current',String(b.dataset.open===S.screen)));updatePanel()}
+function go(id,el){
+ if(el&&el.dataset.person)S.person=el.dataset.person;
+ if(el&&el.dataset.med)S.med=el.dataset.med;
+ if(id==='edit'&&['medlist','meds','notif'].includes(S.screen))S.efrom=S.screen;
+ if(id==='avatarpick')S.avp=(S.av[S.person]||PEOPLE[S.person].av);
+ if(id==='allergy'){S.al={drug:'',sym:[],note:''};S.alIdx=-1}
+ S.aldel='';
+ if(id==='order'&&['home','medlist','notif','meds'].includes(S.screen))S.ofrom=S.screen;
+ if(el&&el.dataset.reset)loadMed(S,S.med);
+ if(el&&el.dataset.newmed)newMed(S,S.screen==='medlist'&&S.mf!=='all'?S.mf:S.person);
+ if(el&&el.dataset.tf!==undefined)S.tf=el.dataset.tf;
+ if(el&&el.dataset.of!==undefined)S.of=el.dataset.of;
+ if(id==='pform'){const p=el&&el.dataset.pfid?S.ph.find(x=>x.id===el.dataset.pfid):null;S.pf=p?{id:p.id,n:p.n,sub:p.sub||'',tel:p.tel||'',ship:p.ship==null?'':String(p.ship),free:p.free==null?'':String(p.free)}:{id:'',n:'',sub:'',tel:'',ship:'',free:''}}
+ if(id==='tpled'){S.etpl=S.tpl;const q=S.tpls.find(x=>x.id===S.etpl);S.tname=q.name;S.tbody=q.body}
+ if(id==='confirm')S.ack=false;
+ if(id==='stop'){S.stopR='';S.stopN='';S.stopS=[];S.ack=false}
+ S.screen=id;S.toast='';draw();$('#phone .body')&&($('#phone .body').scrollTop=0);
+}
+function act(a){
+ const [k,x,y]=a.split(':');
+ if(k==='toast')return say(a.slice(6));
+ const d=S.draft,iv=S.dinv;
+ if(k==='cyc'){if(x==='custom')iv.cust=true;else{iv.cust=false;iv.cycle=+x}}
+ else if(k==='pfsave'){const f=S.pf,o={id:f.id||'p'+(Date.now()%100000),n:f.n.trim(),sub:f.sub.trim(),tel:f.tel.trim(),ship:/^\d+$/.test(f.ship.trim())?parseInt(f.ship,10):null,free:/^\d+$/.test(f.free.trim())&&parseInt(f.free,10)>0?parseInt(f.free,10):null},i=S.ph.findIndex(x=>x.id===o.id);if(i>=0)S.ph[i]=o;else S.ph.push(o);S.screen='pharm';say('บันทึกร้านยาแล้ว');return}
+ else if(k==='mf'){S.mf=x}
+ else if(k==='who'){S.dm.who=x}
+ else if(k==='self'){S.self[x]=!S.self[x]}
+ else if(k==='alsym'){const i=S.al.sym.indexOf(x);if(i>=0)S.al.sym.splice(i,1);else S.al.sym.push(x)}
+ else if(k==='aledit'){const a=(S.allergies[S.person]||[])[+x];if(!a)return;S.al={drug:a.drug,sym:a.sym.slice(),note:a.note||''};S.alIdx=+x;S.aldel='';S.screen='allergy';S.toast=''}
+ else if(k==='aldelask'){S.aldel=S.person+':'+x}
+ else if(k==='aldelno'){S.aldel=''}
+ else if(k==='aldel'){(S.allergies[S.person]||[]).splice(+x,1);S.aldel='';say('ลบรายการแพ้ยาแล้ว');return}
+ else if(k==='avsel'){S.avp=x}
+ else if(k==='avsave'){S.av[S.person]=S.avp;S.screen='meds';say('เปลี่ยนรูปโปรไฟล์แล้ว');return}
+ else if(k==='alsave'){const a=S.al;if(!a.drug.trim()||!a.sym.length)return;const L=(S.allergies[S.person]=S.allergies[S.person]||[]),o={drug:a.drug.trim(),sym:a.sym.slice(),note:a.note.trim(),date:TODAY.short};if(S.alIdx>=0&&L[S.alIdx]){o.date=L[S.alIdx].date;L[S.alIdx]=o}else L.push(o);const ed=S.alIdx>=0;S.alIdx=-1;S.screen='meds';say(ed?'แก้ไขรายการแพ้ยาแล้ว':'บันทึกแพ้ยาแล้ว');return}
+ else if(k==='sym'){const i=S.stopS.indexOf(x);if(i>=0)S.stopS.splice(i,1);else S.stopS.push(x)}
+ else if(k==='stopok'){const m=medById(S.med);if(!S.stopR||(S.stopR==='แพ้ยา'&&!S.stopS.length)||!S.ack)return;const dt=TODAY.short;m.stopped={reason:S.stopR,date:dt,note:S.stopN};S.hist.unshift({med:m.id,date:dt,kind:'stop',chg:'หยุดใช้ยา',reason:S.stopR,note:S.stopN,sym:S.stopS.slice()});if(S.stopR==='แพ้ยา'){(S.allergies[m.who]=S.allergies[m.who]||[]).push({drug:m.n,sym:S.stopS.slice(),note:S.stopN,date:dt})}reindex();if(PEOPLE[m.who].house){S.mf='บ้าน';S.screen='medlist'}else{S.person=m.who;S.screen='meds'}S.stopR='';S.stopN='';S.stopS=[];S.ack=false;say(m.n+' ย้ายไปยาที่หยุดแล้ว'+(m.stopped.reason==='แพ้ยา'?' และขึ้นเตือนแพ้ยาในโปรไฟล์':''));return}
+ else if(k==='pradd'){const fr0=S.ph.find(p=>!S.dpr.some(r=>r.ph===p.id));if(fr0)S.dpr.push({ph:fr0.id,price:null,unit:iv.ps?iv.pu:iv.bu})}
+ else if(k==='prdel'){S.dpr.splice(+x,1)}
+ else if(k==='saveinv'){const dm=S.dm;if(!dm.n.trim()){say('ใส่ชื่อยาก่อนบันทึก');return}
+  let m=ALLMEDS.find(q=>q.id===dm.id);
+  if(!m){m={id:dm.id,bq:iv.ps||30,buy:'',left:'',days:null};ALLMEDS.push(m);S.saved[dm.id]=clone(d);if(PEOPLE[dm.who].house)S.saved[dm.id].doses=z()}
+  m.n=dm.n.trim();m.st=dm.st.trim();m.br=(dm.br||'').trim();m.exp=dm.exp||'';m.who=dm.who;reindex();
+  S.inv[dm.id]=clone(iv);S.prices[dm.id]=clone(S.dpr);S.saved[dm.id].u=iv.bu;m.days=calcDays(m,S);
+  if(PEOPLE[dm.who].house){S.mf='บ้าน';S.screen='medlist'}else{S.person=dm.who;S.screen=S.efrom||'meds'}
+  say(dm.isNew?'เพิ่มยาแล้ว':'บันทึกข้อมูลยาแล้ว');return}
+ else if(k==='step'){d.step=+x}
+ else if(k==='done'){const kk=x+':'+y;S.done[kk]=!S.done[kk]}
+ else if(k==='tf'){S.tf=x}
+ else if(k==='of'){S.of=x}
+ else if(k==='tpl'){S.tpl=x}
+ else if(k==='tsel'){S.etpl=x;const q=S.tpls.find(v=>v.id===x);S.tname=q.name;S.tbody=q.body}
+ else if(k==='tplnew'){const id='t'+(Date.now()%100000);S.tpls.push({id,name:'แบบฟอร์มใหม่',body:TPL0});S.etpl=id;S.tname='แบบฟอร์มใหม่';S.tbody=TPL0}
+ else if(k==='ins'){S.tbody+=(S.tbody&&!/\s$/.test(S.tbody)?' ':'')+x}
+ else if(k==='tplsave'){const q=S.tpls.find(v=>v.id===S.etpl);q.name=(S.tname||'').trim()||'แบบฟอร์ม';q.body=S.tbody;S.tpl=S.etpl;S.screen='message';say('บันทึกแบบฟอร์มแล้ว');return}
+ else if(k==='mode'){d.mode=x}
+ else if(k==='day'){const i=+x;d.days=d.days.includes(i)?d.days.filter(v=>v!==i):[...d.days,i]}
+ else if(k==='date'){const i=+x;d.dates=d.dates.includes(i)?d.dates.filter(v=>v!==i):[...d.dates,i]}
+ else if(k==='n'){d.n=Math.min(30,Math.max(2,d.n+ +x))}
+ else if(k==='dose'){d.doses[x]=Math.min(9,Math.max(0,+(d.doses[x]+(+y)*(d.step||.5)).toFixed(2)))}
+ else if(k==='ack'){S.ack=!S.ack}
+ else if(k==='save'){if(needReason(S)&&!S.rs){say('เลือกเหตุผลก่อนบันทึก');return}const cg0=changes(S.saved[S.med],d);if(cg0.length)S.hist.unshift({med:S.med,date:TODAY.short,kind:'dose',chg:cg0.map(c=>c[0]+': '+c[1]+' → '+c[2]).join(' · '),reason:S.rs||'',note:S.rn||''});S.rs='';S.rn='';S.saved[S.med]=clone(d);S.saved[S.med].u=S.dinv.u||S.dinv.bu;const mm=ALLMEDS.find(q=>q.id===S.med);if(mm)mm.days=calcDays(mm,S);S.ack=false;S.screen='edit';S.toast='';say('บันทึกตารางใหม่แล้ว');return}
+ else if(k==='pharm'){S.pharm=x}
+ else if(k==='person'){S.person=x}
+ else if(k==='share'){S.shares[x]=!S.shares[x]}
+ else if(k==='thr'){S.thr=Math.min(30,Math.max(1,S.thr+ +x))}
+ else if(k==='copy'){
+  const t=orderText(S);
+  const ok=()=>say('คัดลอกแล้ว เปิด LINE แล้ววางส่งได้เลย'),no=()=>say('คัดลอกไม่สำเร็จ เลือกข้อความแล้วคัดลอกเอง');
+  try{navigator.clipboard.writeText(t).then(ok,no)}catch(e){no()}
+  return}
+ draw();
+}
+
+/* ---------- ความเห็นรายหน้าจอ: บันทึกลงฐานข้อมูลของหน้านี้ ร่างเก็บในเครื่องอัตโนมัติ ---------- */
+const FB_IDS=['general','splash','welcome','login','register','otp','home','notif','today','household','meds','avatarpick','medlist','edit','buy','modes','dose','confirm','hist','stop','allergy','order','message','tpled','doctor','share','pharm','pform'];
+const LS='judya-fb-draft-v1';
+let DBH=null,dbDead=false,panelId='';
+const saved={},state={};let draft={};
+try{draft=JSON.parse(localStorage.getItem(LS)||'{}')||{}}catch(e){draft={}}
+const persistDraft=()=>{try{localStorage.setItem(LS,JSON.stringify(draft))}catch(e){}};
+const meta=id=>id==='general'?{no:'รวม',name:'ความเห็นรวมของทั้ง flow'}:SCREENS[id];
+let ASSETS=null;
+const IK=a=>(a||[]).map(x=>x.id).join(',');
+const sv=id=>{const s=saved[id]||{};return{text:s.text||'',verdict:s.verdict||'',images:Array.isArray(s.images)?s.images:[]}};
+const dv=id=>{const d=draft[id],b=sv(id);return d?{text:d.text,verdict:d.verdict,images:Array.isArray(d.images)?d.images:b.images}:b};
+const dirty=id=>{if(!draft[id])return false;const a=dv(id),b=sv(id);return a.text!==b.text||a.verdict!==b.verdict||IK(a.images)!==IK(b.images)};
+const val=id=>dirty(id)?dv(id):sv(id);
+const fmtT=iso=>{try{return new Date(iso).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
+function cmt(id,site){
+ const m=meta(id),tid=`fb-${id}-${site}`;
+ return`<div class="cm ${site[0]==='r'||site[0]==='p'?'big':''}" data-fbw="${id}"><div class="cmv" role="group" aria-label="สรุปผล ${m.name}"><button class="vb ok" data-fbv="ok" aria-pressed="false">${ic('check',16)}ผ่าน</button><button class="vb fix" data-fbv="fix" aria-pressed="false">${ic('alert',16)}ต้องแก้</button></div><textarea id="${tid}" data-fb="${id}" aria-label="ความเห็นหน้า ${m.name}" placeholder="พิมพ์สิ่งที่ต้องแก้ เช่น ปุ่มเล็กไป สีไม่ตรงโลโก้ ข้อความอ่านยาก"></textarea><div class="imgs" data-imgs></div><div class="cmr" hidden></div><div class="cmf"><button class="sv" data-fbsave="${id}">${ic('check',16)}บันทึก</button><span class="cms" aria-live="polite"></span></div></div>`;
+}
+function sync(id){
+ const v=val(id),d=dirty(id),st=state[id]||'',s0=saved[id];
+ document.querySelectorAll(`[data-fbw="${id}"]`).forEach(w=>{
+  const ta=w.querySelector('textarea');
+  if(document.activeElement!==ta&&ta.value!==v.text)ta.value=v.text;
+  w.querySelectorAll('[data-fbv]').forEach(b=>b.setAttribute('aria-pressed',String(v.verdict===b.dataset.fbv)));
+  const r=w.querySelector('.cmr'),rp=s0&&typeof s0.reply==='string'?s0.reply:'',pv=s0&&typeof s0.prev==='string'?s0.prev:'';
+  const rt=[pv?'รอบก่อนคุณเขียนว่า: '+pv:'',rp?'Claude: '+rp:''].filter(Boolean).join('\n');
+  r.hidden=!rt;r.textContent=rt;
+  const ik=IK(v.images);
+  if(w.dataset.ik!==ik){w.dataset.ik=ik;w.querySelector('[data-imgs]').innerHTML=v.images.map(im=>`<span class="th"><img src="/_blob/${encodeURIComponent(im.id)}" alt="รูปอ้างอิง ${esc(im.name||'')}" loading="lazy"><button data-fbrm="${id}:${esc(im.id)}" aria-label="ลบรูป ${esc(im.name||'')}">×</button></span>`).join('')}
+  const noDb=!DBH;
+  w.querySelector('.cms').textContent=st==='up'?'กำลังอัปโหลดรูป…':st==='uerr'?'อัปโหลดรูปไม่สำเร็จ ลองใหม่อีกครั้ง':st==='saving'?'กำลังบันทึก…':st==='error'?'บันทึกไม่สำเร็จ กดบันทึกอีกครั้ง':d?(noDb?'ยังไม่ได้บันทึก (ระบบบันทึกยังไม่พร้อม ร่างอยู่ในเครื่องนี้)':'ยังไม่ได้บันทึก ร่างเก็บในเครื่องนี้แล้ว'):(s0&&s0.updatedAt?'บันทึกแล้ว '+fmtT(s0.updatedAt):'ยังไม่มีความเห็น');
+  w.classList.toggle('dirty',d);
+  w.querySelector('.sv').disabled=!d||st==='saving'||st==='up'||noDb;
+ });
+ summary();
+}
+function summary(){
+ let ok=0,fix=0,none=0,dr=0;
+ FB_IDS.slice(1).forEach(id=>{const v=val(id).verdict;if(v==='ok')ok++;else if(v==='fix')fix++;else none++});
+ FB_IDS.forEach(id=>{if(dirty(id))dr++});
+ const b=document.getElementById('fbBadge');if(b){b.hidden=!dr;b.textContent=dr;b.setAttribute('aria-label',dr+' รายการยังไม่ได้บันทึก')}
+ const s=document.getElementById('rvSum');
+ if(s)s.innerHTML=`<span class="pl">ผ่าน ${ok}</span><span class="pl">ต้องแก้ ${fix}</span><span class="pl">ยังไม่ตรวจ ${none}</span><span class="pl">ยังไม่ได้บันทึก ${dr}</span><button class="sv" id="saveAll" ${dr&&DBH?'':'disabled'}>${ic('check',16)}บันทึกทั้งหมด</button>`;
+}
+async function save(id){
+ if(state[id]==='saving'||state[id]==='up'||!dirty(id)||!DBH)return;
+ const v=dv(id),at=new Date().toISOString(),m=meta(id);
+ state[id]='saving';sync(id);
+ try{
+  await DBH.doc('feedback/'+id).set({...(saved[id]||{}),no:m.no,name:m.name,text:v.text,verdict:v.verdict,images:v.images,updatedAt:at});
+  saved[id]={...(saved[id]||{}),text:v.text,verdict:v.verdict,images:v.images,updatedAt:at};
+  if(draft[id]){const c=dv(id);if(c.text===v.text&&c.verdict===v.verdict&&IK(c.images)===IK(v.images)){delete draft[id];persistDraft()}}
+  state[id]='';
+ }catch(e){state[id]='error'}
+ sync(id);
+}
+function setDraft(id,patch){
+ draft[id]={...val(id),...patch};
+ if(!dirty(id))delete draft[id];
+ persistDraft();sync(id);
+}
+/* รูปอ้างอิง: ย่อในเครื่องก่อน (ด้านยาวสุด 1600px) แล้วอัปโหลดเข้าที่เก็บของ artifact เก็บเฉพาะ id ไว้ในเอกสารความเห็น */
+function shrink(f){return new Promise(res=>{const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{try{const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);c.toBlob(b=>{URL.revokeObjectURL(u);res(b&&b.size<f.size?b:f)},'image/jpeg',.85)}catch(e){URL.revokeObjectURL(u);res(f)}};
+ im.onerror=()=>{URL.revokeObjectURL(u);res(f)};im.src=u})}
+async function addImgs(id,files){
+ if(!ASSETS||state[id]==='up')return;
+ const cur=[...val(id).images],room=6-cur.length;
+ if(room<=0)return;
+ state[id]='up';sync(id);
+ let fail=false;
+ try{for(const f of files.slice(0,room)){const r=await ASSETS.upload(await shrink(f));cur.push({id:r.id,name:String(f.name||'รูป').slice(0,60)})}}catch(e){fail=true}
+ state[id]=fail?'uerr':'';
+ setDraft(id,{images:cur});
+}
+function bindFB(){
+ document.addEventListener('input',e=>{const t=e.target.closest&&e.target.closest('textarea[data-fb]');if(t)setDraft(t.dataset.fb,{text:t.value})});
+ document.addEventListener('change',e=>{const f=e.target.closest&&e.target.closest('[data-fbfile]');if(f&&f.files&&f.files.length){const fl=[...f.files],id=f.dataset.fbfile;f.value='';addImgs(id,fl)}});
+ document.addEventListener('click',e=>{
+  const v=e.target.closest('[data-fbv]');
+  if(v){const id=v.closest('[data-fbw]').dataset.fbw;setDraft(id,{verdict:val(id).verdict===v.dataset.fbv?'':v.dataset.fbv});return}
+  const ib=e.target.closest('[data-fbimg]');if(ib){const i=ib.closest('[data-fbw]').querySelector('[data-fbfile]');if(i)i.click();return}
+  const rm=e.target.closest('[data-fbrm]');if(rm){const k=rm.dataset.fbrm,p=k.indexOf(':'),id=k.slice(0,p),iid=k.slice(p+1);setDraft(id,{images:val(id).images.filter(x=>x.id!==iid)});return}
+  const s=e.target.closest('[data-fbsave]');if(s){save(s.dataset.fbsave);return}
+  if(e.target.closest('#saveAll')){(async()=>{for(const id of FB_IDS)await save(id)})()}
+ });
+}
+function startDB(){
+ const c=window.claude;if(!c||!c.use)return;
+ c.use('assets').then(a=>{ASSETS=a||null;FB_IDS.forEach(sync)}).catch(()=>{});
+ c.use('db').then(d=>{
+  if(!d){summary();FB_IDS.forEach(sync);return}
+  DBH=d;
+  d.collection('feedback').onSnapshot(snap=>{
+   const seen={};
+   snap.docs.forEach(x=>{seen[x.id]=1;saved[x.id]=x.data()||{}});
+   Object.keys(saved).forEach(k=>{if(!seen[k])delete saved[k]});
+   FB_IDS.forEach(sync);
+  },()=>{DBH=null;dbDead=true;FB_IDS.forEach(sync)});
+  FB_IDS.forEach(sync);
+ }).catch(()=>{FB_IDS.forEach(sync)});
+}
+function buildReview(){
+ $('#rvList').innerHTML=FB_IDS.map(id=>{const m=meta(id);return`<article class="rvi"><header><h3><span class="no">${m.no}</span>${m.name}</h3>${id==='general'?'':`<button class="jb" data-open="${id}">ดูหน้าจอ</button>`}</header>${cmt(id,'r')}</article>`}).join('');
+}
+function updatePanel(){
+ if(panelId===S.screen)return;
+ panelId=S.screen;const m=SCREENS[S.screen];
+ $('#pfb').innerHTML=`<h2>ความเห็นหน้านี้ · ${m.no} ${m.name}</h2><p>เปลี่ยนหน้าจอในกรอบมือถือ ช่องนี้จะเปลี่ยนตาม</p>${cmt(S.screen,'p')}`;
+ sync(S.screen);
+}
+function fit(){const k=Math.min(1,(document.documentElement.clientWidth-32)/(390+16));$('#pw').style.setProperty('--k',k.toFixed(3))}
+function view(v){
+ ['flow','proto','review'].forEach(k=>{$('#v-'+k).hidden=k!==v;$('#t-'+k).setAttribute('aria-selected',String(k===v))});
+ try{history.replaceState(null,'','#'+v)}catch(e){}
+ if(v==='proto'){fit();draw()}
+ if(v==='flow')fitThumbs();
+}
+function init(){
+ $('#hIcon').src=IMG.icon;
+ buildFlow();buildReview();bindFB();summary();FB_IDS.forEach(sync);startDB();
+ const J=FB_IDS.slice(1);
+ $('#jump').innerHTML=`<h2>ข้ามไปหน้าจอ</h2><p>รุ่นทดลองเริ่มจากหน้าแรกได้ทันที ปุ่มและตัวเลือกส่วนใหญ่กดได้จริง</p>`+J.map(id=>`<button class="jb" data-open="${id}"><span class="no">${SCREENS[id].no}</span>${SCREENS[id].name}</button>`).join('');
+ document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-view]');if(t)return view(t.dataset.view);
+  const o=e.target.closest('[data-open]');if(o){const id=o.dataset.open;view('proto');go(id);if(['edit','modes','dose','confirm','buy'].includes(id)){loadMed(S,'vitd');S.draft=clone(DEMO.draft);S.rs=id==='confirm'?DEMO.rs:'';S.rn=id==='confirm'?DEMO.rn:''}if(id==='hist')loadMed(S,'vitd');if(id==='stop'){loadMed(S,'los');S.stopR='';S.stopN='';S.stopS=[]}draw();return}
+  const p=e.target.closest('#phone');if(!p)return;
+  const el=e.target.closest('[data-go],[data-act]');if(!el||el.disabled)return;
+  if(el.dataset.go)go(el.dataset.go,el);
+  if(el.dataset.act)act(el.dataset.act);
+ });
+ document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('thumbbtn')){e.preventDefault();e.target.click()}});
+ document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#phone'))return;if(t.matches('[data-dm]')){S.dm[t.dataset.dm]=t.value}else if(t.matches('[data-pf]')){S.pf[t.dataset.pf]=t.value;const b=$('#phone [data-act="pfsave"]');if(b)b.disabled=!(S.pf.n.trim()&&telOk(S.pf.tel));if(t.dataset.pf==='tel'){const ok=telOk(t.value),h=$('#telhx');t.style.borderColor=ok?'':'var(--dng)';if(h){h.style.color=ok?'':'var(--dngink)';h.textContent=ok?'ถ้ามีเบอร์ จะมีปุ่มโทรสั่งยาในหน้าสั่งยา':'เบอร์โทรไม่ถูกต้อง ใส่ตัวเลขและขีดเท่านั้น'}}}else if(t.matches('[data-al]')){S.al[t.dataset.al]=t.value;const b=$('#phone [data-act="alsave"]');if(b)b.disabled=!(S.al.drug.trim()&&S.al.sym.length)}else if(t.matches('[data-rn]'))S.rn=t.value;else if(t.matches('[data-stn]'))S.stopN=t.value;else if(t.matches('[data-tname]'))S.tname=t.value;else if(t.matches('[data-tbody]')){S.tbody=t.value;const p=$('#tprev');if(p)p.textContent=fillTpl(S.tbody,phOf(S),S)}});
+ document.addEventListener('change',e=>{const i=e.target;if(!i.closest||!i.closest('#phone'))return;const s=i.dataset.sel,n=i.dataset.num,iv=S.dinv;if(i.dataset.pr){const [f,ix]=i.dataset.pr.split(':'),r=S.dpr[+ix];if(r){if(f==='price'){const raw=i.value.trim().replace(',','.'),v=parseFloat(raw);r.price=raw===''?null:(v>=0?Math.round(v*100)/100:r.price)}else r[f]=i.value}setTimeout(draw,0);return}
+  if(i.dataset.dm){setTimeout(draw,0);return}
+  if(i.dataset.rs){S.rs=i.value;setTimeout(draw,0);return}
+  if(i.dataset.srs){S.stopR=i.value;if(i.value!=='แพ้ยา')S.stopS=[];setTimeout(draw,0);return}
+  if(!s&&!n)return;
+  if(s==='form'){const f=FORMS.find(x=>x.k===i.value);iv.form=f.k;iv.unit=f.bu;iv.bu=f.bu;iv.pu=f.cu;S.draft.u=f.bu}
+  else if(s==='unit')iv.unit=i.value;else if(s==='pu')iv.pu=i.value;else if(s==='bu'){iv.bu=i.value;S.draft.u=i.value}
+  else if(n){const raw=i.value.trim().replace(',','.'),v=parseFloat(raw);
+   if(n==='ps')iv.ps=raw===''?null:(v>0?Math.min(1000,Math.round(v)):iv.ps);
+   else if(n==='qty')iv.qty=v>=0?Math.min(9999,Math.round(v*4)/4):iv.qty;
+   else if(n==='lead')iv.lead=v>=0?Math.min(90,Math.round(v)):iv.lead;
+   else if(n==='cycle')iv.cycle=v>0?Math.min(365,Math.round(v)):iv.cycle}
+  setTimeout(draw,0)});
+ addEventListener('resize',fit);
+ view(['#proto','#review'].includes(location.hash)?location.hash.slice(1):'flow');
+}
+init();
+</script>

@@ -1,0 +1,371 @@
+{
+ "5": {
+  "layers": [
+   [
+    "skin",
+    "#FEC59E",
+    1
+   ],
+   [
+    "navy",
+    "#0F2E5D",
+    9
+   ],
+   [
+    "teal",
+    "#56BAA2",
+    7
+   ],
+   [
+    "navy",
+    "#0C2447",
+    7
+   ],
+   [
+    "skin",
+    "#FDAC7D",
+    3
+   ],
+   [
+    "skin",
+    "#FEC098",
+    1
+   ],
+   [
+    "teal",
+    "#38A48E",
+    0
+   ]
+  ],
+  "bg": "#D7EBFE",
+  "n_ext": 0,
+  "n_cheeks": 1,
+  "svg_bad": [],
+  "maxgap": 9.165725883006586e-13,
+  "readback_maxdiff": 129,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.19029871622721353,
+  "poppler_p99": 2.0,
+  "poppler_frac_gt16": 0.0058135986328125,
+  "iou": {
+   "0": 0.991,
+   "1": 0.9934,
+   "2": 0.9852,
+   "3": 0.9237,
+   "5": 0.9375,
+   "6": 0.9896,
+   "7": 0.9882
+  },
+  "agree": 0.9965514660837603,
+  "bd_mean": 0.11227356725396759,
+  "bd_p99": 0.5,
+  "bd_max": 0.9013878188659973,
+  "de_mean": 2.0832830829567532,
+  "within6": 0.933362094202117,
+  "within12": 0.9762198973853289,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1539,
+  "edge_max_dist_to_palette": 82.38931969618392,
+  "min_feature_px": 4.0,
+  "min_ratio": 0.017015207911721446,
+  "min_print_mm": 14.692738478251556,
+  "outline": {
+   "invalid": 0,
+   "total": 919,
+   "axes": [
+    225.94972229003906,
+    234.54331970214844
+   ]
+  },
+  "ellipses_snapped": 9,
+  "ellipse_dev_max": 0.215,
+  "svg_bytes": 12294,
+  "n_paths": 29,
+  "secs": 5.0
+ },
+ "6": {
+  "layers": [
+   [
+    "navy",
+    "#0E2C5B",
+    1
+   ],
+   [
+    "skin",
+    "#FED5B8",
+    1
+   ],
+   [
+    "color",
+    "#C3B3F3",
+    8
+   ],
+   [
+    "color",
+    "#9E8FE5",
+    9
+   ],
+   [
+    "skin",
+    "#FEBC94",
+    7
+   ],
+   [
+    "skin",
+    "#FED0B6",
+    6
+   ],
+   [
+    "navy",
+    "#102749",
+    6
+   ],
+   [
+    "skin",
+    "#FDC29B",
+    4
+   ],
+   [
+    "navy",
+    "#021434",
+    4
+   ],
+   [
+    "skin",
+    "#FDC6A1",
+    2
+   ],
+   [
+    "skin",
+    "#ED9771",
+    2
+   ]
+  ],
+  "bg": "#F0EBFD",
+  "n_ext": 3,
+  "n_cheeks": 2,
+  "svg_bad": [],
+  "maxgap": 4.687428401686771e-13,
+  "readback_maxdiff": 60,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.175262451171875,
+  "poppler_p99": 3.0,
+  "poppler_frac_gt16": 0.005245208740234375,
+  "iou": {
+   "0": 0.9861,
+   "1": 0.9898,
+   "2": 0.9931,
+   "3": 0.9847,
+   "4": 0.9621,
+   "5": 0.9554,
+   "6": 0.9179,
+   "7": 0.9772,
+   "8": 0.948,
+   "9": 0.8944,
+   "10": 0.9788,
+   "11": 0.9815
+  },
+  "agree": 0.9961337784027623,
+  "bd_mean": 0.10910303896116925,
+  "bd_p99": 0.5,
+  "bd_max": 0.7905694150420949,
+  "de_mean": 2.3226787279161027,
+  "within6": 0.9257742778994916,
+  "within12": 0.973318857991787,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1512,
+  "edge_max_dist_to_palette": 35.958309192730404,
+  "min_feature_px": 3.5968997478485107,
+  "min_ratio": 0.015156265956752952,
+  "min_print_mm": 16.494827994794537,
+  "outline": {
+   "invalid": 0,
+   "total": 921,
+   "axes": [
+    229.06512451171875,
+    236.9095458984375
+   ]
+  },
+  "ellipses_snapped": 13,
+  "ellipse_dev_max": 0.191,
+  "svg_bytes": 18969,
+  "n_paths": 51,
+  "secs": 9.3
+ },
+ "7": {
+  "layers": [
+   [
+    "navy",
+    "#0F3267",
+    1
+   ],
+   [
+    "skin",
+    "#FECBA9",
+    1
+   ],
+   [
+    "navy",
+    "#082247",
+    9
+   ],
+   [
+    "skin",
+    "#FEB78C",
+    4
+   ]
+  ],
+  "bg": "#FEF4E1",
+  "n_ext": 0,
+  "n_cheeks": 0,
+  "svg_bad": [],
+  "maxgap": 8.198074455012805e-13,
+  "readback_maxdiff": 42,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.1580530802408854,
+  "poppler_p99": 2.0,
+  "poppler_frac_gt16": 0.005008697509765625,
+  "iou": {
+   "0": 0.9931,
+   "1": 0.9901,
+   "2": 0.9853,
+   "3": 0.9315,
+   "4": 0.9456
+  },
+  "agree": 0.9964279001447984,
+  "bd_mean": 0.11663770058907551,
+  "bd_p99": 0.5,
+  "bd_max": 0.75,
+  "de_mean": 3.017499737450634,
+  "within6": 0.8863114119535623,
+  "within12": 0.9757792070872408,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1517,
+  "edge_max_dist_to_palette": 127.5617497528158,
+  "min_feature_px": 3.696899890899658,
+  "min_ratio": 0.01585230108069737,
+  "min_print_mm": 15.770581111685651,
+  "outline": {
+   "invalid": 0,
+   "total": 924,
+   "axes": [
+    228.16943359375,
+    232.63311767578125
+   ]
+  },
+  "ellipses_snapped": 4,
+  "ellipse_dev_max": 0.312,
+  "svg_bytes": 7608,
+  "n_paths": 16,
+  "secs": 3.9
+ },
+ "8": {
+  "layers": [
+   [
+    "navy",
+    "#0E2C5A",
+    1
+   ],
+   [
+    "skin",
+    "#FEDAC0",
+    1
+   ],
+   [
+    "color",
+    "#C2E2FD",
+    6
+   ],
+   [
+    "navy",
+    "#061838",
+    5
+   ],
+   [
+    "skin",
+    "#FEC29E",
+    2
+   ]
+  ],
+  "bg": "#FEE5E7",
+  "n_ext": 1,
+  "n_cheeks": 0,
+  "svg_bad": [],
+  "maxgap": 9.094947017729282e-13,
+  "readback_maxdiff": 35,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.15126419067382812,
+  "poppler_p99": 2.0,
+  "poppler_frac_gt16": 0.0045013427734375,
+  "iou": {
+   "0": 0.9869,
+   "1": 0.992,
+   "2": 0.9927,
+   "3": 0.9912,
+   "4": 0.938,
+   "5": 0.9471
+  },
+  "agree": 0.9967246324348408,
+  "bd_mean": 0.10989089026541193,
+  "bd_p99": 0.5,
+  "bd_max": 0.5590169943749475,
+  "de_mean": 2.5520174309289367,
+  "within6": 0.9159199969867038,
+  "within12": 0.971697615729406,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1505,
+  "edge_max_dist_to_palette": 133.52153384379613,
+  "min_feature_px": 4.0,
+  "min_ratio": 0.01685833350557751,
+  "min_print_mm": 14.829461044728326,
+  "outline": {
+   "invalid": 0,
+   "total": 934,
+   "axes": [
+    228.2421875,
+    237.41586303710938
+   ]
+  },
+  "ellipses_snapped": 7,
+  "ellipse_dev_max": 0.206,
+  "svg_bytes": 6493,
+  "n_paths": 16,
+  "secs": 6.8
+ }
+}

@@ -1,84 +1,28 @@
 {
-  "_note": "v1.2 (2026-10-08): JudYa palette. Old v1.1 values: navy #1F3A56, green #22A06B, mint #DDF3E6, yellow #FACC15, beige #F8F4EB, sky #EAF4FF, background #F7FAFC, text #0F172A, muted #64748B, border #E2E8F0, warning_bg #FFF7D6, success_bg #EAF8F0, info #3B82F6.",
-  "brand": {
-    "name": "JudYa",
-    "tagline": "ดูแลยา...ง่ายทุกวัน",
-    "tagline_2": "จัดการยา เตือนยา สั่งยาได้ในที่เดียว",
-    "language": "th-TH"
+  "name": "JudYa design tokens v0.7",
+  "note": "Colours come from the JudYa logo palette only (owner rule). Locked in the approved prototype.",
+  "color": {
+    "navy": "#0B3A6B", "blue": "#1976F3", "green": "#13C596", "yellow": "#FFC629",
+    "sky": "#E6F4FF", "pale": "#F5FAFF", "mint": "#D9F1E9", "cream": "#FFF7DB",
+    "muted": "#4F6A85", "line": "#D5E3F0", "white": "#FFFFFF",
+    "danger": "#EF4444", "dangerBg": "#FEECEC", "dangerInk": "#B91C1C", "dangerBorder": "#F2B8B8",
+    "warnInk": "#8A6A00", "okInk": "#14744C"
   },
-  "palette": {
-    "navy": "#0B3A6B",
-    "blue": "#1976F3",
-    "green": "#13C596",
-    "mint": "#D9F1E9",
-    "yellow": "#FFC629",
-    "beige": "#FFF7DB",
-    "sky": "#E6F4FF",
-    "white": "#FFFFFF",
-    "background": "#F5FAFF",
-    "text": "#0B3A6B",
-    "muted": "#4F6A85",
-    "border": "#D5E3F0",
-    "danger": "#EF4444",
-    "danger_bg": "#FEECEC",
-    "warning_bg": "#FFF7DB",
-    "success_bg": "#D9F1E9",
-    "danger_ink": "#B91C1C",
-    "warning_ink": "#8A6A00",
-    "success_ink": "#14744C"
+  "semantic": {
+    "primaryButtonBg": "navy", "primaryButtonText": "white", "secondaryButton": "white + 1.5px navy border",
+    "dangerButton": "white + 1.5px dangerBorder, text dangerInk",
+    "screenBg": "pale", "cardBg": "white", "cardBorder": "line",
+    "chipLow": {"bg": "dangerBg", "ink": "dangerInk"}, "chipOk": {"bg": "mint", "ink": "okInk"},
+    "chipRest": {"bg": "cream", "ink": "warnInk"}, "chipInfo": {"bg": "sky", "ink": "navy"},
+    "banner": "yellow", "recommendation": "mint", "allergyBlock": {"bg": "dangerBg", "border": "danger 2px", "ink": "dangerInk"}
   },
-  "typography": {
-    "font_family": "Noto Sans Thai, Noto Sans, sans-serif",
-    "weights": { "regular": 400, "medium": 500, "semibold": 600, "bold": 700 },
-    "sizes": {
-      "display": 28,
-      "h1": 24,
-      "h2": 20,
-      "h3": 17,
-      "body": 16,
-      "label": 14,
-      "caption": 12,
-      "micro": 11
-    },
-    "minimum_size": 11
-  },
-  "layout": {
-    "reference_width": 390,
-    "reference_height": 844,
-    "page_padding": 24,
-    "grid": 8,
-    "card_radius": 16,
-    "control_radius": 12,
-    "button_height": 52,
-    "secondary_button_height": 48,
-    "touch_target": 48,
-    "top_pill_height": 44,
-    "bottom_nav_height": 64
-  },
-  "schedule_ui": {
-    "kind_chip_height": 48,
-    "weekday_button_diameter": 44,
-    "month_day_cell": 44,
-    "stepper_button": 48,
-    "dose_row_height": 56,
-    "today_chip_height": 28,
-    "weekday_order": ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
-    "kinds": ["ทุกวัน", "เลือกวัน", "วันเว้นวัน", "ทุกกี่วัน", "วันที่ของเดือน"],
-    "today_labels": { "take": "ทานวันนี้", "rest": "พักวันนี้" },
-    "preview_labels": { "take": "ทาน", "rest": "พัก" }
-  },
-  "icon": {
-    "style": "clean-line",
-    "stroke_width": 2,
-    "cap": "round",
-    "join": "round",
-    "size": 24,
-    "set": ["back", "chev", "menu", "user", "home", "bag", "share", "sliders", "pill", "check", "moon", "alert", "cal", "plus", "minus", "down", "arrow", "file"]
-  },
-  "status": {
-    "normal": "#22A06B",
-    "attention": "#FACC15",
-    "critical": "#EF4444",
-    "info": "#3B82F6"
-  }
+  "font": {"family": "'Noto Sans Thai', system-ui, sans-serif", "weights": [400, 600, 700],
+    "size": {"body": 17, "secondary": 16, "chip": 16, "navLabel": 15, "caption": 15, "h2": 19, "h1": 22, "display": 30},
+    "minReadable": 15},
+  "space": {"grid": 8, "screenSidePadding": 24, "cardPadding": 16, "gap": [8, 12, 14, 16]},
+  "radius": {"card": 16, "button": 12, "input": 12, "chip": 999, "sheetTop": 24, "avatar": 999},
+  "size": {"primaryButton": 52, "secondaryButton": 48, "touchMin": 44, "inputHeight": 52, "avatar": {"md": 44, "lg": 56, "xl": 76}, "phoneFrame": [390, 845]},
+  "avatarColors": {"พ่อ": "sky", "แม่": "mint", "ฉัน": "cream", "บ้าน": "yellow"},
+  "icons": "clean-line, 2px stroke, rounded caps, inline SVG set in prototype/app.src.html (ICONS)",
+  "assets": {"icon": "icon.svg", "logoVertical": "logo-vertical-tight.svg", "logoHorizontal": "logo-horizontal.svg", "splash": "splash-noleaf-tight.svg", "woman": "woman-tight.svg"}
 }

@@ -1,0 +1,168 @@
+{
+ "version": "1.0",
+ "brand": "JudYa",
+ "viewBox": "0 0 1000 1000",
+ "note": "alt เป็นชื่อกลางๆ เปลี่ยนได้ตามที่เจ้าของแอปตั้ง",
+ "items": [
+  {
+   "id": "profile-01",
+   "svg": "svg/judya-profile-01_full-color.svg",
+   "png512": "png/judya-profile-01_full-color.png",
+   "background": "#D7EBFE",
+   "layers": 6,
+   "alt": "รูปโปรไฟล์ 01"
+  },
+  {
+   "id": "profile-02",
+   "svg": "svg/judya-profile-02_full-color.svg",
+   "png512": "png/judya-profile-02_full-color.png",
+   "background": "#FEE5E6",
+   "layers": 6,
+   "alt": "รูปโปรไฟล์ 02"
+  },
+  {
+   "id": "profile-03",
+   "svg": "svg/judya-profile-03_full-color.svg",
+   "png512": "png/judya-profile-03_full-color.png",
+   "background": "#DCF4EA",
+   "layers": 7,
+   "alt": "รูปโปรไฟล์ 03"
+  },
+  {
+   "id": "profile-04",
+   "svg": "svg/judya-profile-04_full-color.svg",
+   "png512": "png/judya-profile-04_full-color.png",
+   "background": "#FDF0DD",
+   "layers": 9,
+   "alt": "รูปโปรไฟล์ 04"
+  },
+  {
+   "id": "profile-05",
+   "svg": "svg/judya-profile-05_full-color.svg",
+   "png512": "png/judya-profile-05_full-color.png",
+   "background": "#D7EBFE",
+   "layers": 8,
+   "alt": "รูปโปรไฟล์ 05"
+  },
+  {
+   "id": "profile-06",
+   "svg": "svg/judya-profile-06_full-color.svg",
+   "png512": "png/judya-profile-06_full-color.png",
+   "background": "#F0EBFD",
+   "layers": 12,
+   "alt": "รูปโปรไฟล์ 06"
+  },
+  {
+   "id": "profile-07",
+   "svg": "svg/judya-profile-07_full-color.svg",
+   "png512": "png/judya-profile-07_full-color.png",
+   "background": "#FEF4E1",
+   "layers": 5,
+   "alt": "รูปโปรไฟล์ 07"
+  },
+  {
+   "id": "profile-08",
+   "svg": "svg/judya-profile-08_full-color.svg",
+   "png512": "png/judya-profile-08_full-color.png",
+   "background": "#FEE5E7",
+   "layers": 6,
+   "alt": "รูปโปรไฟล์ 08"
+  },
+  {
+   "id": "profile-09",
+   "svg": "svg/judya-profile-09_full-color.svg",
+   "png512": "png/judya-profile-09_full-color.png",
+   "background": "#D7EBFE",
+   "layers": 10,
+   "alt": "รูปโปรไฟล์ 09"
+  },
+  {
+   "id": "profile-10",
+   "svg": "svg/judya-profile-10_full-color.svg",
+   "png512": "png/judya-profile-10_full-color.png",
+   "background": "#E0F6EC",
+   "layers": 7,
+   "alt": "รูปโปรไฟล์ 10"
+  },
+  {
+   "id": "profile-11",
+   "svg": "svg/judya-profile-11_full-color.svg",
+   "png512": "png/judya-profile-11_full-color.png",
+   "background": "#DEF5EB",
+   "layers": 10,
+   "alt": "รูปโปรไฟล์ 11"
+  },
+  {
+   "id": "profile-12",
+   "svg": "svg/judya-profile-12_full-color.svg",
+   "png512": "png/judya-profile-12_full-color.png",
+   "background": "#EFEBFD",
+   "layers": 12,
+   "alt": "รูปโปรไฟล์ 12"
+  },
+  {
+   "id": "profile-13",
+   "svg": "svg/judya-profile-13_full-color.svg",
+   "png512": "png/judya-profile-13_full-color.png",
+   "background": "#D7EBFE",
+   "layers": 6,
+   "alt": "รูปโปรไฟล์ 13"
+  },
+  {
+   "id": "profile-14",
+   "svg": "svg/judya-profile-14_full-color.svg",
+   "png512": "png/judya-profile-14_full-color.png",
+   "background": "#FEE5E7",
+   "layers": 8,
+   "alt": "รูปโปรไฟล์ 14"
+  },
+  {
+   "id": "profile-15",
+   "svg": "svg/judya-profile-15_full-color.svg",
+   "png512": "png/judya-profile-15_full-color.png",
+   "background": "#FEF4E1",
+   "layers": 7,
+   "alt": "รูปโปรไฟล์ 15"
+  },
+  {
+   "id": "profile-16",
+   "svg": "svg/judya-profile-16_full-color.svg",
+   "png512": "png/judya-profile-16_full-color.png",
+   "background": "#D7ECFE",
+   "layers": 8,
+   "alt": "รูปโปรไฟล์ 16"
+  },
+  {
+   "id": "profile-17",
+   "svg": "svg/judya-profile-17_full-color.svg",
+   "png512": "png/judya-profile-17_full-color.png",
+   "background": "#FEE5E6",
+   "layers": 11,
+   "alt": "รูปโปรไฟล์ 17"
+  },
+  {
+   "id": "profile-18",
+   "svg": "svg/judya-profile-18_full-color.svg",
+   "png512": "png/judya-profile-18_full-color.png",
+   "background": "#DFF5EB",
+   "layers": 8,
+   "alt": "รูปโปรไฟล์ 18"
+  },
+  {
+   "id": "profile-19",
+   "svg": "svg/judya-profile-19_full-color.svg",
+   "png512": "png/judya-profile-19_full-color.png",
+   "background": "#EFEBFD",
+   "layers": 10,
+   "alt": "รูปโปรไฟล์ 19"
+  },
+  {
+   "id": "profile-20",
+   "svg": "svg/judya-profile-20_full-color.svg",
+   "png512": "png/judya-profile-20_full-color.png",
+   "background": "#FDF0DD",
+   "layers": 10,
+   "alt": "รูปโปรไฟล์ 20"
+  }
+ ]
+}
