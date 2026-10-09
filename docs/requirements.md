@@ -197,7 +197,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 |---|---|---|
 | C-1 | Target: Android Chrome first. | Confirmed |
 | C-2 | Readable for older users: large text, good contrast. | Confirmed |
-| C-3 | Free hosting (GitHub Pages, private repo), no running costs. Keep the same Pages URL/origin so the phone's saved data survives. | Confirmed |
+| C-3 | Free hosting (GitHub Pages, private repo), no running costs. Keep the same Pages origin so the phone's saved data survives. Live address (owner checked 2026-10-09): `https://chutimonsatidularn-stack.github.io/JudYa/`; the installed phone app opens. | Confirmed |
 
 ## Out of scope (parked)
 | ID | Item | Status |
