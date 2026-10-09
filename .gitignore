@@ -1,0 +1,6 @@
+node_modules/
+app/dist/
+*.log
+# never commit real personal data (backups of the owner's medicines)
+*backup*.json
+medmate-backup*
