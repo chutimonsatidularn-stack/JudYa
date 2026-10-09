@@ -210,7 +210,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 | ID | Check | Status |
 |---|---|---|
 | AP-1 | Owner can do the top 3 jobs on their own phone without help: (1) see stock left and when to prepare an order; (2) one overview of everything to manage for the household; (3) pass medicine and dose info to others. | Open |
-| AP-2 | Owner says in words "the prototype is approved". (The owner passed the **flow review** on 2026-10-08; that is not yet AP-2 — see HANDOFF §5.) | Open |
+| AP-2 | Owner says in words "the prototype is approved". **Done 2026-10-09: the owner answered "เริ่มเลย" to "flow passed — start building the real app (v0.7)?"**; this approves prototype v0.7 (29 screens) as the base for the real app. The real build still follows ADR-0005 (data) and ADR-0006 (approach) once the owner OKs them. | Confirmed |
 | AP-3 | Acceptance checks: `docs/acceptance-criteria.md`. | Confirmed |
 
 ## Open questions
@@ -218,7 +218,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 |---|---|---|
 | Q-A | Should deleting an allergy leave a log entry (like dose history)? Prototype: no log. | Decided 2026-10-08: no log for now |
 | Q-B | Edit-page details for "real app" members: add / edit / remove member **designed in the prototype 2026-10-09 (MB-5…MB-9)**, waiting for the owner's review. Still open: conditions and insurance fields. | Designed — review |
-| Q-C | Which approach for the build: edit the compiled single file in place, or a readable rebuild? (ADR needed first — see HANDOFF §5.) | Recommended B; confirm with owner in step 0 |
+| Q-C | Which approach for the build? **Owner chose B, readable rebuild (Vite + React + TypeScript) on 2026-10-09** → ADR-0006 (waiting for the owner's OK). | Answered |
 | Q-D | Phone-number login (OTP) provider for the sellable version — not for now. | Open |
 | Q-E | Do the Welcome illustration, Home house banner and profile pictures also change to the JudYa style/palette? **Answer (owner 2026-10-08/09): yes for the Home banner (done, UI-10) and profile pictures (the 20-icon set, done in the prototype, MB-1). Welcome: no change, owner is satisfied.** | Answered |
 | Q-F | Camera / file photo next to the 20-icon set? **Answer (owner 2026-10-09): no. This version uses only the 20 icons; the user picks one (MB-1).** | Answered |
