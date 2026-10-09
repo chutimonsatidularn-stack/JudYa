@@ -349,3 +349,28 @@ describe('order, message and templates (AC-P1, AC-P2)', () => {
     expect(screen.getByRole('button', { name: 'สร้างข้อความสั่งยา' })).toBeDisabled(); expect(screen.getByText('เลือกยาอย่างน้อย 1 รายการ')).toBeInTheDocument();
   });
 });
+
+describe('share and doctor mode (AC-S)', () => {
+  it('doctor page shows medicines, the history with its reason and the red allergy block', async () => {
+    const d = demoData();
+    d.allergies = [{ id: 'al', personId: 'p_dad', drug: 'Penicillin', symptoms: ['ผื่น/ลมพิษ'], recordedOn: '2026-10-01', source: 'manual' }];
+    d.changes = [{ id: 'c1', assignmentId: 'a_dad_los', kind: 'dose', on: '2026-10-05', at: '2026-10-05T03:00:00.000Z', reason: 'แพทย์สั่งปรับ', previous: { doses: { morning: 1, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, next: { doses: { morning: 2, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } } } as never];
+    open('#/doctor/p_dad', mem(d));
+    expect(screen.getByText(/ไม่ใช่การวินิจฉัย/)).toBeInTheDocument();
+    expect(screen.getByText('Losartan (Cozaar) 50 mg')).toBeInTheDocument();
+    expect(screen.getByText(/ขนาดยาเช้า: 1 เม็ด → 2 เม็ด/)).toBeInTheDocument(); expect(screen.getByText('เหตุผล: แพทย์สั่งปรับ')).toBeInTheDocument();
+    expect(screen.getByText('Penicillin')).toBeInTheDocument();
+  });
+  it('share: privacy note, person chips, switches save, copy puts the summary on the clipboard', async () => {
+    const s = mem(demoData()); open('#/share', s);
+    expect(screen.getByText('ข้อมูลยาเป็นข้อมูลส่วนตัว')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'คุณแม่' }));
+    expect(await screen.findByRole('button', { name: 'คุณแม่', pressed: true })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('switch', { name: /สต๊อกคงเหลือ/ }));
+    expect(saved(s).settings.shares).toMatchObject({ stock: true, days: true });
+    const write = vi.fn().mockResolvedValue(undefined); Object.assign(navigator, { clipboard: { writeText: write } });
+    fireEvent.click(screen.getByRole('button', { name: 'คัดลอกข้อความสรุป' }));
+    await vi.waitFor(() => expect(write).toHaveBeenCalled());
+    expect(write.mock.calls[0]![0]).toContain('สรุปยาของ คุณแม่'); expect(write.mock.calls[0]![0]).toContain('Metformin');
+  });
+});

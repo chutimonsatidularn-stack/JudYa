@@ -22,6 +22,8 @@ import { PharmacyForm } from './pages/PharmacyForm';
 import { OrderPage } from './pages/OrderPage';
 import { OrderMessage } from './pages/OrderMessage';
 import { TemplateEditor } from './pages/TemplateEditor';
+import { SharePage } from './pages/SharePage';
+import { Doctor } from './pages/Doctor';
 import { Gallery } from './pages/Gallery';
 import { ComingSoon } from './pages/ComingSoon';
 import { LoadError } from './pages/LoadError';
@@ -61,7 +63,8 @@ function Page() {
   if ((m = match('/medicine/:x/stop', path))) return <StopPage id={m.x as string} />;
   if ((m = match('/medicine/:x', path))) return <MedicineForm k={m.x as string} />;
   if (path === '/gallery') return <Gallery />;
-  if (path === '/share') return <ComingSoon title="แชร์ข้อมูลยา" nav />;
+  if (base === '/share') return <SharePage />;
+  if ((m = match('/doctor/:p', path))) return <Doctor id={m.p as string} />;
   if (path === '/settings') return <Settings />;
   if (path === '/pharmacy/new') return <PharmacyForm id={null} />;
   if ((m = match('/pharmacy/:id', path))) return <PharmacyForm id={m.id as string} />;
