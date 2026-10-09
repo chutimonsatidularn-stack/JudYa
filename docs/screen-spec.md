@@ -1,4 +1,4 @@
-# JudYa — Screen spec (v0.7, 27 screens)
+# JudYa — Screen spec (v0.7, 29 screens)
 
 Pictures: `docs/design/screens/NN_<no>_<id>.png` (390×~845 phone frame). Clickable prototype: `prototype/judya-flow-v0.7.html` (open → tap a thumbnail). Pixel details come from the pictures + `design-system.md`; this file defines **content, rules, actions, states**. Thai strings in the pictures are the copy to use. Req IDs in brackets.
 
@@ -23,11 +23,13 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 ## Members & medicines
 | No | Screen | Content / rules / actions |
 |---|---|---|
-| 07 | Members | One card per member: avatar, name, "ยา N รายการ", "ตัวที่น้อยสุดพอทาน N วัน", chip (ต้องจัดยาวันนี้ N ตัว / วันนี้ไม่ต้องจัดยา / **จัดยาเอง · เราดูแลสต๊อก**), status chip. Pill "เพิ่มสมาชิก" (real app). Note about self-managed. |
+| 07 | Members | One card per member: avatar, name, "ยา N รายการ", "ตัวที่น้อยสุดพอทาน N วัน", chip (ต้องจัดยาวันนี้ N ตัว / วันนี้ไม่ต้องจัดยา / **จัดยาเอง · เราดูแลสต๊อก**), status chip. Pill "เพิ่มสมาชิก" → 07f. Section "สมาชิกที่นำออกแล้ว" with "นำกลับ" [MB-8]. Empty state when no members [MB-9]. Note about self-managed. |
 | 07b | Member page | See MB-3: profile card (large avatar, name, chip เราจัดยาให้/จัดยาเอง, pill "รูป") · switch "<คน>จัดยาทานเอง" · allergy block (red when records; else note + "เพิ่มแพ้ยา") with แก้ไข/ลบ per record (inline delete confirm) [AL-2,AL-4] · tiles: จัดยาวันนี้ (or จัดยาเอง) / สั่งยา / แชร์ให้แพทย์ / สรุปพบแพทย์ · medicine cards · "ยาที่หยุดแล้ว" (name, date, reason). Header pill "เพิ่มยา" (owner preset). |
 | 07c | Medicines (tab 2) | Filter chips ทุกคน · พ่อ · แม่ · ฉัน · **ยาบ้าน**; banner "ยาใกล้หมด N รายการ → เทียบราคาร้านยาก่อนสั่ง"; sections per owner; medicine card: generic + strength, **brand line**, status chip (ใกล้หมด/พอใช้/ยังไม่ทราบ, or expiry chip for household), schedule summary, progress bar (not for household), "เหลือ X · พอทานอีก N วัน". Tap → 08. Pill "เพิ่มยา". |
 | 07d | Allergy form | Title บันทึกแพ้ยา / แก้ไขแพ้ยา; fields: drug name (required), symptom chips (≥1, multi), severe warning when severe chosen, optional detail; info note; save disabled with hint until valid [AL-1…AL-5]. Saves to the member shown in the header; edit keeps the original date. |
 | 07e | Choose profile picture | Opened by "เปลี่ยนรูป" on the member page (07b). Title เลือกรูปโปรไฟล์ + member name; big preview; 4-column grid of the 20 icons (≥ 48 px touch, 78 px here); the chosen one has a check badge + dark frame; primary "ใช้รูปนี้" saves and returns to 07b with a toast; back arrow changes nothing. No camera / file upload [MB-1]. |
+| 07f | Add / edit member | Title เพิ่มสมาชิก / แก้ไขข้อมูลสมาชิก. Big avatar + "เปลี่ยนรูป" (→ 07e, returns here) · field ชื่อ (required) · chips ความสัมพันธ์ (7, single, optional) · field ปีเกิด พ.ศ. (optional, shows "อายุ ประมาณ N ปี" or an error) · primary เพิ่มสมาชิก / บันทึก (disabled with one reason line) · edit mode only: red outline "นำออกจากรายชื่อ" → 07g. Back = nothing saved [MB-5, MB-6]. |
+| 07g | Remove member | Title นำสมาชิกออก. Card with avatar, name, "ยา N รายการ". Note list: what disappears, what is kept (history, schedules, stock, allergies), can be brought back. Tick "ฉันเข้าใจ" · red "ยืนยันนำออก" (disabled until ticked) · "ยกเลิก". After confirm: back to Members with a toast [MB-7]. |
 
 ## Edit medicine (3 levels) [BR-7]
 | No | Screen | Content / rules |
