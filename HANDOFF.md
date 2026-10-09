@@ -4,14 +4,14 @@ Purpose: let a **new chat (design work)** or **Claude Code (build)** continue wi
 
 ## 0. Read first
 - Project: **JudYa** (formerly MedMate) — household medicine manager (stock, buy reminders, pharmacy price comparison incl. shipping, share with doctor/caregivers). Owner: non-coder, Thai, Android phone, PWA first.
-- Status: the **review prototype v0.7 (26 screens) passed** the owner's flow review on 2026-10-08. **No real build of v0.7 has started.** The installed PWA on the owner's phone is the older MedMate prototype (compiled single file `medmate-app.html`, React, key `medmate.v1`, data `version: 2`) and holds real data — it must be migrated, not replaced blindly.
+- Status: the **review prototype v0.7 (26 screens at the time; 07e profile picker added 2026-10-09, now 27) passed** the owner's flow review on 2026-10-08. **No real build of v0.7 has started.** The installed PWA on the owner's phone is the older MedMate prototype (compiled single file `medmate-app.html`, React, key `medmate.v1`, data `version: 2`) and holds real data — it must be migrated, not replaced blindly.
 - Language: reply to the owner in simple Thai, short. Say when **Claude Code** is needed (it is, for the real build). Ask when unsure; never guess.
 
 ## 1. What is in this pack
 | Path | What |
 |---|---|
 | `docs/requirements.md` | Full living requirements (all IDs; supersedes the repo copy) |
-| `docs/screen-spec.md` | 26 screens: content, rules, actions |
+| `docs/screen-spec.md` | 27 screens: content, rules, actions |
 | `docs/data-model.md`, `docs/adr/0005-…` | Target data v3 + lossless migration plan |
 | `docs/calculation-spec.md`, `reference/calc.mjs`, `reference/calc.test.mjs` | Reference maths + 18 passing tests (`node reference/calc.test.mjs`) |
 | `docs/acceptance-criteria.md` | Testable checks |

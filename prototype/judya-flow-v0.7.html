@@ -198,6 +198,11 @@ body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--font);padding-
 .inp:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px #E6F4FF}
 .inp .unit{color:var(--mut)}
 .hx{font-size:16px;color:var(--mut);line-height:1.4}
+.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.avb{position:relative;aspect-ratio:1;border-radius:50%;padding:3px!important;border:3px solid transparent!important;display:block}
+.avb img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.avb.on{border-color:var(--navy)!important}
+.avck{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;border:2px solid #fff}
 .av.lg{width:56px;height:56px;font-size:26px}.av.xl{width:76px;height:76px;font-size:34px}
 .btn.d{height:48px;background:#fff;border:1.5px solid #F2B8B8;color:var(--dngink);font-weight:700;font-size:17px}
 .tl{display:flex;flex-direction:column}.tli{position:relative;padding:0 0 18px 30px}
@@ -396,7 +401,7 @@ const nav=a=>`<nav class="nav" aria-label="เมนูหลัก">${TABS.map(
 const stat=days=>days==null?`<span class="chip rest">${ic('info',14)}ยังไม่ทราบ</span>`:days<=LOW?`<span class="chip low">${ic('alert',14)}ใกล้หมด</span>`:`<span class="chip ok">${ic('check',14)}พอใช้</span>`;
 // Profile pictures: always through getAvatar (profiles.json index, built in by build.py); unknown id -> first icon.
 const getAvatar=id=>AVATARS.find(a=>a.id===id)||AVATARS[0];
-const avatar=(w,c='')=>{const a=getAvatar(PEOPLE[w].av);return`<img class="av ${c}" src="${a.src}" alt="${a.alt}" style="background:${a.bg}">`};
+const avatar=(s,w,c='')=>{const a=getAvatar((s.av&&s.av[w])||PEOPLE[w].av);return`<img class="av ${c}" src="${a.src}" alt="${a.alt}" style="background:${a.bg}">`};
 const lowCount=()=>ALLMEDS.filter(m=>!m.stopped&&m.days!=null&&m.days<=LOW);
 const minDays=w=>{const a=MEDS[w].map(m=>m.days).filter(v=>v!=null);return a.length?Math.min(...a):null};
 const dueOf=(s,w)=>isSelf(s,w)?[]:MEDS[w].map(m=>({m,sc:s.saved[m.id]})).filter(x=>takeOn(x.sc,0)&&PER.some(k=>x.sc.doses[k]>0));
@@ -490,7 +495,7 @@ home:{no:'06',name:'หน้าแรก (Dashboard)',note:'แบนเนอ�
  ${homeBanner(s)}
  <button class="banner" data-go="order" data-of=""><span class="d">${ic('alert',24)}</span><span class="grow"><b>ยาใกล้หมด ${lw.length} รายการ</b><span class="sm">${first.n} ของ${PEOPLE[first.who].name} เหลือ ${first.days} วัน</span></span>${ic('chev',20)}</button>
  <div class="sec"><h2>สมาชิก</h2><button class="lnk" data-go="household">ดูทั้งหมด</button></div>
- <div class="list" style="gap:8px;margin-top:-6px">${ppl.map(w=>`<button class="card tap" style="padding:12px 14px" data-go="meds" data-person="${w}">${avatar(w,'lg')}<span class="grow"><b style="font-size:20px">${PEOPLE[w].name}</b><span class="chips" style="gap:6px;margin-top:6px;display:flex">${personChips(s,w)}</span></span>${ic('chev',20)}</button>`).join('')}</div></div>
+ <div class="list" style="gap:8px;margin-top:-6px">${ppl.map(w=>`<button class="card tap" style="padding:12px 14px" data-go="meds" data-person="${w}">${avatar(s,w,'lg')}<span class="grow"><b style="font-size:20px">${PEOPLE[w].name}</b><span class="chips" style="gap:6px;margin-top:6px;display:flex">${personChips(s,w)}</span></span>${ic('chev',20)}</button>`).join('')}</div></div>
  <div class="foot"><button class="btn p" data-go="order" data-of="">${ic('bag',22)}เตรียมสั่งยา</button></div>${nav('home')}`}},
 notif:{no:'06b',name:'การแจ้งเตือน',note:'ระฆังรวมการเตือนไว้ที่เดียว: ยาที่ต้องทานวันนี้ ยาที่ควรซื้อ และทางไปตั้งค่าการเตือน',
  r:s=>{const ppl=MEMBERS(),due=ppl.filter(w=>dueOf(s,w).length),lw=lowCount();return`${sbar()}${hdr('การแจ้งเตือน',{back:'home',sub:`${notifCount(s)} รายการ`})}<div class="body" style="gap:12px">
@@ -513,11 +518,11 @@ today:{no:'06c',name:'ยาที่ต้องทานวันนี้',no
  ${sel.filter(w=>isSelf(s,w)).length?`<div class="note">${ic('info',20)}<span>ไม่รวม ${joinTh(sel.filter(w=>isSelf(s,w)).map(w=>PEOPLE[w].name))} เพราะจัดยาเอง</span></div>`:''}</div>`}},
 household:{no:'07',name:'สมาชิก',note:'รายชื่อทุกคน สต๊อกนับแยกรายคน และมีป้ายบอกว่าวันนี้ต้องจัดยาให้คนนี้หรือไม่',
  r:s=>`${sbar()}${hdr('สมาชิก',{back:'home',pill:{t:'เพิ่มสมาชิก',ic:'plus',act:'toast:เพิ่มสมาชิกใหม่ได้ในแอปจริง'}})}<div class="body">
- ${MEMBERS().map(w=>`<button class="card tap" data-go="meds" data-person="${w}">${avatar(w,'lg')}<span class="grow"><b style="font-size:21px">${PEOPLE[w].name}</b><br><span class="mut sm">ยา ${MEDS[w].length} รายการ<br>ตัวที่น้อยสุดพอทาน ${minDays(w)} วัน</span><span style="display:flex;margin-top:6px">${isSelf(s,w)?`<span class="chip info">${ic('info',14)}จัดยาเอง · เราดูแลสต๊อก</span>`:dueOf(s,w).length?`<span class="chip info">${ic('pill',14)}ต้องจัดยาวันนี้ ${dueOf(s,w).length} ตัว</span>`:`<span class="chip rest">${ic('moon',14)}วันนี้ไม่ต้องจัดยา</span>`}</span></span>${stat(minDays(w))}${ic('chev',20)}</button>`).join('')}
+ ${MEMBERS().map(w=>`<button class="card tap" data-go="meds" data-person="${w}">${avatar(s,w,'lg')}<span class="grow"><b style="font-size:21px">${PEOPLE[w].name}</b><br><span class="mut sm">ยา ${MEDS[w].length} รายการ<br>ตัวที่น้อยสุดพอทาน ${minDays(w)} วัน</span><span style="display:flex;margin-top:6px">${isSelf(s,w)?`<span class="chip info">${ic('info',14)}จัดยาเอง · เราดูแลสต๊อก</span>`:dueOf(s,w).length?`<span class="chip info">${ic('pill',14)}ต้องจัดยาวันนี้ ${dueOf(s,w).length} ตัว</span>`:`<span class="chip rest">${ic('moon',14)}วันนี้ไม่ต้องจัดยา</span>`}</span></span>${stat(minDays(w))}${ic('chev',20)}</button>`).join('')}
  <div class="note">${ic('info',20)}<span>สต๊อกนับเป็นรายวัน แยกตามแต่ละคน คนที่จัดยาเอง (เปิดสวิตช์ในหน้าของเขา) จะไม่ขึ้นรายการจัดยาประจำวัน แต่เรายังดูสต๊อกและเตือนซื้อให้</span></div></div>`},
 meds:{no:'07b',name:'หน้าของแต่ละคน',note:'รูปโปรไฟล์และสถานะ "จัดยาเอง" อยู่ด้านบน ตามด้วยข้อมูลแพ้ยา ทางลัดงาน และรายการยา',
  r:s=>{const w=s.person,P=PEOPLE[w],self=isSelf(s,w),n=dueOf(s,w).length,b=buyOf(w).length,al=s.allergies[w]||[],stp=ALLMEDS.filter(m=>m.who===w&&m.stopped);return`${sbar()}${hdr(P.name,{back:'household',pill:{t:'เพิ่มยา',ic:'plus',go:'edit',newmed:1},sub:`ยา ${MEDS[w].length} รายการ`})}<div class="body" style="gap:14px">
- <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px 16px">${avatar(w,'xl')}<span class="grow"><b style="font-size:22px">${P.name}</b><br><span class="chip ${self?'info':'ok'}" style="margin-top:6px">${self?ic('info',14)+'จัดยาเอง':ic('check',14)+'เราจัดยาให้'}</span></span><button class="pill" data-act="toast:แอปจริงจะให้ถ่ายรูปหรือเลือกรูปจากเครื่อง">${ic('camera',20)}รูป</button></div>
+ <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px 16px">${avatar(s,w,'xl')}<span class="grow"><b style="font-size:22px">${P.name}</b><br><span class="chip ${self?'info':'ok'}" style="margin-top:6px">${self?ic('info',14)+'จัดยาเอง':ic('check',14)+'เราจัดยาให้'}</span></span><button class="pill" data-go="avatarpick" aria-label="เปลี่ยนรูปโปรไฟล์ของ${P.name}">${ic('edit',20)}เปลี่ยนรูป</button></div>
  <div class="card" style="padding:4px 16px"><button class="li" style="width:100%" data-act="self:${w}" role="switch" aria-checked="${self}"><span class="grow"><b>${P.name}จัดยาทานเอง</b><br><span class="mut cap">เราดูแลแค่สต๊อกและซื้อยาให้ ไม่ขึ้นรายการจัดยาประจำวัน</span></span><span class="tg ${self?'on':''}"></span></button></div>
  ${al.length?`<div class="card" style="border:2px solid var(--dng);background:var(--dngbg)"><b style="color:var(--dngink);font-size:18px;display:flex;gap:8px;align-items:center">${ic('alert',22)}แพ้ยา ${al.length} รายการ</b>${al.map((a,i)=>`<div style="margin-top:12px;padding-top:12px;${i?'border-top:1px solid #F2B8B8':''}"><b>${esc(a.drug)}</b><br><span class="sm">อาการ: ${a.sym.map(esc).join(', ')}${a.note?' · '+esc(a.note):''}</span><br><span class="mut sm">บันทึกเมื่อ ${esc(a.date)}</span>${s.aldel===w+':'+i?`<div style="margin-top:10px"><span class="sm"><b>ลบรายการนี้ใช่ไหม?</b> ถ้าลบ จะไม่ขึ้นเตือนแพ้ยานี้อีก</span><div style="display:flex;gap:8px;margin-top:8px"><button class="btn d" style="flex:1;height:44px" data-act="aldel:${i}">ยืนยันลบ</button><button class="btn s" style="flex:1;height:44px" data-act="aldelno">ยกเลิก</button></div></div>`:`<div style="display:flex;gap:8px;margin-top:8px"><button class="btn s" style="flex:1;height:44px;font-size:16px" data-act="aledit:${i}">${ic('edit',18)}แก้ไข</button><button class="btn d" style="flex:1;height:44px;font-size:16px" data-act="aldelask:${i}">${ic('x',18)}ลบ</button></div>`}</div>`).join('')}<button class="btn s" style="margin-top:12px;height:44px;flex:none" data-go="allergy">${ic('plus',18)}เพิ่มแพ้ยา</button></div>`:`<div class="note">${ic('info',20)}<span>ยังไม่มีบันทึกแพ้ยา เพิ่มได้ที่ปุ่มด้านล่าง หรือตอนหยุดยาด้วยเหตุผล "แพ้ยา"</span></div><button class="btn s" style="height:44px;flex:none;width:100%" data-go="allergy">${ic('plus',18)}เพิ่มแพ้ยา</button>`}
  <div class="tiles">
@@ -624,6 +629,11 @@ allergy:{no:'07d',name:'บันทึกแพ้ยา',note:'เพิ่ม
  <div class="fld"><span>รายละเอียดเพิ่มเติม (ไม่บังคับ)</span><textarea class="ta rbx" data-al="note" maxlength="200" placeholder="เช่น เกิดหลังทานยา 2 วัน">${esc(a.note)}</textarea></div>
  <div class="note">${ic('info',20)}<span>จะขึ้นกรอบเตือนแพ้ยาในโปรไฟล์ของ${PEOPLE[s.person].name} และในสรุปที่แชร์ให้แพทย์ ถ้าเพิ่มยาที่ชื่อตรงกัน แอปจะเตือนทันที</span></div></div>
  <div class="foot"><button class="btn p" data-act="alsave" ${ok?'':'disabled'}>${s.alIdx>=0?'บันทึกการแก้ไข':'บันทึกแพ้ยา'}</button>${ok?'':`<p class="mut cap" style="text-align:center">${!a.drug.trim()?'ใส่ชื่อยาก่อน':'เลือกอาการอย่างน้อย 1 อย่าง'}</p>`}</div>`}},
+avatarpick:{no:'07e',name:'เลือกรูปโปรไฟล์',note:'เลือกรูปโปรไฟล์ของสมาชิกจากไอคอน 20 แบบ รูปที่เลือกมีเครื่องหมายถูกและกรอบสีน้ำเงินเข้ม กด ใช้รูปนี้ เพื่อบันทึก ย้อนกลับเพื่อไม่เปลี่ยน',
+ r:s=>{const w=s.person,cur=s.avp||s.av[w]||PEOPLE[w].av,a=getAvatar(cur);return`${sbar()}${hdr('เลือกรูปโปรไฟล์',{back:'meds',sub:PEOPLE[w].name})}<div class="body" style="gap:16px">
+ <div style="display:flex;justify-content:center"><img class="av xl" style="width:96px;height:96px;background:${a.bg}" src="${a.src}" alt="${a.alt}"></div>
+ <div class="avgrid" role="group" aria-label="รูปโปรไฟล์ 20 แบบ">${AVATARS.map((x,i)=>`<button class="avb ${x.id===cur?'on':''}" data-act="avsel:${x.id}" aria-pressed="${x.id===cur}" aria-label="รูปที่ ${i+1}"><img src="${x.src}" alt="" style="background:${x.bg}">${x.id===cur?`<span class="avck">${ic('check',16)}</span>`:''}</button>`).join('')}</div></div>
+ <div class="foot"><button class="btn p" data-act="avsave">ใช้รูปนี้</button></div>`}},
 order:{no:'10',name:'เทียบร้านก่อนสั่ง',note:'รวมค่ายาทุกรายการ + ค่าส่งของแต่ละร้าน แนะนำร้านที่รวมแล้วถูกที่สุด ร้านที่ราคาไม่ครบจะไม่ถูกจัดอันดับและบอกว่าขาดอะไร',
  r:s=>{const c=cmpShops(s),L=c.L,b=c.best;return`${sbar()}${hdr('สั่งยา',{back:s.ofrom||'home',sub:`ควรสั่ง ${L.length} รายการ${s.of?' · '+PEOPLE[s.of].name:''}`,pill:s.of?{t:'ดูทุกคน',act:'of:'}:undefined})}<div class="body" style="gap:12px">
  <div class="card" style="padding:4px 16px">${L.length?L.map(m=>`<div class="li"><span class="bx on" style="width:28px;height:28px;border-radius:8px;background:var(--navy);color:#fff;display:grid;place-items:center;flex:none">${ic('check',18)}</span><span class="grow"><b>${esc(m.n)} ${esc(m.st)}</b><br><span class="mut sm">${m.br?'ยี่ห้อ '+esc(m.br)+' · ':''}${PEOPLE[m.who].name} · สั่ง ${orderQty(s,m)}</span></span><span class="chip low">${ic('alert',14)}${m.days} วัน</span></div>`).join(''):`<p class="mut" style="padding:14px 0">ยังไม่มียาที่ต้องสั่ง</p>`}</div>
@@ -679,7 +689,7 @@ pform:{no:'14b',name:'เพิ่ม/แก้ไขร้านยา',note:'�
  <div class="foot"><button class="btn p" data-act="pfsave" ${f.n.trim()&&!bad?'':'disabled'}>บันทึกร้านยา</button></div>`}}
 };
 /* ---------- สถานะ ---------- */
-const mk=()=>{const tp=TPLS();return{screen:'splash',person:'พ่อ',med:'vitd',saved:initSaved(),draft:null,dinv:null,inv:initInv(),done:{},tf:'all',of:'',tpls:tp,tpl:'t1',etpl:'t1',tname:tp[0].name,tbody:tp[0].body,ack:false,pharm:'b',thr:7,prices:PR0(),dpr:[],dm:null,mf:'all',self:{แม่:true},rs:'',rn:'',hist:HIST0(),allergies:AL0(),stopR:'',stopN:'',stopS:[],alIdx:-1,aldel:'',al:{drug:'',sym:[],note:''},efrom:'meds',ofrom:'home',shares:{list:true,sched:true,stock:false},ph:clone(PH0),pf:{id:'',n:'',sub:'',tel:'',ship:'',free:''},pferr:false,toast:''}};
+const mk=()=>{const tp=TPLS();return{screen:'splash',person:'พ่อ',med:'vitd',saved:initSaved(),draft:null,dinv:null,inv:initInv(),done:{},tf:'all',of:'',tpls:tp,tpl:'t1',etpl:'t1',tname:tp[0].name,tbody:tp[0].body,ack:false,pharm:'b',thr:7,prices:PR0(),dpr:[],dm:null,mf:'all',self:{แม่:true},rs:'',rn:'',hist:HIST0(),allergies:AL0(),stopR:'',stopN:'',stopS:[],alIdx:-1,aldel:'',al:{drug:'',sym:[],note:''},efrom:'meds',ofrom:'home',shares:{list:true,sched:true,stock:false},ph:clone(PH0),pf:{id:'',n:'',sub:'',tel:'',ship:'',free:''},pferr:false,toast:'',av:Object.fromEntries(Object.keys(PEOPLE).map(w=>[w,PEOPLE[w].av])),avp:''}};
 let S=mk();loadMed(S,'vitd');
 /* สถานะตัวอย่างสำหรับแผนผัง: ร่างที่ถูกแก้แล้ว เพื่อให้เห็นหน้า 08c 09 09b ครบ */
 const DEMO=(()=>{const d=mk();d.draft=sch('weekdays',{days:[1,4,6],doses:{...z(),เช้า:1.5}});loadMed(d,'vitd');d.draft=sch('weekdays',{days:[1,4,6],doses:{...z(),เช้า:1.5}});d.done={'los:เช้า':1,'vitd:เช้า':1,'met:เช้า':1};d.rs='แพทย์สั่งปรับ';d.rn='หมอปรับหลังตรวจเลือด';d.al={drug:'Aspirin',sym:['ผื่น/ลมพิษ','หายใจลำบาก'],note:'',};return d})();
@@ -689,7 +699,7 @@ const DEMO_STOP=(()=>{const d=mk();loadMed(d,'los');d.stopR='แพ้ยา';d.
 const ROWS=[
  {t:'1 · เริ่มต้นใช้งาน',d:'จากโลโก้ไปหน้าต้อนรับ รุ่นทดลองกดเริ่มแล้วเข้าหน้าแรกเลย ส่วน 03 ถึง 05 ใช้กับแอปจริง',ids:['splash','welcome','login','register','otp'],ar:['แตะต่อ','ฉันมีบัญชีแล้ว','สร้างบัญชีใหม่','ขอรหัส OTP'],dash:[0,0,1,1]},
  {t:'2 · หน้าแรก การแจ้งเตือน และยาวันนี้',d:'หน้าแรกเป็น Dashboard: ป้ายของแต่ละคนบอกว่าทานยาวันนี้กี่ตัวและต้องซื้อกี่ตัว ระฆังรวมการเตือน แล้วไปจัดยาตามช่วงเวลา',ids:['home','notif','today'],ar:['แตะระฆัง','ยาที่ต้องทานวันนี้']},
- {t:'3 · สมาชิก',d:'แตะชื่อสมาชิกเพื่อเข้าหน้าของคนนั้น มีทางลัดงาน 4 อย่าง',ids:['household','meds'],ar:['เลือกคน']},
+ {t:'3 · สมาชิก',d:'แตะชื่อสมาชิกเพื่อเข้าหน้าของคนนั้น มีทางลัดงาน 4 อย่าง',ids:['household','meds','avatarpick'],ar:['เลือกคน','เปลี่ยนรูป']},
  {t:'4 · เมนู "ยา" เพิ่มและแก้ไขยา',d:'เมนูที่ 2 คือ "ยา" ดูยาทั้งหมด เพิ่มยารายตัว เลือกว่าเป็นของสมาชิกคนไหน หน้าแก้ไขเหลือข้อมูลหลัก ส่วนขนาดบรรจุ รอบเติมยา และราคาแต่ละร้านอยู่หน้าถัดไป',ids:['medlist','edit','buy'],ar:['แตะยา หรือเพิ่มยา','ขนาดบรรจุและการซื้อ']},
  {t:'5 · ตั้งตารางและปรับโดส',d:'เปลี่ยนโดสทีละ 1 ½ หรือ ¼ หน่วย ต้องเลือกเหตุผลทุกครั้ง และผ่านหน้ายืนยัน ติ๊กรับทราบก่อนปุ่มบันทึกจึงใช้ได้',ids:['edit','modes','dose','confirm'],ar:['ตารางทานยา','ปรับโดส','ตรวจสอบ']},
  {t:'6 · ประวัติ หยุดยา และแพ้ยา',d:'หน้าปรับโดสมีปุ่มประวัติและปุ่มหยุดใช้ยา หยุดยาต้องบอกเหตุผล ถ้าแพ้ยาต้องบอกอาการ แล้วโปรไฟล์ขึ้นกรอบเตือนแพ้ยา',ids:['hist','dose','stop','meds','allergy'],ar:['ย้อนกลับ','ปุ่มหยุดใช้ยา','ยืนยันแล้วเห็นเตือนแพ้ยา','ปุ่มเพิ่มแพ้ยา']},
@@ -720,6 +730,7 @@ function go(id,el){
  if(el&&el.dataset.person)S.person=el.dataset.person;
  if(el&&el.dataset.med)S.med=el.dataset.med;
  if(id==='edit'&&['medlist','meds','notif'].includes(S.screen))S.efrom=S.screen;
+ if(id==='avatarpick')S.avp=(S.av[S.person]||PEOPLE[S.person].av);
  if(id==='allergy'){S.al={drug:'',sym:[],note:''};S.alIdx=-1}
  S.aldel='';
  if(id==='order'&&['home','medlist','notif','meds'].includes(S.screen))S.ofrom=S.screen;
@@ -747,6 +758,8 @@ function act(a){
  else if(k==='aldelask'){S.aldel=S.person+':'+x}
  else if(k==='aldelno'){S.aldel=''}
  else if(k==='aldel'){(S.allergies[S.person]||[]).splice(+x,1);S.aldel='';say('ลบรายการแพ้ยาแล้ว');return}
+ else if(k==='avsel'){S.avp=x}
+ else if(k==='avsave'){S.av[S.person]=S.avp;S.screen='meds';say('เปลี่ยนรูปโปรไฟล์แล้ว');return}
  else if(k==='alsave'){const a=S.al;if(!a.drug.trim()||!a.sym.length)return;const L=(S.allergies[S.person]=S.allergies[S.person]||[]),o={drug:a.drug.trim(),sym:a.sym.slice(),note:a.note.trim(),date:TODAY.short};if(S.alIdx>=0&&L[S.alIdx]){o.date=L[S.alIdx].date;L[S.alIdx]=o}else L.push(o);const ed=S.alIdx>=0;S.alIdx=-1;S.screen='meds';say(ed?'แก้ไขรายการแพ้ยาแล้ว':'บันทึกแพ้ยาแล้ว');return}
  else if(k==='sym'){const i=S.stopS.indexOf(x);if(i>=0)S.stopS.splice(i,1);else S.stopS.push(x)}
  else if(k==='stopok'){const m=medById(S.med);if(!S.stopR||(S.stopR==='แพ้ยา'&&!S.stopS.length)||!S.ack)return;const dt=TODAY.short;m.stopped={reason:S.stopR,date:dt,note:S.stopN};S.hist.unshift({med:m.id,date:dt,kind:'stop',chg:'หยุดใช้ยา',reason:S.stopR,note:S.stopN,sym:S.stopS.slice()});if(S.stopR==='แพ้ยา'){(S.allergies[m.who]=S.allergies[m.who]||[]).push({drug:m.n,sym:S.stopS.slice(),note:S.stopN,date:dt})}reindex();if(PEOPLE[m.who].house){S.mf='บ้าน';S.screen='medlist'}else{S.person=m.who;S.screen='meds'}S.stopR='';S.stopN='';S.stopS=[];S.ack=false;say(m.n+' ย้ายไปยาที่หยุดแล้ว'+(m.stopped.reason==='แพ้ยา'?' และขึ้นเตือนแพ้ยาในโปรไฟล์':''));return}
@@ -788,7 +801,7 @@ function act(a){
 }
 
 /* ---------- ความเห็นรายหน้าจอ: บันทึกลงฐานข้อมูลของหน้านี้ ร่างเก็บในเครื่องอัตโนมัติ ---------- */
-const FB_IDS=['general','splash','welcome','login','register','otp','home','notif','today','household','meds','medlist','edit','buy','modes','dose','confirm','hist','stop','allergy','order','message','tpled','doctor','share','pharm','pform'];
+const FB_IDS=['general','splash','welcome','login','register','otp','home','notif','today','household','meds','avatarpick','medlist','edit','buy','modes','dose','confirm','hist','stop','allergy','order','message','tpled','doctor','share','pharm','pform'];
 const LS='judya-fb-draft-v1';
 let DBH=null,dbDead=false,panelId='';
 const saved={},state={};let draft={};

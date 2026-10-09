@@ -1,4 +1,4 @@
-# JudYa — Screen spec (v0.7, 26 screens)
+# JudYa — Screen spec (v0.7, 27 screens)
 
 Pictures: `docs/design/screens/NN_<no>_<id>.png` (390×~845 phone frame). Clickable prototype: `prototype/judya-flow-v0.7.html` (open → tap a thumbnail). Pixel details come from the pictures + `design-system.md`; this file defines **content, rules, actions, states**. Thai strings in the pictures are the copy to use. Req IDs in brackets.
 
@@ -27,6 +27,7 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 | 07b | Member page | See MB-3: profile card (large avatar, name, chip เราจัดยาให้/จัดยาเอง, pill "รูป") · switch "<คน>จัดยาทานเอง" · allergy block (red when records; else note + "เพิ่มแพ้ยา") with แก้ไข/ลบ per record (inline delete confirm) [AL-2,AL-4] · tiles: จัดยาวันนี้ (or จัดยาเอง) / สั่งยา / แชร์ให้แพทย์ / สรุปพบแพทย์ · medicine cards · "ยาที่หยุดแล้ว" (name, date, reason). Header pill "เพิ่มยา" (owner preset). |
 | 07c | Medicines (tab 2) | Filter chips ทุกคน · พ่อ · แม่ · ฉัน · **ยาบ้าน**; banner "ยาใกล้หมด N รายการ → เทียบราคาร้านยาก่อนสั่ง"; sections per owner; medicine card: generic + strength, **brand line**, status chip (ใกล้หมด/พอใช้/ยังไม่ทราบ, or expiry chip for household), schedule summary, progress bar (not for household), "เหลือ X · พอทานอีก N วัน". Tap → 08. Pill "เพิ่มยา". |
 | 07d | Allergy form | Title บันทึกแพ้ยา / แก้ไขแพ้ยา; fields: drug name (required), symptom chips (≥1, multi), severe warning when severe chosen, optional detail; info note; save disabled with hint until valid [AL-1…AL-5]. Saves to the member shown in the header; edit keeps the original date. |
+| 07e | Choose profile picture | Opened by "เปลี่ยนรูป" on the member page (07b). Title เลือกรูปโปรไฟล์ + member name; big preview; 4-column grid of the 20 icons (≥ 48 px touch, 78 px here); the chosen one has a check badge + dark frame; primary "ใช้รูปนี้" saves and returns to 07b with a toast; back arrow changes nothing. No camera / file upload [MB-1]. |
 
 ## Edit medicine (3 levels) [BR-7]
 | No | Screen | Content / rules |
