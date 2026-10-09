@@ -26,3 +26,18 @@ The review prototype added: brand entries, household medicines with expiry, per-
 
 ## Consequences
 Brand-level packaging/prices are shared across owners; older entries get an explicit "ก่อนมีช่องเหตุผล" note; a rollback is possible via the backup key until confirmed.
+
+## Findings from the repo, 2026-10-09 (Step 1, read from `medmate-app.html`)
+The docs above say the phone holds **version 2** data (dose schedule, ADR-0004). The only app code in this repo is **version 1** and has **no dose-schedule feature** (no `schedule`, `anchorDate`, `weekdays` in the file, and no commit that adds them). Its loader accepts only `version === 1`. So the owner's real data is most likely **v1**, unless the phone runs a build that is not in this repo. The backup file's `version` field will tell (owner to confirm).
+
+Real v1 shape (key `medmate.v1`): `{version:1, session, settings{deliveryAddress,recipient,recipientPhone,warnDays,targetDays}, persons[], medications[], assignments[], doseChanges[], notes[], pharmacies[], prices{pharmacyId:{medicationId:price}}, orders[], orderPlan{…}, seeded}`.
+- `persons`: `id,name,relationship,gender,birthYear,conditions[],allergies[] (plain strings),insurance,accidentInsurance,avatar,createdAt,updatedAt`
+- `medications`: `id,genericName,brandName,strength,dosageForm,notes`
+- `assignments`: `id,personId,medicationId,stockQuantity,packageSize,packageUnit,doses{morning,noon,evening,bedtime},frequency('ทุกวัน'),startDate,reorderLeadDays,targetStockDays,prescriber,notes,active`
+- `doseChanges`: `id,assignmentId,kind('start'|'adjust'|'stop'),effectiveAt,previousDose,newDose,source,reason,note,changedBy`
+- `pharmacies`: `id,name,contact,lineHandle,phone,address,shippingMode('fixed'|'variable'),shippingCost,orderTemplate,active`
+
+Consequences for the decision above:
+1. The migration is written as `migrate1to3` (and `migrate2to3` only if a real v2 file turns up); both end in v3 and both are idempotent, all-or-nothing, and keep the raw old string under `medmate.v1.backup.v<old>`.
+2. Mapping by meaning (v1 → v3): `stockQuantity`→`stockQty`; `frequency 'ทุกวัน'`→`schedule {kind:'daily'}`; `reorderLeadDays`→`leadDays`; `targetStockDays`→`refillCycleDays`; `prices` (one number per pharmacy and medication, unit not recorded) → `PriceRow` with the unit **unknown → not comparable until the owner sets the unit** (never guess); `allergies` strings → `Allergy{symptoms:['อื่นๆ'], note: text}`; `shippingMode fixed`→`shippingFee`, `variable`→`null` (unknown); `doseChanges` `adjust`→`dose`, `start` is dropped into the medicine's start date, reason `อื่นๆ` + note "ก่อนมีช่องเหตุผล".
+3. Rollback copy: the raw string goes to `medmate.v1.backup.v1` before anything is written.

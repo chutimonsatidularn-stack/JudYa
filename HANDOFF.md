@@ -26,7 +26,7 @@ Claude Project "แอพจัดการยา" also holds the earlier packag
 
 ## 2. Status (update at the end of every session)
 - Design: 26 screens approved as a flow. Not yet designed: member add/edit/remove, backup/restore screens, delete-all-data confirmation, empty/error/loading states, pharmacy delete, PWA install/offline pages, real photo picker (see screen-spec last section).
-- Build: **Step 0 done 2026-10-09** — owner said start (AP-2) and chose approach B. Waiting for the owner's OK on `docs/adr/0006-readable-rebuild-react-typescript.md` and `0005-…`; then Step 1 (protect the data: backup file from the owner, find the real v2 shape in `medmate-app.html`, `migrate2to3` with fixtures). Open: which Pages address the phone's installed app uses after the repo rename MedMate → JudYa.
+- Build: **Step 0 done 2026-10-09** — owner said start (AP-2) and chose approach B. Waiting for the owner's OK on `docs/adr/0006-readable-rebuild-react-typescript.md` and `0005-…`; then Step 1 (protect the data: backup file from the owner, find the real v2 shape in `medmate-app.html`, `migrate2to3` with fixtures). **Finding:** the app code in this repo is data **v1** (no dose schedule), not v2 as the docs say; see ADR-0005 "Findings". Needs the owner's backup file to confirm the phone's version. Open: which Pages address the phone's installed app uses after the repo rename MedMate → JudYa.
 
 - Decisions made 2026-10-08 (owner asked Claude to choose, beginner): run on **claude.ai/code**; **approach B**; work on a branch + PR; allergy delete = no log (Q-A); undesigned screens = Claude Code drafts then pauses for owner. Beginner steps: `docs/BEGINNER-GUIDE.md`.
 
