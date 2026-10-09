@@ -7,9 +7,9 @@ Status: Step 1 (data), Step 2 (foundation) and Step 3 groups 1–5 done (Home 06
 - `src/domain/` — pure code: `schema.ts` (data model, zod), `storage.ts` (safe load/save), `calc.ts` (calculation module, port of `reference/calc.mjs`), `dates.ts` (Bangkok dates)
 - `src/ui/` — building blocks (`components.tsx`, `Shell.tsx`, `Icon.tsx`, `avatars.ts` = the 20 profile icons)
 - `src/styles/` — design tokens and component CSS (from the approved prototype)
-- `src/pages/` — screens (`Home` first-run now; `Gallery` = all components on one page, **remove before release**)
+- `src/pages/` — screens
 - `src/store.tsx`, `src/router.tsx` — state and hash router
 - `public/` — app icons (bottle icon) and manifest
 
 Commands (inside `app/`): `npm install` · `npm run dev` · `npm test` · `npm run typecheck` · `npm run build`.
-Open `#/gallery` to see every component. Never commit real backups (see `.gitignore`).
+Never commit real backups (see `.gitignore`).

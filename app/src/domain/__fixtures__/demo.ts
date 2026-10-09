@@ -1,4 +1,4 @@
-// Anonymised demo data for tests and the component gallery. Not real people.
+// Anonymised demo data for tests. Not real people.
 import { emptyData } from '../storage';
 import type { AppData, Assignment } from '../schema';
 
