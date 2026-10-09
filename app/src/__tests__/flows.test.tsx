@@ -187,3 +187,55 @@ describe('add and edit a medicine (AC-B, AC-H, AC-A4)', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('ตารางทานยายังไม่ครบ');
   });
 });
+
+describe('adjust dose, history, stop (AC-A1…A3)', () => {
+  it('09: button stays disabled until a dose changed AND a reason is chosen; the sheet shows old → new and the reason; one history entry', async () => {
+    const s = mem(demoData()); open('#/medicine/a_dad_los/dose', s);
+    const review = screen.getByRole('button', { name: 'ตรวจสอบก่อนบันทึก' }); expect(review).toBeDisabled(); expect(screen.getByText('ยังไม่ได้เปลี่ยนโดส')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'เพิ่มขนาดยาเย็น' }));
+    expect(screen.getByRole('button', { name: 'ตรวจสอบก่อนบันทึก' })).toBeDisabled(); expect(screen.getByText('เลือกเหตุผลก่อนบันทึก')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('เหตุผล / แหล่งข้อมูล'), { target: { value: 'ผลตรวจเลือดหรือผลตรวจอื่น' } }); type('รายละเอียดเพิ่มเติม (ไม่บังคับ)', 'ปรับตามผลเลือด');
+    fireEvent.click(screen.getByRole('button', { name: 'ตรวจสอบก่อนบันทึก' }));
+    const dlg = await screen.findByRole('dialog'); expect(dlg).toHaveTextContent('เช้า 1 เม็ด'); expect(dlg).toHaveTextContent('เช้า 1 เม็ด · เย็น ½ เม็ด'); expect(dlg).toHaveTextContent('ผลตรวจเลือดหรือผลตรวจอื่น · ปรับตามผลเลือด');
+    expect(within(dlg).getByRole('button', { name: 'บันทึกโดสใหม่' })).toBeDisabled();
+    fireEvent.click(within(dlg).getByRole('checkbox')); fireEvent.click(within(dlg).getByRole('button', { name: 'บันทึกโดสใหม่' }));
+    await screen.findByText('บันทึกโดสใหม่แล้ว');
+    const d = saved(s); expect(d.changes).toHaveLength(1); expect(d.changes[0]).toMatchObject({ kind: 'dose', reason: 'ผลตรวจเลือดหรือผลตรวจอื่น', note: 'ปรับตามผลเลือด' });
+    expect(d.assignments.find((a) => a.id === 'a_dad_los')!.doses).toMatchObject({ morning: 1, evening: 0.5 });
+  });
+  it('09c: timeline newest first with reason chips and the "add only" footer', () => {
+    const d = demoData();
+    d.changes = [{ id: 'c1', assignmentId: 'a_dad_los', on: '2026-07-02', at: '2026-07-02T09:00:00+07:00', kind: 'dose', previous: { doses: { morning: 1, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, next: { doses: { morning: 0.5, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, reason: 'เภสัชกรแนะนำ' }, { id: 'c2', assignmentId: 'a_dad_los', on: '2026-08-15', at: '2026-08-15T09:00:00+07:00', kind: 'dose', previous: { doses: { morning: 0.5, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, next: { doses: { morning: 1, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, reason: 'แพทย์สั่งปรับ', note: 'หมอปรับหลังตรวจเลือด' }];
+    open('#/medicine/a_dad_los/history', mem(d));
+    const text = document.body.textContent ?? ''; expect(text.indexOf('15 ส.ค. 2569')).toBeLessThan(text.indexOf('2 ก.ค. 2569'));
+    expect(screen.getByText('เหตุผล: แพทย์สั่งปรับ')).toBeInTheDocument(); expect(screen.getByText('หมอปรับหลังตรวจเลือด')).toBeInTheDocument(); expect(screen.getByText(/ลบหรือแก้ย้อนหลังไม่ได้/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /ลบ|แก้ไข/ })).toBeNull();
+  });
+  it('09d: stop needs a reason and a tick; "แพ้ยา" needs a symptom and adds the red allergy block', async () => {
+    const s = mem(demoData()); open('#/medicine/a_dad_los/stop', s);
+    const go = () => screen.getByRole('button', { name: 'ยืนยันหยุดใช้ยา' }); expect(go()).toBeDisabled(); expect(screen.getByText('เลือกเหตุผลก่อน')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('เหตุผลที่หยุด'), { target: { value: 'แพ้ยา' } }); fireEvent.click(screen.getByRole('checkbox'));
+    expect(go()).toBeDisabled(); expect(screen.getByText('เลือกอาการอย่างน้อย 1 อย่าง')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'ผื่น/ลมพิษ' })); fireEvent.click(screen.getByRole('button', { name: 'หายใจลำบาก' }));
+    expect(screen.getAllByRole('alert').some((n) => n.textContent?.includes('1669'))).toBe(true);
+    expect(go()).toBeEnabled(); fireEvent.click(go());
+    expect(await screen.findByText('แพ้ยา 1 รายการ')).toBeInTheDocument(); // member page: red allergy block
+    const d = saved(s); expect(d.assignments.find((a) => a.id === 'a_dad_los')).toMatchObject({ active: false, stopped: { reason: 'แพ้ยา' } });
+    expect(d.allergies).toMatchObject([{ drug: 'Losartan', symptoms: ['ผื่น/ลมพิษ', 'หายใจลำบาก'], source: 'stopMedication' }]); expect(d.changes.at(-1)).toMatchObject({ kind: 'stop', reason: 'แพ้ยา' });
+    expect(screen.getByText('ยาที่หยุดแล้ว')).toBeInTheDocument();
+  });
+});
+
+describe('XSS (AC-U2, SEC-1)', () => {
+  it('a medicine and a member named like HTML are shown as plain text on every screen', () => {
+    const evil = '<img src=x onerror=alert(1)>';
+    const d = demoData(); d.medications[0]!.generic = evil; d.medications[0]!.brand = evil; d.persons[0]!.name = evil;
+    d.allergies.push({ id: 'al', personId: 'p_dad', drug: evil, symptoms: ['คัน'], note: evil, recordedOn: '2026-01-01', source: 'manual' });
+    d.changes.push({ id: 'c', assignmentId: 'a_dad_los', on: '2026-08-01', at: '2026-08-01T00:00:00+07:00', kind: 'dose', previous: { doses: { morning: 1, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, next: { doses: { morning: 2, noon: 0, evening: 0, bedtime: 0 }, schedule: { kind: 'daily' } }, reason: 'อื่นๆ', note: evil });
+    for (const route of ['#/', '#/notifications', '#/today/all', '#/members', '#/member/p_dad', '#/medicines', '#/medicine/a_dad_los', '#/medicine/a_dad_los/history', '#/medicine/a_dad_los/dose']) {
+      const { container, unmount } = open(route, mem(d));
+      expect(container.querySelector('img[src="x"]'), route).toBeNull();
+      unmount();
+    }
+  });
+});

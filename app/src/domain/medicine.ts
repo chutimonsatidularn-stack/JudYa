@@ -126,3 +126,21 @@ export function withMode(s: Schedule, mode: Mode, today: string): Schedule {
 export const toggleIn = (a: number[], v: number): number[] => (a.includes(v) ? a.filter((x) => x !== v) : [...a, v].sort((p, q) => p - q));
 /** 7-day take/rest preview for the interval modes (DS-6) */
 export const preview7 = (s: Schedule, today: string, addDays: (iso: string, n: number) => string): { date: string; take: boolean }[] => Array.from({ length: 7 }, (_, i) => { const date = addDays(today, i); return { date, take: isTakeDay(s, date) }; });
+
+/** DA-6 / DA-7: stop a medicine. History keeps a "stop" entry; the assignment becomes inactive; reason "แพ้ยา" also creates an allergy record */
+export function stopMedication(d: AppData, assignmentId: string, o: { reason: string; note: string; symptoms: string[] }, today: string, ids: { dc: string; allergy: string }, at: string): AppData {
+  const a = d.assignments.find((q) => q.id === assignmentId); if (!a || !a.active || a.owner.kind !== 'person') return d;
+  const med = d.medications.find((m) => m.id === a.medicationId);
+  const allergic = o.reason === 'แพ้ยา';
+  const change = { id: ids.dc, assignmentId, on: today, at, kind: 'stop' as const, reason: o.reason as (typeof STOP_REASONS)[number], ...(o.note.trim() ? { note: o.note.trim() } : {}), ...(allergic ? { symptoms: o.symptoms as AppData['allergies'][number]['symptoms'] } : {}) };
+  const next: AppData = {
+    ...d, changes: [...d.changes, change],
+    assignments: d.assignments.map((q) => (q.id === assignmentId ? { ...q, active: false, stopped: { on: today, reason: o.reason as (typeof STOP_REASONS)[number], ...(o.note.trim() ? { note: o.note.trim() } : {}) } } : q)),
+  };
+  if (allergic && med) next.allergies = [...d.allergies, { id: ids.allergy, personId: a.owner.personId, drug: med.generic, symptoms: o.symptoms as AppData['allergies'][number]['symptoms'], ...(o.note.trim() ? { note: o.note.trim() } : {}), recordedOn: today, source: 'stopMedication' }];
+  return next;
+}
+export const stopValid = (reason: string, symptoms: string[]): boolean => !!reason && (reason !== 'แพ้ยา' || symptoms.length > 0);
+
+/** history of one medicine, newest first (DA-5) */
+export const historyOf = (d: AppData, assignmentId: string) => d.changes.filter((c) => c.assignmentId === assignmentId).sort((p, q) => (q.on + q.at).localeCompare(p.on + p.at));

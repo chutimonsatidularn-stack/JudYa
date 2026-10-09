@@ -47,3 +47,11 @@ export const scheduleDoseText = (schedule: Schedule | null, doses: Doses, unit: 
 export const fullDose = (a: Assignment, med: Medication, today: string): string => scheduleDoseText(a.schedule, a.doses, med.baseUnit, today);
 /** "Losartan (Cozaar) 50 mg" (BR-2) */
 export const medTitle = (m: Medication): string => `${m.generic}${m.brand ? ` (${m.brand})` : ''}${m.strength ? ` ${m.strength}` : ''}`;
+
+/** "วันที่ทาน: ทุกวัน → จันทร์ · ขนาดยาเช้า: ½ เม็ด → 1 เม็ด" for the history and the confirm card (what changed) */
+export function describeChange(prev: { doses: Doses; schedule: Schedule | null }, next: { doses: Doses; schedule: Schedule | null }, unit: string, today: string): string {
+  const parts: string[] = [];
+  if (JSON.stringify(prev.schedule) !== JSON.stringify(next.schedule)) parts.push(`วันที่ทาน: ${scheduleSummary(prev.schedule, today)} → ${scheduleSummary(next.schedule, today)}`);
+  for (const [k, label] of PERIODS) if ((prev.doses[k] || 0) !== (next.doses[k] || 0)) parts.push(`ขนาดยา${label}: ${fr(prev.doses[k] || 0)} ${unit} → ${fr(next.doses[k] || 0)} ${unit}`);
+  return parts.join(' · ');
+}

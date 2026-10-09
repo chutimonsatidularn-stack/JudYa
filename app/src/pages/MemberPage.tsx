@@ -63,7 +63,7 @@ export function MemberPage({ id }: { id: string }) {
         {stopped.length > 0 && <>
           <SectionTitle title="ยาที่หยุดแล้ว" />
           <div className="card" style={{ padding: '4px 16px' }}>
-            {stopped.map((a) => <div key={a.id} className="li"><span className="grow"><b>{medOf(d, a)?.generic}</b> <span className="mut sm">{medOf(d, a)?.strength}</span><br /><span className="mut cap">หยุดเมื่อ {a.stopped ? thDate(a.stopped.on) : ''} · {a.stopped?.reason}</span></span></div>)}
+            {stopped.map((a) => <button key={a.id} type="button" className="li" style={{ width: '100%' }} onClick={() => go(`/medicine/${a.id}/history`)}><span className="grow"><b>{medOf(d, a)?.generic}</b> <span className="mut sm">{medOf(d, a)?.strength}</span><br /><span className="mut cap">หยุดเมื่อ {a.stopped ? thDate(a.stopped.on) : ''} · {a.stopped?.reason}</span></span><Icon name="chev" size={20} /></button>)}
           </div>
         </>}
       </Body>
