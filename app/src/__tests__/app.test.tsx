@@ -15,8 +15,8 @@ describe('app shell', () => {
   });
   it('bottom nav moves between tabs', async () => {
     window.location.hash = '#/'; render(<App store={mem()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'ตั้งค่า' }));
-    expect(window.location.hash).toBe('#/settings'); expect(await screen.findByText('หน้านี้กำลังสร้างในขั้นถัดไป')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'แชร์' }));
+    expect(window.location.hash).toBe('#/share'); expect(await screen.findByText('หน้านี้กำลังสร้างในขั้นถัดไป')).toBeInTheDocument();
   });
   it('unreadable saved data: shows the problem, does not touch the data (SEC-2)', () => {
     window.location.hash = '#/'; const bad = '{broken'; const s = mem({ [STORAGE_KEY]: bad }); render(<App store={s} />);

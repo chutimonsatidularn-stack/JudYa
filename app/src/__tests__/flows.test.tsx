@@ -239,3 +239,60 @@ describe('XSS (AC-U2, SEC-1)', () => {
     }
   });
 });
+
+describe('settings and pharmacies (AC-P3)', () => {
+  it('add a pharmacy, use it in the list, change reminder days, delete with confirmation', async () => {
+    const s = mem(demoData()); open('#/settings', s);
+    expect(screen.getByText('ยังไม่มีร้านยา', { exact: false })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'เพิ่มร้าน' }));
+    expect(await screen.findByRole('heading', { name: 'เพิ่มร้านยา' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'บันทึกร้านยา' })).toBeDisabled(); expect(screen.getByText('ใส่ชื่อร้านก่อน')).toBeInTheDocument();
+    type('ชื่อร้าน', 'ร้านยาสุขใจ'); type(/เบอร์โทร/, '12-x');
+    expect(screen.getByRole('button', { name: 'บันทึกร้านยา' })).toBeDisabled(); expect(screen.getAllByText(/เบอร์โทรไม่ถูกต้อง/).length).toBeGreaterThan(0);
+    type(/เบอร์โทร/, '02-123-4567'); type('ค่าส่ง (ไม่บังคับ)', '40'); type(/ส่งฟรีเมื่อซื้อครบ/, '500');
+    fireEvent.click(screen.getByRole('button', { name: 'บันทึกร้านยา' }));
+    expect(await screen.findByText('โทร 02-123-4567')).toBeInTheDocument();
+    expect(screen.getByText(/ค่าส่ง 40 บาท · ฟรีเมื่อซื้อครบ 500 บาท/)).toBeInTheDocument();
+    expect(saved(s).pharmacies[0]).toMatchObject({ name: 'ร้านยาสุขใจ', shippingFee: 40, freeShippingOver: 500 });
+
+    fireEvent.click(screen.getByRole('button', { name: 'เพิ่ม จำนวนวัน' }));
+    expect(saved(s).settings.reminderDays).toBe(8);
+
+    fireEvent.click(screen.getByRole('button', { name: 'แก้ไข ร้านยาสุขใจ' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'ลบร้านนี้' }));
+    expect(saved(s).pharmacies).toHaveLength(1); // not yet: asks first
+    const sheet = screen.getByRole('dialog', { name: 'ลบร้านยา' });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'ลบร้านนี้' }));
+    expect(await screen.findByText('ยังไม่มีร้านยา', { exact: false })).toBeInTheDocument();
+    expect(saved(s).pharmacies).toHaveLength(0);
+  });
+
+  it('delete-all needs the tick; restore refuses a bad file and keeps data', async () => {
+    const s = mem(demoData()); open('#/settings', s);
+    fireEvent.click(screen.getByRole('button', { name: 'ลบข้อมูลทั้งหมด' }));
+    const sheet = screen.getByRole('dialog', { name: 'ลบข้อมูลทั้งหมด' });
+    expect(within(sheet).getByRole('button', { name: 'ลบทั้งหมด' })).toBeDisabled();
+    fireEvent.click(within(sheet).getByRole('checkbox', { name: 'ฉันเข้าใจ' }));
+    fireEvent.click(within(sheet).getByRole('button', { name: 'ลบทั้งหมด' }));
+    expect(await screen.findByRole('button', { name: 'เพิ่มสมาชิก' })).toBeInTheDocument();
+    expect(saved(s).persons).toHaveLength(0);
+  });
+
+  it('restore: shows file vs current, replaces only after the tick', async () => {
+    const s = mem(); open('#/settings', s);
+    const file = new File([JSON.stringify(demoData())], 'b.json', { type: 'application/json' });
+    Object.defineProperty(file, 'text', { value: () => Promise.resolve(JSON.stringify(demoData())) });
+    fireEvent.change(screen.getByLabelText('เลือกไฟล์สำรอง'), { target: { files: [file] } });
+    const sheet = await screen.findByRole('dialog', { name: 'นำเข้าข้อมูล' });
+    expect(within(sheet).getByRole('button', { name: 'แทนที่ด้วยข้อมูลในไฟล์' })).toBeDisabled();
+    fireEvent.click(within(sheet).getByRole('checkbox', { name: 'ฉันเข้าใจ' }));
+    fireEvent.click(within(sheet).getByRole('button', { name: 'แทนที่ด้วยข้อมูลในไฟล์' }));
+    expect(await screen.findByText('ยาใกล้หมด 1 รายการ')).toBeInTheDocument();
+    expect(saved(s).persons.length).toBeGreaterThan(0);
+
+    open('#/settings', s);
+    const bad = new File(['nope'], 'x.json'); Object.defineProperty(bad, 'text', { value: () => Promise.resolve('nope') });
+    fireEvent.change(screen.getAllByLabelText('เลือกไฟล์สำรอง').at(-1)!, { target: { files: [bad] } });
+    expect(await screen.findByText(/ไม่ใช่ไฟล์สำรองของ JudYa/)).toBeInTheDocument();
+  });
+});

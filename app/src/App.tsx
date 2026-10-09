@@ -17,6 +17,8 @@ import { SchedulePage } from './pages/SchedulePage';
 import { DosePage } from './pages/DosePage';
 import { HistoryPage } from './pages/HistoryPage';
 import { StopPage } from './pages/StopPage';
+import { Settings } from './pages/Settings';
+import { PharmacyForm } from './pages/PharmacyForm';
 import { Gallery } from './pages/Gallery';
 import { ComingSoon } from './pages/ComingSoon';
 import { LoadError } from './pages/LoadError';
@@ -53,7 +55,9 @@ function Page() {
   if ((m = match('/medicine/:x', path))) return <MedicineForm k={m.x as string} />;
   if (path === '/gallery') return <Gallery />;
   if (path === '/share') return <ComingSoon title="แชร์ข้อมูลยา" nav />;
-  if (path === '/settings') return <ComingSoon title="ตั้งค่า" nav />;
+  if (path === '/settings') return <Settings />;
+  if (path === '/pharmacy/new') return <PharmacyForm id={null} />;
+  if ((m = match('/pharmacy/:id', path))) return <PharmacyForm id={m.id as string} />;
   return <ComingSoon title="หน้านี้" />;
 }
 

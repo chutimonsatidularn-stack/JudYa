@@ -5,6 +5,7 @@ Format: Given / When / Then. IDs link to requirements. "Test" = automated (unit/
 ## Data safety (do first)
 - **AC-D1 (D-4, ADR-0007)** Given a phone that still holds the old app's data under `medmate.v1`, when the new app runs, saves and is restored from a backup, then `medmate.v1` is byte-for-byte unchanged and the new app starts with its own empty data under `judya.v1`. (Test: `app/src/domain/__tests__/storage.test.ts`.)
 - **AC-D2 (SEC-2)** Given a corrupt/oversized/foreign JSON backup, when imported, then the app refuses with a Thai message and keeps current data.
+- **AC-P3 (UI-7, UI-7a)** Add a pharmacy with a bad phone → save is disabled with a reason; fix it → saved and shown in the list and in the price-row select on 08d; delete asks first and also removes that pharmacy's price rows. Changing the reminder days to N changes "ใกล้หมด" everywhere. (Tests: `settings.test.ts`, `flows.test.tsx`.)
 - **AC-D3 (D-3)** Backup file → restore on a clean browser reproduces identical data (round trip test); restore asks for confirmation first.
 
 ## Calculations (unit tests = `reference/calc.test.mjs` ported)
