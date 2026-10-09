@@ -36,6 +36,7 @@ export const Person = z.object({
   birthYear: z.number().int().min(1800).max(3000).optional(), // พ.ศ. as saved by the old app
   avatarId: Text(40).optional(), // MB-1: id from docs/design/assets/profile-icons/profiles.json
   selfManaged: z.boolean(),
+  removed: z.boolean().optional(), // MB-7: taken out of the list; medicines, history and allergies are kept, can be brought back
   conditions: z.array(Text(200)).optional(),
   insurance: z.object({ health: Text(200).optional(), accident: Text(200).optional() }).optional(),
 });
@@ -142,6 +143,7 @@ export const AppData = z.object({
   templates: z.array(MessageTemplate).min(1),
   settings: Settings,
   orderDrafts: z.array(OrderDraft),
+  ticks: z.object({ date: IsoDate, done: z.array(z.string()) }).optional(), // today's "จัดแล้ว" ticks (NV-4); reset when the date changes
 });
 
 export type Person = z.infer<typeof Person>;
