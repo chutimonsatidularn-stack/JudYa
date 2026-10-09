@@ -1,6 +1,6 @@
 # ADR-0005 (number: use the next free one in the repo): JudYa v0.7 — data model v3 and lossless migration
 
-- Status: Accepted (owner OKed on 2026-10-09). The exact v2 field names are read from `medmate-app.html` in Step 1; if they differ from the mapping below, add a note here before coding the migration.
+- Status: Superseded by ADR-0007 on 2026-10-09 (the owner will start fresh; no migration). Kept as a record. Earlier: Accepted (owner OKed on 2026-10-09). The exact v2 field names are read from `medmate-app.html` in Step 1; if they differ from the mapping below, add a note here before coding the migration.
 - Date: 2026-10-08
 - Inputs: requirements MB-*, HM-*, BR-*, PR-*, DA-*, AL-*, D-4; ADR-0004.
 

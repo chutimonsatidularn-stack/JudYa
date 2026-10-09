@@ -3,7 +3,7 @@
 Format: Given / When / Then. IDs link to requirements. "Test" = automated (unit/component) unless marked **Manual** (done on the owner's Android phone). Numbers use the demo data in `reference/calc.test.mjs`.
 
 ## Data safety (do first)
-- **AC-D1 (D-4)** Given a phone/browser holding v2 data, when the new build loads, then all medicines, people, doses, schedules, history, pharmacies and templates are present and unchanged in meaning; a copy of the old data exists under the backup key; running the upgrade twice changes nothing. Test with an anonymised fixture + **Manual** with the owner's real backup file.
+- **AC-D1 (D-4, ADR-0007)** Given a phone that still holds the old app's data under `medmate.v1`, when the new app runs, saves and is restored from a backup, then `medmate.v1` is byte-for-byte unchanged and the new app starts with its own empty data under `judya.v1`. (Test: `app/src/domain/__tests__/storage.test.ts`.)
 - **AC-D2 (SEC-2)** Given a corrupt/oversized/foreign JSON backup, when imported, then the app refuses with a Thai message and keeps current data.
 - **AC-D3 (D-3)** Backup file → restore on a clean browser reproduces identical data (round trip test); restore asks for confirmation first.
 

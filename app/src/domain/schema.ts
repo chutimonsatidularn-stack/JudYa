@@ -1,4 +1,4 @@
-// JudYa data model v3 — the contract from docs/data-model.md, as zod schemas (SEC-2: validate everything read from
+// JudYa data model (format version 1 of the new app) — the contract from docs/data-model.md, as zod schemas (SEC-2: validate everything read from
 // storage or from an imported backup). Limits here are "storage sanity" limits and are deliberately lenient so that
 // real data is never rejected by a migration; the screens apply the tighter limits (names ≤ 40, stock ≤ 9999 …).
 import { z } from 'zod';
@@ -33,7 +33,6 @@ export const Person = z.object({
   id: Id,
   name: Text(100),
   relationship: Text(60).optional(),
-  gender: Text(20).optional(),
   birthYear: z.number().int().min(1800).max(3000).optional(), // พ.ศ. as saved by the old app
   avatarId: Text(40).optional(), // MB-1: id from docs/design/assets/profile-icons/profiles.json
   selfManaged: z.boolean(),
@@ -51,8 +50,8 @@ export const Allergy = z.object({
   source: z.enum(['manual', 'stopMedication']),
 });
 
-// price unit null = "not recorded" (old data had no unit): never guessed, so the shop comparison says "เทียบไม่ได้"
-export const PriceRow = z.object({ pharmacyId: Id, price: z.number().min(0), unit: z.union([Unit, PackUnit]).nullable() });
+// the unit must be the base or pack unit of the medicine to be comparable (PR-4); otherwise the comparison says "เทียบไม่ได้"
+export const PriceRow = z.object({ pharmacyId: Id, price: z.number().min(0), unit: z.union([Unit, PackUnit]) });
 
 export const Medication = z.object({
   id: Id,
@@ -130,12 +129,9 @@ export const OrderDraft = z.object({
   status: z.enum(['draft', 'reviewed', 'copied']),
 });
 
-// Things the old app saved that v3 has no place for yet. Kept as plain JSON so nothing the owner entered is lost;
-// no screen reads it. `sourceVersion` says which old format it came from.
-export const Legacy = z.object({ sourceVersion: z.number().int() }).passthrough();
-
-export const RootV3 = z.object({
-  version: z.literal(3),
+export const DATA_VERSION = 1;
+export const AppData = z.object({
+  version: z.literal(DATA_VERSION),
   household: z.object({ name: Text(100) }),
   persons: z.array(Person),
   allergies: z.array(Allergy),
@@ -146,7 +142,6 @@ export const RootV3 = z.object({
   templates: z.array(MessageTemplate).min(1),
   settings: Settings,
   orderDrafts: z.array(OrderDraft),
-  legacy: Legacy.optional(),
 });
 
 export type Person = z.infer<typeof Person>;
@@ -157,4 +152,4 @@ export type DoseChange = z.infer<typeof DoseChange>;
 export type Pharmacy = z.infer<typeof Pharmacy>;
 export type Schedule = z.infer<typeof Schedule>;
 export type Doses = z.infer<typeof Doses>;
-export type RootV3 = z.infer<typeof RootV3>;
+export type AppData = z.infer<typeof AppData>;

@@ -15,7 +15,7 @@ This file is a **superset of the repo's `docs/requirements.md`** (all old IDs ke
 | P-2 | Stay simple for beginners; no complex features yet. | Confirmed |
 | P-3 | It is a **family medication management assistant**, not only a reminder app: keep each person's medicines, know the stock, days remaining and reorder date, prepare the order, compare pharmacies, share with family, give the doctor a readable summary. (pkg) | Confirmed |
 | P-4 | Core principle: **ไม่ต้องจำ ไม่ต้องคำนวณ ไม่ต้องพิมพ์ใหม่**. (pkg) | Confirmed |
-| P-5 | Name is **JudYa**. First rename pass changes only what users see; internal names and storage keys (`medmate.v1`) stay so existing phone data is kept. (owner, Q-rename) | Confirmed |
+| P-5 | Name is **JudYa**. The new app uses the storage key `judya.v1` (ADR-0007); the old app keeps `medmate.v1`. (owner, Q-rename; revised 2026-10-09) | Confirmed |
 | P-6 | The app UI uses only the JudYa logo palette (see design system). (owner) | Confirmed |
 | P-7 | Plan: trial PWA first (Android), later maybe sold (first customers: families caring for elderly parents) and maybe App Store/Play Store. Design so it can become a mobile app. | Confirmed |
 
@@ -169,7 +169,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 | D-1 | Data is stored **on the device only**; no cloud sync (for now). | Confirmed |
 | D-2 | Entities: see `docs/data-model.md` (Person, Allergy, Medication [brand entry: names, strength, form, packaging, prices], Assignment [stock, doses, schedule, cycle, lead days, expiry, active/stop], DoseChange [append-only: dose/stop, previous/new, reason, note, symptoms], Pharmacy, MessageTemplate, OrderDraft, Settings). | Confirmed |
 | D-3 | **Backup / restore**: Settings can save all data to a file and load it back. Loading replaces current data only after a confirmation showing what will be replaced; the file is validated first. User can delete all data. | Confirmed |
-| D-4 | Saved data is versioned. `medmate.v1` holds `{version: 2, …}` today (dose-schedule upgrade); this build upgrades to **version 3** (ADR-0005). The owner's phone already holds real data: **upgrade must be lossless and re-runnable; keep a copy of the old data until the upgrade is confirmed.** | Confirmed |
+| D-4 | Saved data is versioned (`version` inside the saved object). The new app uses its own key `judya.v1`, format `version: 1`. **No migration of the old app's data** (owner 2026-10-09, ADR-0007); the old key `medmate.v1` is never touched. | Confirmed |
 | D-5 | No login in the prototype/test phase: the app opens straight to Home. Screens 03–05 stay as pictures for the real app. | Confirmed |
 | D-6 | Health data is sensitive personal data (Thai PDPA): keep it on the device, no analytics/tracking, no third-party scripts that see the data, sharing only on explicit user action, privacy notice visible on Share. | Confirmed |
 
@@ -197,7 +197,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 |---|---|---|
 | C-1 | Target: Android Chrome first. | Confirmed |
 | C-2 | Readable for older users: large text, good contrast. | Confirmed |
-| C-3 | Free hosting (GitHub Pages, private repo), no running costs. Keep the same Pages origin so the phone's saved data survives. Live address (owner checked 2026-10-09): `https://chutimonsatidularn-stack.github.io/JudYa/`; the installed phone app opens. | Confirmed |
+| C-3 | Free hosting (GitHub Pages, private repo), no running costs. Live address (owner checked 2026-10-09): `https://chutimonsatidularn-stack.github.io/JudYa/`; the installed phone app opens. | Confirmed |
 
 ## Out of scope (parked)
 | ID | Item | Status |
