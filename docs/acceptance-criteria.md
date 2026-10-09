@@ -43,3 +43,4 @@ Format: Given / When / Then. IDs link to requirements. "Test" = automated (unit/
 - **AC-U2 (SEC-1)** A medicine name like `<img src=x onerror=alert(1)>` is shown as plain text everywhere (list, order message, history, doctor summary).
 - **AC-U3 (UX-1/L-2)** Installs to the Android home screen; opens offline after first load; **Manual** on the owner's phone.
 - **AC-U4 (SEC-3)** CSP present; no console errors on any of the 26 screens; Lighthouse accessibility ≥ 90.
+- **AC-H1 (UI-10)** Home shows the `reminder` picture when something is near running out or a dose is still to take today, else `family` when other members have open items, else `normal`; the picture keeps its proportions and never covers the text at 360 / 390 / 430 px; no 👋 anywhere. Test: pure function `getHomeBannerState` (3 states, several at once, no data → `normal`) + screenshots.

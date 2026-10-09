@@ -16,7 +16,7 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 ## Home & daily
 | No | Screen | Content / rules / actions |
 |---|---|---|
-| 06 | Home | Header บ้านของเรา + date + bell with count [NV-3]. Greeting card with the 3-state badge picture (normal / reminder / family) at the right, no 👋 [UI-10]. Yellow banner "ยาใกล้หมด N รายการ" (first item named) → 10. Member cards (avatar, name, chips: ทานวันนี้ N / พักวันนี้ / **จัดยาเอง** · ต้องซื้อ N / สต๊อกพอ) → 07b. Button "เตรียมสั่งยา" → 10. Empty states: no members, no medicines, nothing low (banner hidden). No "today" summary card [NV-2]. |
+| 06 | Home | Header บ้านของเรา + date + bell with count [NV-3]. Greeting card above the yellow banner: "สวัสดีค่ะ" + one line (normal "วันนี้ยังไม่มีเรื่องเร่งด่วน" · reminder "มีเรื่องที่ควรดูวันนี้" · family "ดูแลสมาชิกในบ้านให้ครบ") and the 3-state picture at the right (≈ 35–38% width, not stretched), no 👋 [UI-10]. Yellow banner "ยาใกล้หมด N รายการ" (first item named) → 10. Member cards (avatar, name, chips: ทานวันนี้ N / พักวันนี้ / **จัดยาเอง** · ต้องซื้อ N / สต๊อกพอ) → 07b. Button "เตรียมสั่งยา" → 10. Empty states: no members, no medicines, nothing low (banner hidden). No "today" summary card [NV-2]. |
 | 06b | Notifications | Groups: วันนี้ (who takes pills → 06c) · ควรซื้อยา (each low medicine → 10) · **ใกล้หมดอายุ** (household medicines ≤30 days → 08) · ตั้งค่าการเตือน (→ 14). |
 | 06c | Today | Filter chips ทุกคน/members; progress card "จัดแล้ว X จาก Y"; groups เช้า/กลางวัน/เย็น/ก่อนนอน with tick rows (medicine, person, dose+unit); "พักวันนี้" note; **"ไม่รวม <คน> เพราะจัดยาเอง"** [NV-4, MB-2]. Ticks are per day (not persisted across days). |
 

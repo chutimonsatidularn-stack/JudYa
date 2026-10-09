@@ -90,6 +90,12 @@ body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--font);padding-
 .mut{color:var(--mut)}
 .sm{font-size:17px}.cap{font-size:16px}
 .grow{flex:1;min-width:0}
+.hello{display:flex;align-items:center;gap:8px;background:var(--sky);border-radius:16px;padding:12px 14px;flex:none}
+.hello .tx{flex:1;min-width:0}
+.hello .tx b{display:block;font-size:20px}
+.hello .tx span{display:block;font-size:16px;margin-top:4px}
+.hello .pic{width:38%;height:104px;flex:none;display:flex;align-items:center;justify-content:center}
+.hello .pic img{max-width:100%;max-height:100%;object-fit:contain}
 .banner{display:flex;align-items:center;gap:12px;width:100%;background:var(--yellow);border-radius:16px;padding:14px 16px}
 .banner .d{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
 .banner b{display:block;font-size:17px}
@@ -282,7 +288,7 @@ body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--font);padding-
 
 <script>
 'use strict';
-const IMG={logoV:'__LOGO_V__',logoNT:'__LOGO_NT__',icon:'__ICON__',splash:'__SPLASH__',woman:'__WOMAN__'};
+const IMG={logoV:'__LOGO_V__',logoNT:'__LOGO_NT__',icon:'__ICON__',splash:'__SPLASH__',woman:'__WOMAN__',bnNormal:'__BN_NORMAL__',bnReminder:'__BN_REMINDER__',bnFamily:'__BN_FAMILY__'};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---------- ไอคอน: เส้น 2px ปลายมน กล่อง 24px ชุดเดียว ---------- */
@@ -393,6 +399,11 @@ const minDays=w=>{const a=MEDS[w].map(m=>m.days).filter(v=>v!=null);return a.len
 const dueOf=(s,w)=>isSelf(s,w)?[]:MEDS[w].map(m=>({m,sc:s.saved[m.id]})).filter(x=>takeOn(x.sc,0)&&PER.some(k=>x.sc.doses[k]>0));
 const restOf=(s,w)=>isSelf(s,w)?[]:MEDS[w].filter(m=>!takeOn(s.saved[m.id],0));
 const perOf=x=>PER.filter(k=>x.sc.doses[k]>0);
+// Home banner (UI-10): reminder > family > normal. Pure function; inputs are counts, no clock.
+function getHomeBannerState(i){i=i||{};if(i.lowCount>0||i.dueNow>0)return'reminder';if(i.othersOpen>0)return'family';return'normal'}
+const HOME_BANNERS={normal:{src:IMG.bnNormal,alt:'ผู้หญิงโบกมือทักทาย',txt:'วันนี้ยังไม่มีเรื่องเร่งด่วน'},reminder:{src:IMG.bnReminder,alt:'ปฏิทินและขวดยาเตือนให้จัดการยา',txt:'มีเรื่องที่ควรดูวันนี้'},family:{src:IMG.bnFamily,alt:'ครอบครัวกับกล่องยา',txt:'ดูแลสมาชิกในบ้านให้ครบ'}};
+const homeBannerInput=s=>{const ppl=MEMBERS();return{lowCount:lowCount().length,dueNow:ppl.reduce((a,w)=>a+dueOf(s,w).flatMap(x=>perOf(x).filter(k=>!s.done[x.m.id+':'+k])).length,0),othersOpen:ppl.filter(w=>w!=='ฉัน'&&(dueOf(s,w).length||buyOf(w).length)).length}};
+const homeBanner=s=>{const b=HOME_BANNERS[getHomeBannerState(homeBannerInput(s))]||HOME_BANNERS.normal;return`<div class="hello"><div class="tx"><b>สวัสดีค่ะ</b><span>${b.txt}</span></div><div class="pic"><img src="${b.src}" alt="${b.alt}"></div></div>`};
 const buyOf=w=>MEDS[w].filter(m=>m.days!=null&&m.days<=LOW);
 const notifCount=s=>(MEMBERS().some(w=>dueOf(s,w).length)?1:0)+lowCount().length+expList().length;
 const personChips=(s,w)=>{const n=dueOf(s,w).length,b=buyOf(w).length;return(isSelf(s,w)?`<span class="chip info">${ic('info',14)}จัดยาเอง</span>`:n?`<span class="chip info">${ic('pill',14)}ทานวันนี้ ${n}</span>`:`<span class="chip rest">${ic('moon',14)}พักวันนี้</span>`)+(b?`<span class="chip low">${ic('alert',14)}ต้องซื้อ ${b}</span>`:`<span class="chip ok">${ic('check',14)}สต๊อกพอ</span>`)};
@@ -473,6 +484,7 @@ home:{no:'06',name:'หน้าแรก (Dashboard)',note:'แบนเนอ�
  r:s=>{const lw=lowCount(),first=lw[0],ppl=MEMBERS(),n=notifCount(s);
  return`${sbar()}<div class="top"><img class="ico" src="${IMG.icon}" alt="JudYa"><div class="tt"><b>บ้านของเรา</b><small>${TODAY.label}</small></div><button class="ib sky" data-go="notif" aria-label="การแจ้งเตือน ${n} รายการ">${ic('bell')}<span class="dot-n" aria-hidden="true">${n}</span></button></div>
  <div class="body" style="gap:14px">
+ ${homeBanner(s)}
  <button class="banner" data-go="order" data-of=""><span class="d">${ic('alert',24)}</span><span class="grow"><b>ยาใกล้หมด ${lw.length} รายการ</b><span class="sm">${first.n} ของ${PEOPLE[first.who].name} เหลือ ${first.days} วัน</span></span>${ic('chev',20)}</button>
  <div class="sec"><h2>สมาชิก</h2><button class="lnk" data-go="household">ดูทั้งหมด</button></div>
  <div class="list" style="gap:8px;margin-top:-6px">${ppl.map(w=>`<button class="card tap" style="padding:12px 14px" data-go="meds" data-person="${w}">${avatar(w,'lg')}<span class="grow"><b style="font-size:20px">${PEOPLE[w].name}</b><span class="chips" style="gap:6px;margin-top:6px;display:flex">${personChips(s,w)}</span></span>${ic('chev',20)}</button>`).join('')}</div></div>
