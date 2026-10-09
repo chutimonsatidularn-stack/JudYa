@@ -144,6 +144,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 |---|---|---|
 | UI-1 | Thai language, mobile-first. | Confirmed |
 | UI-2 | Visual system = `docs/design-system.md` + `docs/design/design-tokens.json`: navy `#0B3A6B`, blue, green/mint, yellow, sky/pale surfaces, Noto Sans Thai, rounded cards, clean-line icons. | Confirmed |
+| UI-2a | Real app start: splash + welcome appear once, on the first start only; afterwards the app opens on Home. Second welcome button is "ฉันมีไฟล์สำรองข้อมูล" (opens Settings) instead of "ฉันมีบัญชีแล้ว", because there is no login (OS-1). Pictures 03–05 are not built. (Claude's proposal 2026-10-09) | Proposed |
 | UI-3 | Screens (29; pictures in `docs/design/screens/`): 01 Splash · 02 Welcome · 03 Login · 04 Register · 05 OTP · 06 Home · 06b Notifications · 06c Today · 07 Members · 07b Member page · 07c Medicines · 07d Allergy · 07e Choose profile picture · 07f Add / edit member · 07g Remove member · 08 Edit medicine · 08c Schedule · 08d Pack & buying · 09 Adjust dose · 09b Confirm · 09c History · 09d Stop · 10 Compare & order · 11 Order message · 11b Message template · 12 Doctor mode · 13 Share · 14 Pharmacies/Settings · 14b Pharmacy form. | Confirmed |
 | UI-4 | Home is action-first (NV-2). | Confirmed |
 | UI-5 | Doctor Mode: person, current medicines with dose and schedule, latest history with reasons, **allergy block (red when present)**, share button, and a visible note "ไม่ใช่การวินิจฉัย". | Confirmed |

@@ -6,5 +6,6 @@ import '@fontsource/noto-sans-thai/700.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import App from './App';
+import { Intro } from './pages/Intro';
 
-createRoot(document.getElementById('root') as HTMLElement).render(<StrictMode><App store={window.localStorage} /></StrictMode>);
+createRoot(document.getElementById('root') as HTMLElement).render(<StrictMode><Intro store={window.localStorage}><App store={window.localStorage} /></Intro></StrictMode>);

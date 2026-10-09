@@ -8,7 +8,7 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 | No | Screen | Content / rules |
 |---|---|---|
 | 01 | Splash | Logo + splash illustration (approved SVG, no leaf version in-app). Goes to Welcome. |
-| 02 | Welcome | Headline "ดูแลยาของคนที่คุณรัก ได้ในที่เดียว"; 3 benefits (เช็คสต๊อกยา · เตือนซื้อยา · ส่งต่อข้อมูลยา); buttons เริ่มใช้งาน (prototype → Home, D-5) / ฉันมีบัญชีแล้ว. |
+| 02 | Welcome | Headline "ดูแลยาของคนที่คุณรัก ได้ในที่เดียว"; 3 benefits (เช็คสต๊อกยา · เตือนซื้อยา · ส่งต่อข้อมูลยา); buttons เริ่มใช้งาน (prototype → Home, D-5) / ฉันมีบัญชีแล้ว. Real app: shown once on the very first start only (nothing saved, not seen before; splash moves on by itself after ~2 s or on tap); there is no login in this phase, so the second button is "ฉันมีไฟล์สำรองข้อมูล" → Settings (restore). (Proposed, UI-2a) |
 | 03 | Login | Phone number + OTP text; woman illustration without background; "สร้างบัญชีใหม่". Picture only. |
 | 04 | Register | Name, phone, household name, consent tick, "ขอรหัส OTP". Picture only. |
 | 05 | OTP | 6 boxes, resend countdown, ยืนยัน. Picture only. |
