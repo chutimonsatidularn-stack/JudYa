@@ -118,3 +118,72 @@ describe('safety', () => {
     const s = mem(); s.map.set(STORAGE_KEY, '{broken'); open('#/', s); expect(screen.getByText('เปิดข้อมูลไม่ได้')).toBeInTheDocument(); expect(s.map.get(STORAGE_KEY)).toBe('{broken');
   });
 });
+
+describe('add and edit a medicine (AC-B, AC-H, AC-A4)', () => {
+  const pharm = () => { const d = demoData(); d.pharmacies = [{ id: 'ph1', name: 'ร้านสุขใจ', shippingFee: 40, freeShippingOver: null, active: true }, { id: 'ph2', name: 'ร้านหมอยา', shippingFee: 30, freeShippingOver: null, active: true }]; return d; };
+
+  it('add: name required → fill → pack → schedule → save; days remaining come from the walk', async () => {
+    const s = mem(pharm()); open('#/medicine/new?owner=p_me', s);
+    fireEvent.click(await screen.findByRole('button', { name: 'บันทึก' })); expect(await screen.findByRole('status')).toHaveTextContent('ใส่ชื่อยาก่อน');
+    type('ตัวยาสามัญ (ชื่อสามัญ)', 'Amlodipine'); type('ความแรง', '5 mg'); type('จำนวนที่เหลือ', '12');
+    expect(screen.getAllByText(/ยังไม่ระบุขนาดบรรจุ/).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByText('ขนาดบรรจุและการซื้อ').closest('button')!);
+    fireEvent.change(await screen.findByLabelText('จำนวนต่อแพ็ก'), { target: { value: '10' } });
+    expect(screen.getByText('เท่ากับ 1.2 แผง')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'เพิ่มราคาจากร้านอื่น' }));
+    fireEvent.change(screen.getByLabelText('ราคา'), { target: { value: '35' } });
+    fireEvent.click(screen.getByRole('button', { name: 'เสร็จ' }));
+    fireEvent.click((await screen.findByText('ตารางทานยา')).closest('button')!);
+    fireEvent.click(await screen.findByRole('button', { name: 'เลือกวัน' }));
+    for (const day of ['จันทร์', 'พุธ', 'ศุกร์']) fireEvent.click(screen.getByRole('button', { name: `วัน${day}` }));
+    expect(screen.getByText('ทุกวันจันทร์ พุธ และ ศุกร์')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'เพิ่มขนาดยาเช้า' }));
+    fireEvent.click(screen.getByRole('button', { name: 'เพิ่มขนาดยาเช้า' })); // ½ + ½ = 1
+    fireEvent.click(screen.getByRole('button', { name: 'เสร็จ กลับไปหน้าเพิ่มยา' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'บันทึก' }));
+    await screen.findByText('เพิ่มยาแล้ว');
+    const d = saved(s); const a = d.assignments.at(-1)!; const med = d.medications.at(-1)!;
+    expect(a).toMatchObject({ owner: { kind: 'person', personId: 'p_me' }, stockQty: 12, doses: { morning: 1 }, schedule: { kind: 'weekdays', days: [1, 3, 5] } });
+    expect(med).toMatchObject({ generic: 'Amlodipine', packSize: 10, prices: [{ pharmacyId: 'ph1', price: 35, unit: 'แผง' }] });
+  });
+
+  it('household medicine: expiry field, no schedule card, no stock reminder (HM-1…3)', async () => {
+    open('#/medicine/new?owner=house', mem(pharm()));
+    expect(await screen.findByLabelText('วันหมดอายุ')).toBeInTheDocument();
+    expect(screen.queryByText('ตารางทานยา')).toBeNull(); expect(screen.queryByText('ปรับโดส')).toBeNull();
+  });
+
+  it('allergy warning appears by generic name (AC-L2)', async () => {
+    const d = pharm(); d.allergies.push({ id: 'al', personId: 'p_dad', drug: 'Penicillin', symptoms: ['ผื่น/ลมพิษ'], recordedOn: '2026-01-01', source: 'manual' });
+    open('#/medicine/new?owner=p_dad', mem(d)); type('ตัวยาสามัญ (ชื่อสามัญ)', 'penicillin v');
+    expect(await screen.findByText(/ระวัง: คุณพ่อ เคยแพ้ Penicillin/)).toBeInTheDocument();
+  });
+
+  it('edit stock only: saved without history', async () => {
+    const s = mem(pharm()); open('#/medicine/a_dad_los', s);
+    type('จำนวนที่เหลือ', '50'); fireEvent.click(await screen.findByRole('button', { name: 'บันทึก' })); await screen.findByText('บันทึกแล้ว');
+    expect(saved(s).assignments.find((a) => a.id === 'a_dad_los')!.stockQty).toBe(50); expect(saved(s).changes).toHaveLength(0);
+  });
+
+  it('change the schedule of an existing medicine: needs a reason and a tick, writes ONE history entry (DS-10, AC-A4)', async () => {
+    const s = mem(pharm()); open('#/medicine/a_dad_vitd/schedule', s);
+    expect(screen.getByText('ยังไม่ได้เปลี่ยนตาราง')).toBeInTheDocument(); expect(screen.getByRole('button', { name: 'ตรวจสอบก่อนบันทึก' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'วันพุธ' }));
+    expect(screen.getByRole('button', { name: 'ตรวจสอบก่อนบันทึก' })).toBeDisabled(); expect(screen.getByText('เลือกเหตุผลก่อนบันทึก')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('เหตุผล / แหล่งข้อมูล'), { target: { value: 'แพทย์สั่งปรับ' } });
+    fireEvent.click(screen.getByRole('button', { name: 'ตรวจสอบก่อนบันทึก' }));
+    const dlg = await screen.findByRole('dialog'); expect(dlg).toHaveTextContent('ทุกวันจันทร์ และ พฤหัสบดี'); expect(dlg).toHaveTextContent('ทุกวันจันทร์ พุธ และ พฤหัสบดี'); expect(dlg).toHaveTextContent('แพทย์สั่งปรับ');
+    const save = within(dlg).getByRole('button', { name: 'บันทึกตารางใหม่' }); expect(save).toBeDisabled();
+    fireEvent.click(within(dlg).getByRole('checkbox', { name: 'ฉันตรวจสอบตารางนี้แล้ว' })); fireEvent.click(within(dlg).getByRole('button', { name: 'บันทึกตารางใหม่' }));
+    await screen.findByText('บันทึกตารางใหม่แล้ว');
+    const d = saved(s); expect(d.changes).toHaveLength(1); expect(d.changes[0]).toMatchObject({ kind: 'dose', reason: 'แพทย์สั่งปรับ', assignmentId: 'a_dad_vitd', previous: { schedule: { kind: 'weekdays', days: [1, 4] } }, next: { schedule: { kind: 'weekdays', days: [1, 3, 4] } } });
+    expect(d.assignments.find((a) => a.id === 'a_dad_vitd')!.schedule).toEqual({ kind: 'weekdays', days: [1, 3, 4] });
+  });
+
+  it('weekday schedule with no day chosen cannot be saved (DS-2)', async () => {
+    open('#/medicine/new?owner=p_me', mem(pharm())); type('ตัวยาสามัญ (ชื่อสามัญ)', 'X');
+    fireEvent.click((await screen.findByText('ตารางทานยา')).closest('button')!); fireEvent.click(await screen.findByRole('button', { name: 'เลือกวัน' }));
+    fireEvent.click(screen.getByRole('button', { name: 'เสร็จ กลับไปหน้าเพิ่มยา' })); fireEvent.click(await screen.findByRole('button', { name: 'บันทึก' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('ตารางทานยายังไม่ครบ');
+  });
+});

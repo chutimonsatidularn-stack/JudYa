@@ -43,6 +43,7 @@ export const periodsOf = (doses: Doses): { key: PeriodKey; label: string; amount
 /** "เช้า 1 เม็ด · เย็น 1 เม็ด" */
 export const doseText = (doses: Doses, unit: string): string => { const p = periodsOf(doses).map((x) => `${x.label} ${fr(x.amount)} ${unit}`); return p.length ? p.join(' · ') : 'ยังไม่ได้ตั้งขนาดยา'; };
 /** "ทุกวัน · เช้า 1 เม็ด" */
-export const fullDose = (a: Assignment, med: Medication, today: string): string => `${scheduleSummary(a.schedule, today)} · ${doseText(a.doses, med.baseUnit)}`;
+export const scheduleDoseText = (schedule: Schedule | null, doses: Doses, unit: string, today: string): string => `${scheduleSummary(schedule, today)} · ${doseText(doses, unit)}`;
+export const fullDose = (a: Assignment, med: Medication, today: string): string => scheduleDoseText(a.schedule, a.doses, med.baseUnit, today);
 /** "Losartan (Cozaar) 50 mg" (BR-2) */
 export const medTitle = (m: Medication): string => `${m.generic}${m.brand ? ` (${m.brand})` : ''}${m.strength ? ` ${m.strength}` : ''}`;

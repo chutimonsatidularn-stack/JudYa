@@ -57,12 +57,13 @@ export function Field({ label, hint, error, children }: { label: ReactNode; hint
 }
 export const TextInput = (p: React.InputHTMLAttributes<HTMLInputElement>) => <input className="in1" {...p} />;
 export const DateInput = (p: React.InputHTMLAttributes<HTMLInputElement>) => <input className="in1" type="date" {...p} />;
-export function Select({ id, value, onChange, options, label }: { id?: string; value: string; onChange: (v: string) => void; options: (string | { group: string; items: string[] })[]; label?: string }) {
+export type Opt = string | { value: string; label: string };
+export function Select({ id, value, onChange, options, label }: { id?: string; value: string; onChange: (v: string) => void; options: (Opt | { group: string; items: string[] })[]; label?: string }) {
   return (
     <div className="inp">
       <span className="selw full">
         <select id={id} aria-label={label} value={value} onChange={(e) => onChange(e.target.value)}>
-          {options.map((o) => typeof o === 'string' ? <option key={o} value={o}>{o}</option> : <optgroup key={o.group} label={o.group}>{o.items.map((i) => <option key={i} value={i}>{i}</option>)}</optgroup>)}
+          {options.map((o) => typeof o === 'string' ? <option key={o} value={o}>{o}</option> : 'group' in o ? <optgroup key={o.group} label={o.group}>{o.items.map((i) => <option key={i} value={i}>{i}</option>)}</optgroup> : <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         <Icon name="caret" size={20} />
       </span>
