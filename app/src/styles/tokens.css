@@ -1,0 +1,17 @@
+/* Design tokens from docs/design/design-tokens.json (single source). Palette = JudYa logo palette only. */
+:root{
+  --navy:#0B3A6B;--blue:#1976F3;--green:#13C596;--yellow:#FFC629;--sky:#E6F4FF;--pale:#F5FAFF;--mint:#D9F1E9;--cream:#FFF7DB;
+  --mut:#4F6A85;--line:#D5E3F0;--white:#FFFFFF;
+  --dng:#EF4444;--dngbg:#FEECEC;--dngink:#B91C1C;--dngborder:#F2B8B8;--warnink:#8A6A00;--okink:#14744C;
+  --font:'Noto Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+html,body,#root{height:100%;margin:0}
+body{background:var(--pale);color:var(--navy);font-family:var(--font);-webkit-text-size-adjust:100%}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+/* the app column: full height, centred, phone-width on bigger screens */
+.app{width:100%;max-width:480px;height:100dvh;margin:0 auto;position:relative;overflow:hidden;background:var(--pale);color:var(--navy);font:400 17px/1.45 var(--font);display:flex;flex-direction:column;text-align:left}
+@media (prefers-reduced-motion:no-preference){.toast{animation:tin .2s ease-out}@keyframes tin{from{opacity:0;transform:translateY(8px)}}}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.app .body>*{flex-shrink:0}
+.fld>label{font-size:17px;font-weight:600}

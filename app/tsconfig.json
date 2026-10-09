@@ -8,8 +8,16 @@
     "noImplicitOverride": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "lib": ["ES2022", "DOM"],
-    "types": []
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": [
+      "vite/client"
+    ],
+    "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

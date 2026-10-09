@@ -1,10 +1,15 @@
-# JudYa app (real build, ADR-0006)
+# JudYa app (real build, ADR-0006 / ADR-0007)
 
-Step 1 (revised): data model and safe storage. No migration (the owner starts fresh, ADR-0007). No screens yet.
+Vite + React + TypeScript. Data stays on the device under the key `judya.v1`; the old app's `medmate.v1` is never touched.
 
-- `src/domain/schema.ts` — data model (format version 1 of the new app) as zod schemas (docs/data-model.md)
-- (removed) `migrate1to3` is in git history, commit 3197889 (not used)
-- `src/domain/storage.ts` — `loadData` / `saveData` on key `judya.v1`; validates, verifies, never overwrites on failure; never touches `medmate.v1`
-- Fixtures: anonymised only; **never commit real backups** (see `.gitignore`)
+Status: Step 1 (data) and Step 2 (foundation) done. Screens come in Step 3. Nothing is deployed.
 
-Commands (run inside `app/`): `npm install`, `npm test`, `npm run typecheck`.
+- `src/domain/` — pure code: `schema.ts` (data model, zod), `storage.ts` (safe load/save), `calc.ts` (calculation module, port of `reference/calc.mjs`), `dates.ts` (Bangkok dates)
+- `src/ui/` — building blocks (`components.tsx`, `Shell.tsx`, `Icon.tsx`, `avatars.ts` = the 20 profile icons)
+- `src/styles/` — design tokens and component CSS (from the approved prototype)
+- `src/pages/` — screens (`Home` first-run now; `Gallery` = all components on one page, **remove before release**)
+- `src/store.tsx`, `src/router.tsx` — state and hash router
+- `public/` — app icons (bottle icon) and manifest
+
+Commands (inside `app/`): `npm install` · `npm run dev` · `npm test` · `npm run typecheck` · `npm run build`.
+Open `#/gallery` to see every component. Never commit real backups (see `.gitignore`).

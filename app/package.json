@@ -3,8 +3,11 @@
   "private": true,
   "version": "0.7.0",
   "type": "module",
-  "description": "JudYa real app (ADR-0006). Step 1: data migration only; screens come later.",
+  "description": "JudYa real app (ADR-0006, ADR-0007).",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

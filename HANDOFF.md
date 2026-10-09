@@ -26,7 +26,7 @@ Claude Project "แอพจัดการยา" also holds the earlier packag
 
 ## 2. Status (update at the end of every session)
 - Design: 26 screens approved as a flow. Not yet designed: member add/edit/remove, backup/restore screens, delete-all-data confirmation, empty/error/loading states, pharmacy delete, PWA install/offline pages, real photo picker (see screen-spec last section).
-- Build: **Step 0 and Step 1 done 2026-10-09 (in `app/`).** Owner decided to start fresh (ADR-0007): no migration, new key `judya.v1`; `app/` has the data model (zod) and safe storage with 7 passing tests (`cd app && npm test`). The old migration code is in git history (commit 3197889). Nothing deployed. Next: Step 2 foundation (calc port to TS, tokens, components, router, PWA shell) and a good empty first run.
+- Build: **Steps 0–2 done 2026-10-09 (in `app/`).** Owner started fresh (ADR-0007): own key `judya.v1`, no migration. Step 2 foundation: Vite + React + TypeScript, `calc.ts` (18 ported tests), design tokens + component CSS from the prototype, 20 reusable components + `#/gallery`, hash router, store with safe saving, first-run Home, CSP, manifest + bottle icon, CI checks (`.github/workflows/ci.yml`). 38 tests (`cd app && npm test`). Nothing deployed. Next: Step 3 screens (06 Home, 06b, 06c first), checkpoint with the owner. Later: service worker + deploy workflow (Step 4), remove the gallery page.
 
 - Decisions made 2026-10-08 (owner asked Claude to choose, beginner): run on **claude.ai/code**; **approach B**; work on a branch + PR; allergy delete = no log (Q-A); undesigned screens = Claude Code drafts then pauses for owner. Beginner steps: `docs/BEGINNER-GUIDE.md`.
 
