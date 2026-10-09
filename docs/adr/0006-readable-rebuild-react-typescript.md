@@ -1,6 +1,6 @@
 # ADR-0006: Build the real JudYa app as a readable rebuild (Vite + React + TypeScript)
 
-- Status: **Proposed** — the owner chose approach B on 2026-10-09; becomes Accepted when the owner OKs this file.
+- Status: Accepted (owner chose approach B and OKed this ADR on 2026-10-09; supersedes ADR-0002 for the real app)
 - Date: 2026-10-09
 - Linked inputs/stories: AP-2, Q-C, C-4, C-5, D-4, SEC-1…SEC-3, L-2, UX-1 in docs/requirements.md; ADR-0002 (superseded for the real app), ADR-0004, ADR-0005.
 

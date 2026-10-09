@@ -1,6 +1,6 @@
 # ADR-0002: Prototype first as static HTML; real app later
 
-- Status: Accepted (approach decided by owner; the static-HTML detail reflects what the repo already is)
+- Status: Accepted for the prototype phase; **superseded by ADR-0006 for the real app** (2026-10-09). The old `medmate-app.html` stays untouched until the migration is confirmed.
 - Date: 2026-10-06
 - Linked inputs/stories: see docs/requirements.md, docs/stories.md
 
