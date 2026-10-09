@@ -1,0 +1,354 @@
+{
+ "1": {
+  "layers": [
+   [
+    "skin",
+    "#FEC59E",
+    1
+   ],
+   [
+    "navy",
+    "#0F2E5D",
+    11
+   ],
+   [
+    "blue",
+    "#3384E9",
+    10
+   ],
+   [
+    "navy",
+    "#061F44",
+    9
+   ],
+   [
+    "skin",
+    "#FDAE7E",
+    4
+   ]
+  ],
+  "bg": "#D7EBFE",
+  "n_ext": 0,
+  "n_cheeks": 0,
+  "svg_bad": [],
+  "maxgap": 2.2737367544323206e-13,
+  "readback_maxdiff": 27,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.1892878214518229,
+  "poppler_p99": 2.0,
+  "poppler_frac_gt16": 0.005615234375,
+  "iou": {
+   "0": 0.9889,
+   "1": 0.9929,
+   "2": 0.9847,
+   "3": 0.9891,
+   "4": 0.9324,
+   "5": 0.9484
+  },
+  "agree": 0.9963530644352863,
+  "bd_mean": 0.11696606405160588,
+  "bd_p99": 0.5,
+  "bd_max": 0.7905694150420949,
+  "de_mean": 2.0454699923011925,
+  "within6": 0.9396514807128504,
+  "within12": 0.9757991017996948,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1528,
+  "edge_max_dist_to_palette": 97.082439194738,
+  "min_feature_px": 3.8984498977661133,
+  "min_ratio": 0.016801805988194814,
+  "min_print_mm": 14.879352860975393,
+  "outline": {
+   "invalid": 0,
+   "total": 914,
+   "axes": [
+    224.80593872070312,
+    231.57151794433594
+   ]
+  },
+  "ellipses_snapped": 6,
+  "ellipse_dev_max": 0.149,
+  "svg_bytes": 11005,
+  "n_paths": 36,
+  "secs": 4.5
+ },
+ "2": {
+  "layers": [
+   [
+    "navy",
+    "#0E2C5A",
+    1
+   ],
+   [
+    "skin",
+    "#FEDAC0",
+    2
+   ],
+   [
+    "pink",
+    "#FEA6A4",
+    6
+   ],
+   [
+    "navy",
+    "#05193B",
+    5
+   ],
+   [
+    "skin",
+    "#FEBE98",
+    1
+   ]
+  ],
+  "bg": "#FEE5E6",
+  "n_ext": 0,
+  "n_cheeks": 0,
+  "svg_bad": [],
+  "maxgap": 2.2737367544323206e-13,
+  "readback_maxdiff": 40,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.15116500854492188,
+  "poppler_p99": 2.0,
+  "poppler_frac_gt16": 0.004512786865234375,
+  "iou": {
+   "0": 0.9868,
+   "1": 0.9912,
+   "2": 0.9931,
+   "3": 0.9905,
+   "4": 0.9358,
+   "5": 0.9457
+  },
+  "agree": 0.9967150604254845,
+  "bd_mean": 0.10986540304546917,
+  "bd_p99": 0.5,
+  "bd_max": 0.75,
+  "de_mean": 2.5438342698138356,
+  "within6": 0.9173390966473429,
+  "within12": 0.9720021534404332,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1517,
+  "edge_max_dist_to_palette": 139.60659010233005,
+  "min_feature_px": 3.995349884033203,
+  "min_ratio": 0.01708889127386201,
+  "min_print_mm": 14.629386774926864,
+  "outline": {
+   "invalid": 0,
+   "total": 922,
+   "axes": [
+    224.62789916992188,
+    233.1649169921875
+   ]
+  },
+  "ellipses_snapped": 4,
+  "ellipse_dev_max": 0.184,
+  "svg_bytes": 7151,
+  "n_paths": 16,
+  "secs": 4.5
+ },
+ "3": {
+  "layers": [
+   [
+    "skin",
+    "#FDCFAD",
+    1
+   ],
+   [
+    "navy",
+    "#0D2C5A",
+    11
+   ],
+   [
+    "white",
+    "#FEFEFE",
+    10
+   ],
+   [
+    "navy",
+    "#081B3F",
+    11
+   ],
+   [
+    "skin",
+    "#FEB88C",
+    5
+   ],
+   [
+    "color",
+    "#D6D8DF",
+    2
+   ]
+  ],
+  "bg": "#DCF4EA",
+  "n_ext": 1,
+  "n_cheeks": 0,
+  "svg_bad": [],
+  "maxgap": 4.547473508864641e-13,
+  "readback_maxdiff": 36,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.33612314860026044,
+  "poppler_p99": 9.0,
+  "poppler_frac_gt16": 0.0098724365234375,
+  "iou": {
+   "0": 0.9929,
+   "1": 0.9878,
+   "2": 0.9716,
+   "3": 0.9842,
+   "4": 0.9259,
+   "5": 0.8939,
+   "6": 0.9414
+  },
+  "agree": 0.9947597599688126,
+  "bd_mean": 0.12257941372935637,
+  "bd_p99": 0.5,
+  "bd_max": 1.5206906325745548,
+  "de_mean": 2.391892477967396,
+  "within6": 0.919381539474647,
+  "within12": 0.9711135094265994,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1518,
+  "edge_max_dist_to_palette": 20.346989949375804,
+  "min_feature_px": 3.5968997478485107,
+  "min_ratio": 0.015267526287583488,
+  "min_print_mm": 16.37462384481471,
+  "outline": {
+   "invalid": 497,
+   "total": 1238,
+   "axes": [
+    226.81265258789062,
+    235.61801147460938
+   ]
+  },
+  "ellipses_snapped": 12,
+  "ellipse_dev_max": 0.241,
+  "svg_bytes": 18384,
+  "n_paths": 41,
+  "secs": 7.3
+ },
+ "4": {
+  "layers": [
+   [
+    "navy",
+    "#0D2B59",
+    2
+   ],
+   [
+    "skin",
+    "#FDDBC2",
+    3
+   ],
+   [
+    "white",
+    "#FEFEFE",
+    8
+   ],
+   [
+    "yellow",
+    "#FECB4C",
+    7
+   ],
+   [
+    "skin",
+    "#FED4B7",
+    7
+   ],
+   [
+    "skin",
+    "#FED2BA",
+    7
+   ],
+   [
+    "navy",
+    "#05183A",
+    5
+   ],
+   [
+    "skin",
+    "#FEBF98",
+    2
+   ]
+  ],
+  "bg": "#FDF0DD",
+  "n_ext": 0,
+  "n_cheeks": 2,
+  "svg_bad": [],
+  "maxgap": 9.094947017729282e-13,
+  "readback_maxdiff": 40,
+  "pdf_ok": true,
+  "pdf_msg": [
+   "errors that qpdf cannot detect"
+  ],
+  "poppler_mean": 0.1725743611653646,
+  "poppler_p99": 3.0,
+  "poppler_frac_gt16": 0.005489349365234375,
+  "iou": {
+   "0": 0.989,
+   "1": 0.9912,
+   "2": 0.9773,
+   "3": 0.9835,
+   "4": 0.9824,
+   "5": 0.9674,
+   "6": 0.9434,
+   "7": 0.9522,
+   "8": 0.9846
+  },
+  "agree": 0.9958074599019826,
+  "bd_mean": 0.11645647769850957,
+  "bd_p99": 0.5,
+  "bd_max": 1.0,
+  "de_mean": 2.7059173289793432,
+  "within6": 0.9107859172973948,
+  "within12": 0.967319783821435,
+  "corners_alpha": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "png_mode": "RGBA",
+  "edge_px": 1534,
+  "edge_max_dist_to_palette": 37.36308338453881,
+  "min_feature_px": 4.0,
+  "min_ratio": 0.01723667377692369,
+  "min_print_mm": 14.503958433946684,
+  "outline": {
+   "invalid": 168,
+   "total": 1014,
+   "axes": [
+    226.11712646484375,
+    231.94015502929688
+   ]
+  },
+  "ellipses_snapped": 24,
+  "ellipse_dev_max": 0.185,
+  "svg_bytes": 14699,
+  "n_paths": 42,
+  "secs": 5.6
+ }
+}
