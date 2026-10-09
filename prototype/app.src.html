@@ -104,7 +104,7 @@ body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--font);padding-
 .chip.rest{background:var(--cream);color:var(--warnink)}
 .chip.low{background:var(--dngbg);color:var(--dngink)}
 .chip.info{background:var(--sky);color:var(--navy)}
-.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:19px;flex:none;background:var(--sky)}
+.av{width:44px;height:44px;border-radius:50%;display:block;object-fit:cover;flex:none;background:var(--sky)}
 .av.m{background:var(--mint)}.av.c{background:var(--cream)}.av.h{background:var(--yellow)}
 .disc{width:40px;height:40px;border-radius:12px;background:var(--sky);display:grid;place-items:center;flex:none}
 .list{display:flex;flex-direction:column;gap:8px}
@@ -289,6 +289,7 @@ body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--font);padding-
 <script>
 'use strict';
 const IMG={logoV:'__LOGO_V__',logoNT:'__LOGO_NT__',icon:'__ICON__',splash:'__SPLASH__',woman:'__WOMAN__',bnNormal:'__BN_NORMAL__',bnReminder:'__BN_REMINDER__',bnFamily:'__BN_FAMILY__'};
+const AVATARS=__AVATARS__;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---------- ไอคอน: เส้น 2px ปลายมน กล่อง 24px ชุดเดียว ---------- */
@@ -325,7 +326,7 @@ const z=()=>({เช้า:0,กลางวัน:0,เย็น:0,ก่อน
 const sch=(mode,o={})=>({mode,days:[],n:2,dates:[],step:.5,doses:{...z(),เช้า:1},...o});
 const FRC={.25:'¼',.5:'½',.75:'¾'};
 const fr=n=>{const w=Math.floor(n+1e-9),f=+(n-w).toFixed(2),q=FRC[f];return(w||!q?String(w):'')+(q||'')};
-const PEOPLE={พ่อ:{name:'คุณพ่อ',cls:'',ch:'พ'},แม่:{name:'คุณแม่',cls:'m',ch:'ม'},ฉัน:{name:'ฉัน',cls:'c',ch:'ฉ'},บ้าน:{name:'ยาสามัญประจำบ้าน',cls:'h',ch:'บ',house:true}};
+const PEOPLE={พ่อ:{name:'คุณพ่อ',cls:'',ch:'พ',av:'profile-11'},แม่:{name:'คุณแม่',cls:'m',ch:'ม',av:'profile-19'},ฉัน:{name:'ฉัน',cls:'c',ch:'ฉ',av:'profile-02'},บ้าน:{name:'ยาสามัญประจำบ้าน',cls:'h',ch:'บ',house:true}};
 const MEMBERS=()=>Object.keys(PEOPLE).filter(w=>!PEOPLE[w].house);
 const isSelf=(s,w)=>!!(s.self&&s.self[w]);
 const MEDS={
@@ -393,7 +394,9 @@ function hdr(title,{back,pill,sub}={}){
 const TABS=[['home','หน้าแรก','home'],['medlist','ยา','pill'],['share','แชร์','share'],['pharm','ตั้งค่า','gear']];
 const nav=a=>`<nav class="nav" aria-label="เมนูหลัก">${TABS.map(([id,t,i])=>`<button class="ni ${id===a?'on':''}" data-go="${id}" ${id==='order'?'data-of=""':''} ${id===a?'aria-current="page"':''}>${ic(i)}${t}</button>`).join('')}</nav>`;
 const stat=days=>days==null?`<span class="chip rest">${ic('info',14)}ยังไม่ทราบ</span>`:days<=LOW?`<span class="chip low">${ic('alert',14)}ใกล้หมด</span>`:`<span class="chip ok">${ic('check',14)}พอใช้</span>`;
-const avatar=(w,c='')=>`<span class="av ${c} ${PEOPLE[w].cls}" aria-hidden="true">${PEOPLE[w].ch}</span>`;
+// Profile pictures: always through getAvatar (profiles.json index, built in by build.py); unknown id -> first icon.
+const getAvatar=id=>AVATARS.find(a=>a.id===id)||AVATARS[0];
+const avatar=(w,c='')=>{const a=getAvatar(PEOPLE[w].av);return`<img class="av ${c}" src="${a.src}" alt="${a.alt}" style="background:${a.bg}">`};
 const lowCount=()=>ALLMEDS.filter(m=>!m.stopped&&m.days!=null&&m.days<=LOW);
 const minDays=w=>{const a=MEDS[w].map(m=>m.days).filter(v=>v!=null);return a.length?Math.min(...a):null};
 const dueOf=(s,w)=>isSelf(s,w)?[]:MEDS[w].map(m=>({m,sc:s.saved[m.id]})).filter(x=>takeOn(x.sc,0)&&PER.some(k=>x.sc.doses[k]>0));

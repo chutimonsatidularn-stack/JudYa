@@ -27,7 +27,7 @@ Tokens: `docs/design/design-tokens.json` (single source). Pictures: `docs/design
 - Yellow is a fill with navy text or mark.
 - Text on tinted backgrounds uses navy or the ink colours: `danger-ink #B91C1C`, `warning-ink #8A6A00`, `success-ink #14744C`. Red `#EF4444` is for icons and large marks only (small red text on white or pink fails AA).
 - Contrast checked 2026-10-08: all text pairs used pass 4.5:1. Known failures kept visible: card/field outline `#D5E3F0` on white is 1.31:1 (decorative), and the green progress bar on white is 2.22:1 (status text sits beside it).
-- Owner decided to restyle all three (Q-E). Done: Home banner (3 states, UI-10). Still on the earlier colours until new pictures arrive: Welcome illustration, profile pictures.
+- Home banner (3 states, UI-10) and profile pictures (20-icon set, MB-1) use the new JudYa pictures. Welcome stays as it is (owner 2026-10-09).
 
 ## Schedule components (added 2026-10-07)
 - **Schedule kind chips** (row of 5): ทุกวัน · เลือกวัน · วันเว้นวัน · ทุกกี่วัน · วันที่ของเดือน. 48 px high, round. Selected = navy fill + white check + white text.
