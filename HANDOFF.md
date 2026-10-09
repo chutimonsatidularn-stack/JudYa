@@ -12,7 +12,7 @@ Purpose: let a **new chat (design work)** or **Claude Code (build)** continue wi
 |---|---|
 | `docs/requirements.md` | Full living requirements (all IDs; supersedes the repo copy) |
 | `docs/screen-spec.md` | 27 screens: content, rules, actions |
-| `docs/data-model.md`, `docs/adr/0005-…` | Target data v3 + lossless migration plan |
+| `docs/data-model.md`, `docs/adr/0007-…` | Data model of the new app (key `judya.v1`); no migration (ADR-0005 superseded) |
 | `docs/calculation-spec.md`, `reference/calc.mjs`, `reference/calc.test.mjs` | Reference maths + 18 passing tests (`node reference/calc.test.mjs`) |
 | `docs/acceptance-criteria.md` | Testable checks |
 | `docs/design-system.md`, `docs/design/design-tokens.json`, `docs/design/assets/*.svg`, `docs/design/screens/*.png` | Look & feel, approved vector brand set, 26 screen pictures |
@@ -26,7 +26,7 @@ Claude Project "แอพจัดการยา" also holds the earlier packag
 
 ## 2. Status (update at the end of every session)
 - Design: 26 screens approved as a flow. Not yet designed: member add/edit/remove, backup/restore screens, delete-all-data confirmation, empty/error/loading states, pharmacy delete, PWA install/offline pages, real photo picker (see screen-spec last section).
-- Build: not started. Next action = `docs/prompts/judya-v07-build.md` step 0 (ask the owner: start real build? approach A or B?).
+- Build: **Steps 0–2 and Step 3 all groups done (all screens incl. 01–02 splash/welcome) and screens 14, 14b done 2026-10-09 (in `app/`)**: screens 06, 06b, 06c, 07, 07b–07g, 08, 08c, 08d, 09, 09b, 09c, 09d, 14, 14b work on saved data (key `judya.v1`; settings has real backup/restore/delete-all and pharmacy delete, all Proposed in UI-7a); 124 tests (`cd app && npm test`); looks match the approved pictures. Nothing is "coming soon" any more; 03–05 stay pictures. Nothing deployed — a deploy workflow and a Pages setting are needed to let the owner try it on the phone (ask the owner). The `#/gallery` test page was removed.
 
 - Decisions made 2026-10-08 (owner asked Claude to choose, beginner): run on **claude.ai/code**; **approach B**; work on a branch + PR; allergy delete = no log (Q-A); undesigned screens = Claude Code drafts then pauses for owner. Beginner steps: `docs/BEGINNER-GUIDE.md`.
 
@@ -44,7 +44,7 @@ Edit page split in 3 levels · tab "ยา" · brand = separate entry, pack size
 ## 5. Risks / conflicts Claude Code must resolve with the owner
 1. **Process**: repo `AGENTS.md` = prototype phase until the owner says "prototype approved" + ADR. "ผ่าน" was said about the *flow review*. → ask (prompt step 0).
 2. **Approach**: compiled single file vs readable rebuild (ADR-0004 anticipated this). Recommended: readable rebuild (React + TypeScript) on the same Pages URL.
-3. **Data**: real data on the phone (v2). Export a backup first; migration per ADR-0005; keep the old copy until confirmed. Never commit real data.
+3. **Data**: the owner starts fresh in the new app (ADR-0007); the old app's data on the phone is left alone (key `medmate.v1` is never touched). Never commit real data.
 4. **Maths**: prototype uses an average per day for days-remaining; real app uses the day-by-day walk (`reference/calc.mjs`, DS-7). Demo numbers (5/70/48/6 days) are not test targets; the test targets are in the test file.
 5. **Brand per-entry model** changes the old "medicine shared by people" idea (L-3): packaging/prices per brand entry, stock/dose/schedule per assignment (data-model.md).
 6. **Allergy deletion** leaves no log (Q-A) — confirm with the owner.

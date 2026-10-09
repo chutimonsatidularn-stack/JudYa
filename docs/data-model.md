@@ -1,6 +1,6 @@
 # JudYa — Data model v3 (target)
 
-Storage key stays `medmate.v1` (P-5). Root object: `{ "version": 3, ... }`. Dates are `YYYY-MM-DD` (Asia/Bangkok); timestamps ISO 8601 with offset. IDs are short random strings. TypeScript-style shapes below are the contract; validate on load and on import (SEC-2).
+Storage key `judya.v1` (ADR-0007; the old app's `medmate.v1` is never touched). Root object: `{ "version": 1, ... }` — the first format of the new app. Code: `app/src/domain/schema.ts`. Dates are `YYYY-MM-DD` (Asia/Bangkok); timestamps ISO 8601 with offset. IDs are short random strings. TypeScript-style shapes below are the contract; validate on load and on import (SEC-2).
 
 ```ts
 type Id = string;
@@ -8,11 +8,11 @@ type Unit = 'เม็ด'|'แคปซูล'|'ซอง'|'มล.'|'กรั
 type PackUnit = 'แผง'|'กล่อง'|'ขวด'|'หลอด'|'แพ็ก'|'ถุง';         // pack units
 type Form = 'เม็ด'|'แคปซูล'|'ผงชง/ซอง'|'น้ำ/ไซรัป'|'ยาหยอด/พ่น'|'ครีม/ขี้ผึ้ง'|'แผ่นแปะ';
 
-interface Root { version: 3; household: {name: string}; persons: Person[]; allergies: Allergy[];
+interface Root { version: 1; household: {name: string}; persons: Person[]; allergies: Allergy[];
   medications: Medication[]; assignments: Assignment[]; changes: DoseChange[];
   pharmacies: Pharmacy[]; templates: MessageTemplate[]; settings: Settings; orderDrafts: OrderDraft[]; }
 
-interface Person { id: Id; name: string /*≤40*/; relationship?: string; birthYear?: number; photo?: string /*small data URL, ≤256px*/;
+interface Person { id: Id; name: string /*≤40 in screens*/; relationship?: string; birthYear?: number /*พ.ศ.*/; avatarId?: string /*MB-1: id in profile-icons/profiles.json; no own photo in this version*/;
   selfManaged: boolean;            // MB-2: leaves the daily pill-preparation list; stock/buying still tracked
   conditions?: string[]; insurance?: {health?: string; accident?: string}; }
 
@@ -25,11 +25,11 @@ type Symptom = 'ผื่น/ลมพิษ'|'คัน'|'บวมที่ห
 interface Medication { id: Id; generic: string /*required ≤40*/; brand?: string; strength: string /*≤20*/; form: Form;
   baseUnit: Unit; packUnit: PackUnit; packSize: number|null /*1..1000, null = unknown*/;
   prices: PriceRow[]; notes?: string; }
-interface PriceRow { pharmacyId: Id; price: number /*THB ≥0, 2 dp*/; unit: Unit|PackUnit; }  // unit must be baseUnit or packUnit to be comparable
+interface PriceRow { pharmacyId: Id; price: number /*THB ≥0, 2 dp*/; unit: Unit|PackUnit; }  // unit must be baseUnit or packUnit to be comparable (PR-4)
 
 // An "Assignment" = a medicine for ONE owner. Owner is a person or the household (HM-1).
 interface Assignment { id: Id; medicationId: Id; owner: {kind:'person', personId: Id} | {kind:'household'};
-  stockQty: number /*0..9999 step 0.25*/; stockUnit: Unit|PackUnit;
+  stockQty: number|null /*0..9999 step 0.25; null = not known yet*/; stockUnit: Unit|PackUnit;
   doses: {morning:number; noon:number; evening:number; bedtime:number};   // 0..9, step 1/½/¼; unit label = form's base unit
   doseStep: 1|0.5|0.25;
   schedule: Schedule | null;       // null for household medicines ("ใช้เมื่อมีอาการ")
@@ -58,7 +58,7 @@ interface OrderDraft { id: Id; personFilter: Id|null; lines: {assignmentId: Id; 
 - `Medication.prices`/packaging are shared by every assignment of that brand entry; stock/dose/schedule are per assignment (L-3).
 - Household assignment: `schedule = null`, doses all 0, no days-remaining; only expiry reminders (HM-2).
 - Dose unit label = `Medication.baseUnit` of the form (BR-5); stock unit may be base or pack unit; days-remaining is "unknown" if stock unit matches neither (BR-6).
-- Images: only `Person.photo`, downscaled (SEC-4).
+- Images: none stored (profile pictures are the 20 icons, `avatarId`). SEC-4 applies only if own photos come back.
 
 ## Prototype → model mapping (the review prototype is NOT the schema)
 | Prototype | Real model |

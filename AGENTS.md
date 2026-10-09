@@ -3,14 +3,14 @@
 JudYa helps people manage medicine at home (Thai UI, mobile-first PWA).
 The owner is a **non-coder building with AI**. Keep everything simple, explain in plain language, and don't add complexity "for later".
 
-## Phase: PROTOTYPE
-We are shaping the app by looking at it, not building the real one yet.
+## Phase: BUILD (real app v0.7, started 2026-10-09)
+The owner approved prototype v0.7 (AP-2) and approach B (ADR-0006). The real app is built in `app/` (Vite + React + TypeScript) step by step as in `docs/prompts/judya-v07-build.md`. The new app uses its own storage key `judya.v1` and never touches the old app's `medmate.v1` (ADR-0007: the owner starts fresh, no migration). The prototype below stays as the design reference.
 - Change the page the owner asks about, show/describe the result, and let them react. Repeat until they say they're satisfied.
 - Two files matter. Read `HANDOFF.md` first.
   - **Review prototype (v0.7, 26 screens):** edit `prototype/app.src.html`, then run `python3 build.py` in `prototype/` to make `judya-flow-v0.7.html`. Never edit the built file by hand.
-  - **Installed MedMate prototype** (`medmate-app.html`, with `medmate-app.json`, `medmate-sw.js`): holds the owner's real data on their phone. Don't change it until the build is approved; it must be migrated, not replaced blindly (ADR-0005).
-- Prototype = static HTML, no build step, no backend, no accounts. Data stays in the browser. (ADR-0002)
-- Don't start the "real app" (frameworks, database, sync, login) until the owner explicitly says the prototype is approved. Then write an ADR first.
+  - **Installed MedMate prototype** (`medmate-app.html`, with `medmate-app.json`, `medmate-sw.js`): still holds the old data on the owner's phone. Leave it unchanged (ADR-0007).
+- The prototype is static HTML, no build step. The real app has a build step but still no backend, no accounts, no analytics; data stays on the device. (ADR-0002 for the prototype, ADR-0006 for the app)
+- Database, sync and login are still out of scope (OS-1) until the owner asks, with a new ADR first.
 
 ## Documents are the memory (read before working, update as you go)
 | Where | What |

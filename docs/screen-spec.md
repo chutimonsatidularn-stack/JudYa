@@ -1,4 +1,4 @@
-# JudYa — Screen spec (v0.7, 27 screens)
+# JudYa — Screen spec (v0.7, 29 screens)
 
 Pictures: `docs/design/screens/NN_<no>_<id>.png` (390×~845 phone frame). Clickable prototype: `prototype/judya-flow-v0.7.html` (open → tap a thumbnail). Pixel details come from the pictures + `design-system.md`; this file defines **content, rules, actions, states**. Thai strings in the pictures are the copy to use. Req IDs in brackets.
 
@@ -8,7 +8,7 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 | No | Screen | Content / rules |
 |---|---|---|
 | 01 | Splash | Logo + splash illustration (approved SVG, no leaf version in-app). Goes to Welcome. |
-| 02 | Welcome | Headline "ดูแลยาของคนที่คุณรัก ได้ในที่เดียว"; 3 benefits (เช็คสต๊อกยา · เตือนซื้อยา · ส่งต่อข้อมูลยา); buttons เริ่มใช้งาน (prototype → Home, D-5) / ฉันมีบัญชีแล้ว. |
+| 02 | Welcome | Headline "ดูแลยาของคนที่คุณรัก ได้ในที่เดียว"; 3 benefits (เช็คสต๊อกยา · เตือนซื้อยา · ส่งต่อข้อมูลยา); buttons เริ่มใช้งาน (prototype → Home, D-5) / ฉันมีบัญชีแล้ว. Real app: shown once on the very first start only (nothing saved, not seen before; splash moves on by itself after ~2 s or on tap); there is no login in this phase, so the second button is "ฉันมีไฟล์สำรองข้อมูล" → Settings (restore). (Proposed, UI-2a) |
 | 03 | Login | Phone number + OTP text; woman illustration without background; "สร้างบัญชีใหม่". Picture only. |
 | 04 | Register | Name, phone, household name, consent tick, "ขอรหัส OTP". Picture only. |
 | 05 | OTP | 6 boxes, resend countdown, ยืนยัน. Picture only. |
@@ -23,11 +23,13 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 ## Members & medicines
 | No | Screen | Content / rules / actions |
 |---|---|---|
-| 07 | Members | One card per member: avatar, name, "ยา N รายการ", "ตัวที่น้อยสุดพอทาน N วัน", chip (ต้องจัดยาวันนี้ N ตัว / วันนี้ไม่ต้องจัดยา / **จัดยาเอง · เราดูแลสต๊อก**), status chip. Pill "เพิ่มสมาชิก" (real app). Note about self-managed. |
+| 07 | Members | One card per member: avatar, name, "ยา N รายการ", "ตัวที่น้อยสุดพอทาน N วัน", chip (ต้องจัดยาวันนี้ N ตัว / วันนี้ไม่ต้องจัดยา / **จัดยาเอง · เราดูแลสต๊อก**), status chip. Pill "เพิ่มสมาชิก" → 07f. Section "สมาชิกที่นำออกแล้ว" with "นำกลับ" [MB-8]. Empty state when no members [MB-9]. Note about self-managed. |
 | 07b | Member page | See MB-3: profile card (large avatar, name, chip เราจัดยาให้/จัดยาเอง, pill "รูป") · switch "<คน>จัดยาทานเอง" · allergy block (red when records; else note + "เพิ่มแพ้ยา") with แก้ไข/ลบ per record (inline delete confirm) [AL-2,AL-4] · tiles: จัดยาวันนี้ (or จัดยาเอง) / สั่งยา / แชร์ให้แพทย์ / สรุปพบแพทย์ · medicine cards · "ยาที่หยุดแล้ว" (name, date, reason). Header pill "เพิ่มยา" (owner preset). |
 | 07c | Medicines (tab 2) | Filter chips ทุกคน · พ่อ · แม่ · ฉัน · **ยาบ้าน**; banner "ยาใกล้หมด N รายการ → เทียบราคาร้านยาก่อนสั่ง"; sections per owner; medicine card: generic + strength, **brand line**, status chip (ใกล้หมด/พอใช้/ยังไม่ทราบ, or expiry chip for household), schedule summary, progress bar (not for household), "เหลือ X · พอทานอีก N วัน". Tap → 08. Pill "เพิ่มยา". |
 | 07d | Allergy form | Title บันทึกแพ้ยา / แก้ไขแพ้ยา; fields: drug name (required), symptom chips (≥1, multi), severe warning when severe chosen, optional detail; info note; save disabled with hint until valid [AL-1…AL-5]. Saves to the member shown in the header; edit keeps the original date. |
 | 07e | Choose profile picture | Opened by "เปลี่ยนรูป" on the member page (07b). Title เลือกรูปโปรไฟล์ + member name; big preview; 4-column grid of the 20 icons (≥ 48 px touch, 78 px here); the chosen one has a check badge + dark frame; primary "ใช้รูปนี้" saves and returns to 07b with a toast; back arrow changes nothing. No camera / file upload [MB-1]. |
+| 07f | Add / edit member | Title เพิ่มสมาชิก / แก้ไขข้อมูลสมาชิก. Big avatar + "เปลี่ยนรูป" (→ 07e, returns here) · field ชื่อ (required) · chips ความสัมพันธ์ (7, single, optional) · field ปีเกิด พ.ศ. (optional, shows "อายุ ประมาณ N ปี" or an error) · primary เพิ่มสมาชิก / บันทึก (disabled with one reason line) · edit mode only: red outline "นำออกจากรายชื่อ" → 07g. Back = nothing saved [MB-5, MB-6]. |
+| 07g | Remove member | Title นำสมาชิกออก. Card with avatar, name, "ยา N รายการ". Note list: what disappears, what is kept (history, schedules, stock, allergies), can be brought back. Tick "ฉันเข้าใจ" · red "ยืนยันนำออก" (disabled until ticked) · "ยกเลิก". After confirm: back to Members with a toast [MB-7]. |
 
 ## Edit medicine (3 levels) [BR-7]
 | No | Screen | Content / rules |
@@ -52,8 +54,8 @@ Common: status bar area is a mock (do not build). Header = back arrow (when not 
 | 11b | Template editor | Template chips + "ใหม่"; name; body textarea; placeholder chips insert at end; live preview; save. |
 | 12 | Doctor mode | Person; "ไม่ใช่การวินิจฉัย" note; medicine cards (generic strength + schedule + dose); latest ≤3 history entries with reasons; allergy block (red) or "ยังไม่มีบันทึกแพ้ยา"; button แชร์สรุปนี้. |
 | 13 | Share | Privacy header; person chips; per-field switches; "สรุปสำหรับพบแพทย์" link; copy summary text; (real app: link/PDF/picture/invite). |
-| 14 | Settings & pharmacies | Pharmacy list (name, note, phone, shipping line incl. free-over) with edit, header pill "เพิ่มร้าน"; "สั่งล่วงหน้าตั้งต้น" stepper (default 7 days; the notification list repeats it as "เตือนซื้อเมื่อเหลือไม่เกิน 7 วัน" — one setting, L-11); "ข้อมูลของฉัน" with buttons สำรอง / นำเข้า (toast only in the prototype) [D-3]; footer "ข้อมูลเก็บในเครื่องนี้เท่านั้น". |
-| 14b | Pharmacy form | name (required), note, phone (validated live), shipping fee (0 = pickup; empty = unknown, explained), free-over amount; save disabled until valid. |
+| 14 | Settings & pharmacies | Pharmacy list (name, note, phone, shipping line incl. free-over) with edit, header pill "เพิ่มร้าน"; "สั่งล่วงหน้าตั้งต้น" stepper (default 7 days; the notification list repeats it as "เตือนซื้อเมื่อเหลือไม่เกิน 7 วัน" — one setting, L-11); "ข้อมูลของฉัน" with buttons สำรอง / นำเข้า / ลบข้อมูลทั้งหมด (real in the app: UI-7a) [D-3]; footer "ข้อมูลเก็บในเครื่องนี้เท่านั้น". |
+| 14b | Pharmacy form | name (required), note, phone (validated live), shipping fee (0 = pickup; empty = unknown, explained), free-over amount; save disabled until valid (reason under the button). Edit mode also has a red "ลบร้านนี้" with confirmation sheet (UI-7a). |
 
 ## What the review prototype does NOT show (design later / real-app work)
 Add/edit/remove member and member details; real photo picker; real backup/restore (file save, validation, replace confirmation); delete-all-data button + confirmation; pharmacy delete; empty/error/loading states for every screen (UX-3); pharmacy delete confirmation; real LINE/phone intents; PWA install prompt, offline page, app icon set; accessibility pass (focus order, labels, contrast check).

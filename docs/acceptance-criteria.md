@@ -3,8 +3,9 @@
 Format: Given / When / Then. IDs link to requirements. "Test" = automated (unit/component) unless marked **Manual** (done on the owner's Android phone). Numbers use the demo data in `reference/calc.test.mjs`.
 
 ## Data safety (do first)
-- **AC-D1 (D-4)** Given a phone/browser holding v2 data, when the new build loads, then all medicines, people, doses, schedules, history, pharmacies and templates are present and unchanged in meaning; a copy of the old data exists under the backup key; running the upgrade twice changes nothing. Test with an anonymised fixture + **Manual** with the owner's real backup file.
+- **AC-D1 (D-4, ADR-0007)** Given a phone that still holds the old app's data under `medmate.v1`, when the new app runs, saves and is restored from a backup, then `medmate.v1` is byte-for-byte unchanged and the new app starts with its own empty data under `judya.v1`. (Test: `app/src/domain/__tests__/storage.test.ts`.)
 - **AC-D2 (SEC-2)** Given a corrupt/oversized/foreign JSON backup, when imported, then the app refuses with a Thai message and keeps current data.
+- **AC-P3 (UI-7, UI-7a)** Add a pharmacy with a bad phone → save is disabled with a reason; fix it → saved and shown in the list and in the price-row select on 08d; delete asks first and also removes that pharmacy's price rows. Changing the reminder days to N changes "ใกล้หมด" everywhere. (Tests: `settings.test.ts`, `flows.test.tsx`.)
 - **AC-D3 (D-3)** Backup file → restore on a clean browser reproduces identical data (round trip test); restore asks for confirmation first.
 
 ## Calculations (unit tests = `reference/calc.test.mjs` ported)
@@ -46,3 +47,5 @@ Format: Given / When / Then. IDs link to requirements. "Test" = automated (unit/
 - **AC-H1 (UI-10)** Home shows the `reminder` picture when something is near running out or a dose is still to take today, else `family` when other members have open items, else `normal`; the picture keeps its proportions and never covers the text at 360 / 390 / 430 px; no 👋 anywhere. Test: pure function `getHomeBannerState` (3 states, several at once, no data → `normal`) + screenshots.
 - **AC-P1 (MB-1)** Every member picture (Home, Members, member page) is one of the 20 icons shown via `getAvatar`; an unknown or missing `avatarId` shows `profile-01` and nothing breaks; icons stay clear at 32 / 48 / 96 px; `python3 tools/check_profile_icons.py` passes; saved data is not cleared.
 - **AC-P2 (MB-1)** On the member page "เปลี่ยนรูป" opens all 20 icons; the current one is marked (check + frame, not colour alone); choosing one and "ใช้รูปนี้" updates that member on Home, Members and the member page; going back without saving changes nothing; each icon button is ≥ 48 px.
+- **AC-M3 (MB-5/6)** Add: the button is disabled until the name is filled and not a repeat; birth year outside 2400–2569 shows an error; after adding, the member shows on Home, Members, Today and the medicine filters with the chosen icon. Edit changes name / relationship / year / icon everywhere.
+- **AC-M4 (MB-7/8/9)** Remove needs the tick; after it the member and their medicines are gone from Home, notifications, Today, medicine list, order and the banner counts; "สมาชิกที่นำออกแล้ว" lists them and "นำกลับ" restores them with the same medicines, history and allergies; with no member left the empty state shows.
