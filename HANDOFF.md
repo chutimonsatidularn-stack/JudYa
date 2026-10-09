@@ -26,7 +26,7 @@ Claude Project "แอพจัดการยา" also holds the earlier packag
 
 ## 2. Status (update at the end of every session)
 - Design: 26 screens approved as a flow. Not yet designed: member add/edit/remove, backup/restore screens, delete-all-data confirmation, empty/error/loading states, pharmacy delete, PWA install/offline pages, real photo picker (see screen-spec last section).
-- Build: **Steps 0–2 done 2026-10-09 (in `app/`).** Owner started fresh (ADR-0007): own key `judya.v1`, no migration. Step 2 foundation: Vite + React + TypeScript, `calc.ts` (18 ported tests), design tokens + component CSS from the prototype, 20 reusable components + `#/gallery`, hash router, store with safe saving, first-run Home, CSP, manifest + bottle icon, CI checks (`.github/workflows/ci.yml`). 38 tests (`cd app && npm test`). Nothing deployed. Next: Step 3 screens (06 Home, 06b, 06c first), checkpoint with the owner. Later: service worker + deploy workflow (Step 4), remove the gallery page.
+- Build: **Steps 0–2 done and Step 3 groups 1–3 done 2026-10-09 (in `app/`)**: screens 06, 06b, 06c, 07, 07b, 07c, 07d, 07e, 07f, 07g work on saved data (key `judya.v1`); 69 tests (`cd app && npm test`); looks match the approved pictures. Medicine edit pages (08, 08c, 08d), dose/history/stop (09…), order/share/settings screens are still "coming soon". Nothing deployed — to let the owner try it on the phone a deploy workflow and a Pages setting are needed (ask the owner). Remove the `#/gallery` page before release.
 
 - Decisions made 2026-10-08 (owner asked Claude to choose, beginner): run on **claude.ai/code**; **approach B**; work on a branch + PR; allergy delete = no log (Q-A); undesigned screens = Claude Code drafts then pauses for owner. Beginner steps: `docs/BEGINNER-GUIDE.md`.
 

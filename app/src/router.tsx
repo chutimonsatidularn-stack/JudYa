@@ -12,3 +12,16 @@ export function RouterProvider({ children }: { children: ReactNode }) {
   return <Ctx.Provider value={{ path, go, back }}>{children}</Ctx.Provider>;
 }
 export const useRouter = () => useContext(Ctx);
+
+/** '/member/p_1/edit' against '/member/:id/edit' → {id:'p_1'} or null */
+export function match(pattern: string, path: string): Record<string, string> | null {
+  const a = pattern.split('/'), b = path.split('?')[0]!.split('/');
+  if (a.length !== b.length) return null;
+  const out: Record<string, string> = {};
+  for (let i = 0; i < a.length; i++) {
+    const p = a[i]!, q = b[i]!;
+    if (p.startsWith(':')) out[p.slice(1)] = decodeURIComponent(q); else if (p !== q) return null;
+  }
+  return out;
+}
+export const enc = encodeURIComponent;
