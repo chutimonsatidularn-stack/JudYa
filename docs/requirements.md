@@ -127,7 +127,7 @@ Decision record: `docs/adr/0004-dose-schedule-model.md`. **Reference implementat
 | PR-6 | Free shipping applies when the pharmacy subtotal ≥ its free-over amount. | Confirmed |
 | PR-7 | **Split-order hint**: if buying each line at its cheapest pharmacy (shipping counted per pharmacy used) beats the best single pharmacy, show it as a note; it never changes the recommendation. | Confirmed |
 | PR-8 | Demo numbers that tests must reproduce (see `reference/calc.test.mjs`): สุขใจ ฿505, หมอยาเภสัช ฿456 (recommended, ฿49 cheaper), ออนไลน์ not comparable (Losartan unpriced). | Confirmed |
-| PR-9 | After choosing a pharmacy: "สร้างข้อความสั่งยา" (L-8) and "โทรสั่งที่ <ร้าน>" (disabled with "ยังไม่มีเบอร์โทร" when no phone). The phone button opens the dialler in the real app. | Confirmed |
+| PR-9 | (Real app: the phone button is a `tel:` link; each order line has a tick so the user can leave an item out of this order; the chosen pharmacy, person filter and unticked lines travel in the address so Back from the message returns to the same order.) After choosing a pharmacy: "สร้างข้อความสั่งยา" (L-8) and "โทรสั่งที่ <ร้าน>" (disabled with "ยังไม่มีเบอร์โทร" when no phone). The phone button opens the dialler in the real app. | Confirmed |
 | PR-10 | Message templates: user can pick, create, rename, edit; placeholders `{ร้านยา}` `{รายการยา}` `{ผู้สั่ง}` inserted by tap; live preview. Order lines read "n) <generic> (<brand>) <strength> x <qty base unit> (<packs>) (<person>)". | Confirmed |
 
 ## Navigation and notifications (r4–r7)

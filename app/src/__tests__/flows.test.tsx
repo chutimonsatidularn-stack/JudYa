@@ -296,3 +296,56 @@ describe('settings and pharmacies (AC-P3)', () => {
     expect(await screen.findByText(/ไม่ใช่ไฟล์สำรองของ JudYa/)).toBeInTheDocument();
   });
 });
+
+describe('order, message and templates (AC-P1, AC-P2)', () => {
+  const shops = () => {
+    const d = demoData();
+    d.pharmacies = [
+      { id: 'phA', name: 'ร้าน A', phone: '02-123-4567', shippingFee: 40, freeShippingOver: null, active: true },
+      { id: 'phB', name: 'ร้าน B', shippingFee: 0, freeShippingOver: null, active: true },
+    ];
+    d.medications = d.medications.map((m) => (m.id === 'm_los' ? { ...m, prices: [{ pharmacyId: 'phA', price: 5, unit: 'เม็ด' as const }, { pharmacyId: 'phB', price: 40, unit: 'แผง' as const }] } : m));
+    d.assignments = d.assignments.filter((a) => a.id !== 'a_mom_met');
+    return d;
+  };
+  it('recommends the cheapest, then builds the message and lets the template be edited', async () => {
+    const s = mem(shops()); open('#/order', s);
+    expect(screen.getByText('ควรสั่ง 1 รายการ')).toBeInTheDocument();
+    expect(screen.getByText('ร้าน B · ฿120')).toBeInTheDocument();
+    expect(screen.getByText(/ถูกกว่าร้านถัดไป ฿70/)).toBeInTheDocument();
+    expect(screen.getByText('ถูกที่สุด')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /ร้าน B ยังไม่มีเบอร์โทร/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: /ร้าน A/ }));
+    expect(screen.getByRole('link', { name: /โทรสั่งที่ ร้าน A/ })).toHaveAttribute('href', 'tel:021234567');
+    fireEvent.click(screen.getByRole('button', { name: /ร้าน B/ }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'สร้างข้อความสั่งยา' }));
+    expect(await screen.findByRole('heading', { name: 'ข้อความสั่งยา' })).toBeInTheDocument();
+    expect(screen.getByTestId('msg').textContent).toContain('สวัสดีครับ/ค่ะ ร้าน B');
+    expect(screen.getByTestId('msg').textContent).toContain('1) Losartan (Cozaar) 50 mg x 30 เม็ด (3 แผง) (คุณพ่อ)');
+    fireEvent.click(screen.getByRole('button', { name: 'แบบสั้น' }));
+    expect(saved(s).settings.selectedTemplateId).toBe('t2');
+
+    fireEvent.click(screen.getByRole('button', { name: 'แก้แบบฟอร์ม' }));
+    expect(await screen.findByRole('heading', { name: 'แบบฟอร์มข้อความ' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'ใหม่' }));
+    expect(screen.getByRole('button', { name: 'บันทึกแบบฟอร์ม' })).toBeDisabled();
+    type('ชื่อแบบฟอร์ม', 'ของฉัน'); fireEvent.click(screen.getByRole('button', { name: '{ร้านยา}' }));
+    expect(screen.getByTestId('preview').textContent).toBe('ร้าน B');
+    fireEvent.click(screen.getByRole('button', { name: 'บันทึกแบบฟอร์ม' }));
+    expect(await screen.findByRole('heading', { name: 'ข้อความสั่งยา' })).toBeInTheDocument();
+    expect(screen.getByTestId('msg').textContent).toBe('ร้าน B');
+    expect(saved(s).templates.at(-1)).toMatchObject({ name: 'ของฉัน', body: '{ร้านยา}' });
+  });
+  it('without prices it says the comparison is not possible and says what is missing', () => {
+    const d = shops(); d.medications = d.medications.map((m) => ({ ...m, prices: [] }));
+    open('#/order', mem(d));
+    expect(screen.getByText(/ยังเทียบร้านไม่ได้/)).toBeInTheDocument();
+    expect(screen.getAllByText('ขาดราคา: Losartan').length).toBe(2);
+  });
+  it('unticking the only line disables the message with a reason', () => {
+    open('#/order', mem(shops()));
+    fireEvent.click(screen.getByRole('checkbox', { name: /สั่ง Losartan/ }));
+    expect(screen.getByRole('button', { name: 'สร้างข้อความสั่งยา' })).toBeDisabled(); expect(screen.getByText('เลือกยาอย่างน้อย 1 รายการ')).toBeInTheDocument();
+  });
+});

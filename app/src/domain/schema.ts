@@ -152,6 +152,7 @@ export type Medication = z.infer<typeof Medication>;
 export type Assignment = z.infer<typeof Assignment>;
 export type DoseChange = z.infer<typeof DoseChange>;
 export type Pharmacy = z.infer<typeof Pharmacy>;
+export type MessageTemplate = z.infer<typeof MessageTemplate>;
 export type Schedule = z.infer<typeof Schedule>;
 export type Doses = z.infer<typeof Doses>;
 export type AppData = z.infer<typeof AppData>;
